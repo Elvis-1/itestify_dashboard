@@ -64,11 +64,13 @@ function Dashbord() {
               <p className='opacity-[0.7]'>Overview</p>
             </div>
           </Link>
-
-          <div className='font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]'>
+          <Link to='/dashboard/users'>
+          <div className='font-sans flex items-center gap-1 p-3 text-[13px] hover:bg-[#9966CC] focus:bg-[#9966CC] active:bg-[#9966CC]'>
              <UsergroupAddOutlined style={{ fontSize: '20px' }} />
              <p className='opacity-[0.7]'>Users</p>
           </div>
+          </Link>
+          
 
           <div className='font-sans flex items-center gap-1 p-3 text-[13px]'>
             <CiChat1 style={{ fontSize: '20px' }} />
