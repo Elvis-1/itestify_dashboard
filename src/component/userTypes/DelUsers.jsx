@@ -1,14 +1,19 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { DeletedUsers } from "../../data/userdetails";
 import { MdOutlineMoreHoriz } from "react-icons/md";
 import { UserContext } from "../../context/UserContext";
+import { LuChevronsUpDown } from "react-icons/lu";
 const DelUsers = () => {
-  const {
-    handleSelectAll,
-    handleItemSelect,
-    selectedItems,
-    selectAll
-  } = useContext(UserContext);
+  const { handleSelectAll, handleUserSelect, selectedUsers, selectAll } =
+    useContext(UserContext);
+  const [isOpenOptions, setIsOpenOptions] = useState({});
+  
+  const toggleOptions = (index) => {
+    setIsOpenOptions(prevState => ({
+      ...prevState,
+      [index]: !prevState[index] 
+    }));
+  };
   return (
     <div>
       <div className="table-container">
@@ -25,17 +30,59 @@ const DelUsers = () => {
                   checked={selectAll}
                 />
               </th>
-              <th>S/N</th>
-              <th>User ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Deletion date</th>
-              <th>Reason</th>
+              <th>
+                <div className="flex items-center gap-1">
+                  S/N
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div>
+              </th>
+              <th>
+                <div className="flex items-center gap-1">
+                  User ID
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div>
+              </th>
+              <th>
+                <div className="flex items-center gap-1">
+                  Name
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div>
+              </th>
+              <th>
+                <div className="flex items-center gap-1">
+                  Email
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div>
+              </th>
+              <th>
+                <div className="flex items-center gap-1">
+                  Deletion date
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div>
+              </th>
+              <th>
+                <div className="flex items-center gap-1">
+                  Reason
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div>
+              </th>
               <th>Action</th>
             </tr>
           </thead>
-          {DeletedUsers.map((data) => (
-            <tbody>
+          {DeletedUsers.map((data, index) => (
+            <tbody className="relative" key={data.id}>
               <tr>
                 <td>
                   <input
@@ -43,9 +90,9 @@ const DelUsers = () => {
                     name="guest"
                     id="guest-checkbox"
                     onChange={() => {
-                      handleItemSelect(data.id);
+                      handleUserSelect(data.id);
                     }}
-                    checked={selectedItems.includes(data.id)}
+                    checked={selectedUsers.includes(data.id)}
                   />
                 </td>
                 <td>{data.id}</td>
@@ -55,7 +102,19 @@ const DelUsers = () => {
                 <td>{data.deletionDate}</td>
                 <td>{data.reason}</td>
                 <td>
-                  <MdOutlineMoreHoriz />
+                  {isOpenOptions[index] && (
+                    <div className=" rounded-lg  text-white bg-[#292929] w-[120px] border-[1px] border-white absolute top-10 right-10  z-10">
+                      <p className="border-b-[1px] border-gray-300 p-2">
+                        View profile
+                      </p>
+                      <p className="p-2 text-[#E53935]">Delete</p>
+                    </div>
+                  )}
+                  <i
+                    onClick={()=>{toggleOptions(index)}}
+                  >
+                    <MdOutlineMoreHoriz />
+                  </i>
                 </td>
               </tr>
             </tbody>

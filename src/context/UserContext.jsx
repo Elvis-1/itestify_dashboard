@@ -2,40 +2,43 @@ import React from "react";
 import { createContext, useState } from "react";
 export const UserContext = createContext();
 const UserContextProvider = ({ children }) => {
-  const [selectedItems, setSelectedItems] = useState([]);
+  const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
-
-  const handleItemSelect = (itemId) => {
-    setSelectedItems((prev) =>
-      prev.includes(itemId)
-        ? prev.filter((id) => id !== itemId)
-        : [...prev, itemId]
+  const [deleteModal, setDeleteModal] = useState(false);
+  const [users, setUsers] = useState([]);
+  const handleUserSelect = (UserId) => {
+    setSelectedUsers((prev) =>
+      prev.includes(UserId)
+        ? prev.filter((id) => id !== UserId)
+        : [...prev, UserId]
     );
   };
 
   const handleSelectAll = () => {
     setSelectAll(!selectAll);
-    setSelectedItems(selectAll ? [] : items.map((item) => item.id));
+    setSelectedUsers(selectAll ? [] : users.map((user) => user.id));
   };
 
   const handleDeleteSelected = () => {
-    setItems((prev) => prev.filter((item) => !selectedItems.includes(item.id)));
-    setSelectedItems([]);
-    setSelectAll(false);
+    setUsers((prev) => prev.filter((User) => !selectedUsers.includes(User.id)));
+    // setSelectedUsers([]);
+    setDeleteModal(true);
   };
   return (
-      <UserContext.Provider
-        value={{
-          handleSelectAll,
-          handleItemSelect,
-          handleDeleteSelected,
-          selectedItems,
-          setSelectedItems,
-          selectAll
-        }}
-      >
-        {children}
-      </UserContext.Provider>
+    <UserContext.Provider
+      value={{
+        handleSelectAll,
+        handleUserSelect,
+        handleDeleteSelected,
+        selectedUsers,
+        setSelectedUsers,
+        selectAll,
+        deleteModal,
+        setDeleteModal,
+      }}
+    >
+      {children}
+    </UserContext.Provider>
   );
 };
 

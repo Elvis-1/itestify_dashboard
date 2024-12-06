@@ -1,41 +1,78 @@
 import React, { useContext, useState } from "react";
 import { userDetails } from "../../data/userdetails";
 import { MdOutlineMoreHoriz } from "react-icons/md";
+import { LuChevronsUpDown } from "react-icons/lu";
 
-import { DarkModeContext } from "../../context/DarkModeContext";
-const Users = () => {
-  const { isDarkMode } = useContext(DarkModeContext);
-
+const RegUsers = () => {
+  const [isOpenOptions, setIsOpenOptions] = useState({});
+  
+  const toggleOptions = (index) => {
+    setIsOpenOptions(prevState => ({
+      ...prevState,
+      [index]: !prevState[index] 
+    }));
+  };
   return (
     <div className="">
-      <div
-        className={` table-container${
-          isDarkMode ? `` : `bg-white`
-        } rounded-b-lg`}
-      >
-        <table
-          className={`custom-table ${
-            isDarkMode ? `` : `text-black bg-white`
-          } font-san text-[14px]`}
-        >
+      <div className="table-container">
+        <table className="custom-table font-san text-[14px]">
           <thead>
             <tr>
-              <th>S/N</th>
-              <th>User ID</th>
-              <th>Name</th>
-              <th>Email</th>
-              <th>Registration Date</th>
-              <th>Last Login</th>
+              <th>
+                <div className="flex items-center gap-1">
+                  S/N
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div>
+              </th>
+              <th>
+                <div className="flex items-center gap-1">
+                  User ID
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div>
+              </th>
+
+              <th>
+                <div className="flex items-center gap-1">
+                  Name
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div>
+              </th>
+              <th>
+                <div className="flex items-center gap-1">
+                  Email
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div>
+              </th>
+              <th>
+                <div className="flex items-center gap-1">
+                  Registration Date
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div>
+              </th>
+              <th>
+                <div className="flex items-center gap-1">
+                  Last Login
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div>
+              </th>
               <th>Action</th>
             </tr>
           </thead>
-          {userDetails.map((data) => (
-            <tbody key={data.id}>
-              <tr
-                className={`bg-gray-200 ${
-                  isDarkMode ? `` : `bg-gray-200 text-black`
-                }`}
-              >
+          {userDetails.map((data,index) => (
+            <tbody className="relative" key={data.id}>
+              <tr className="bg-gray-200">
                 <td>{data.id}</td>
                 <td>{data.userId}</td>
                 <td>{data.name}</td>
@@ -43,16 +80,28 @@ const Users = () => {
                 <td>{data.regDate}</td>
                 <td>{data.lastLogin}</td>
                 <td>
-                  <MdOutlineMoreHoriz />
+                  {isOpenOptions[index] && (
+                    <div className=" rounded-lg  text-white bg-[#292929] w-[120px] border-[1px] border-white absolute top-10 right-10  z-10">
+                      <p className="p-2 text-center">
+                        View profile
+                      </p>
+                    </div>
+                  )}
+                  <i
+                    onClick={() => {
+                      toggleOptions(index);
+                    }}
+                  >
+                    <MdOutlineMoreHoriz />
+                  </i>
                 </td>
               </tr>
             </tbody>
           ))}
         </table>
       </div>
-      
     </div>
   );
 };
 
-export default Users;
+export default RegUsers;

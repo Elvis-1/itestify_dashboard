@@ -2,12 +2,12 @@ import React,{useContext} from "react";
 import { GuestUsers } from "../../data/userdetails";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { UserContext } from "../../context/UserContext";
-
+import { LuChevronsUpDown } from "react-icons/lu";
 const GuestUser = () => {
   const {
     handleSelectAll,
-    handleItemSelect,
-    selectedItems,
+    handleUserSelect,
+    selectedUsers,
     selectAll,
     handleDeleteSelected,
   } = useContext(UserContext);
@@ -22,28 +22,48 @@ const GuestUser = () => {
                   className=""
                   type="checkbox"
                   name="guest"
-                  id="guest-checkbox"
+                  id="guestCheckbox"
                   checked={selectAll}
                   onChange={handleSelectAll}
                 />
               </th>
-              <th>S/N</th>
-              <th>Guest ID</th>
-              <th>Number of sessions</th>
-              <th>Last login</th>
+              <th><div className="flex items-center gap-1">
+                 S/N
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div></th>
+              <th><div className="flex items-center gap-1">
+                  Guest ID
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div></th>
+              <th><div className="flex items-center gap-1">
+                  Number of sessions
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div></th>
+              <th><div className="flex items-center gap-1">
+                  Last Login
+                  <i>
+                    <LuChevronsUpDown />
+                  </i>
+                </div></th>
               <th>Actions</th>
             </tr>
           </thead>
           {GuestUsers.map((data) => (
-            <tbody>
+            <tbody key={data.id}>
               <tr>
                 <td>
                   <input
                     type="checkbox"
                     name="guest"
                     id="guest-checkbox"
-                    checked={selectedItems.includes(data.id)}
-                    onChange={handleItemSelect(data.id)}
+                    checked={selectedUsers.includes(data.id)}
+                    onChange={()=>{handleUserSelect(data.id)}}
                   />
                 </td>
                 <td>{data.id}</td>
