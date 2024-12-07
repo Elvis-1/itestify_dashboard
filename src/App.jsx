@@ -7,14 +7,11 @@ import CreatePassword from "./pages/CreatePassword";
 import Dashboard from "./pages/Dashboard";
 import Overview from "./component/Overview";
 import { DarkModeContextProvider } from "./context/DarkModeContext";
-import UserContextProvider from "./context/UserContext";
-import { UserContext } from "./context/UserContext";
 import Users from "./component/Users";
 
 function App() {
   return (
     <div>
-      <UserContextProvider>
         <DarkModeContextProvider>
           <BrowserRouter>
             <Routes>
@@ -27,7 +24,6 @@ function App() {
             </Routes>
           </BrowserRouter>
         </DarkModeContextProvider>
-      </UserContextProvider>
     </div>
   );
 }

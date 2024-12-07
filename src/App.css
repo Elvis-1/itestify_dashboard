@@ -66,3 +66,6 @@ input[type="checkbox"] {
   background-color: #ffffff;
   cursor: pointer;
 }
+th div i{
+  cursor: pointer;
+}
