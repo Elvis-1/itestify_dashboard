@@ -11,6 +11,15 @@ export default {
         roboto: ['Roboto', 'sans-serif'],
         serif: ['Lora', 'serif'],
       },
+      colors:{
+        primary : "#9966CC",
+        red: "#E53935",
+        "off-white" : "#F5F5F5",
+        "near-black" : "#171717",
+        black: "#000000",
+        "off-black" : "#313131",
+        lightBlack :"#1E1E1E"
+      }
     },
   },
   plugins: [],

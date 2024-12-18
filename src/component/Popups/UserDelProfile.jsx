@@ -1,9 +1,15 @@
-import React from "react";
-import avatarProfile from "../../assets/images/Design/Dashboard/avatar.png";
+import React, { useContext } from "react";
+import avatarProfile from "../../assets/images/avatar.png";
 import { MdClose } from "react-icons/md";
-export const UserProfile = ({setProfile}) => {
+import { DarkModeContext } from "../../context/DarkModeContext";
+
+const UserDelProfile = ({ deletedUsers, setProfile }) => {
+  const { isDarkMode } = useContext(DarkModeContext);
+  if (!deletedUsers) {
+    return null;
+  }
   return (
-    <div className="fixed bg-black inset-0 z-50 bg-opacity-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full  max-w-md">
+    <div className="fixed inset-0 z-50 bg-opacity-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full  max-w-md">
       <div className=" rounded-lg">
         <i
           onClick={() => {
@@ -13,7 +19,7 @@ export const UserProfile = ({setProfile}) => {
         >
           <MdClose />
         </i>
-        <div className="bg-[#292929] h-36 w-full relative">
+        <div className={`h-36 w-full relative  rounded-t-2xl  ${isDarkMode ? `bg-[#292929] ` : `bg-off-white`}`}>
           <img
             className="flex justify-center items-center w-24 h-24 absolute top-[60%] left-[38%]"
             src={avatarProfile}
@@ -21,29 +27,30 @@ export const UserProfile = ({setProfile}) => {
           />
         </div>
 
-        <div className="bg-black p-4 ">
+        <div className={`bg-black p-4 rounded-b-2xl ${isDarkMode ? `dark-mode` : `light-mode`}`}>
           <div className="flex justify-between items-center w-full py-2">
             <p>User ID</p>
-            <p>U10892</p>
+            <p>{deletedUsers?.userId || "----"}</p>
           </div>
           <div className="flex justify-between items-center w-full py-2">
             <p>Name</p>
-            <p>U10892</p>
+            <p>{deletedUsers?.name || "----"}</p>
           </div>
           <div className="flex justify-between items-center w-full py-2">
             <p>Email</p>
-            <p>U10892</p>
+            <p>{deletedUsers?.email || "----"}</p>
           </div>
           <div className="flex justify-between items-center w-full py-2">
             <p>Status</p>
-            <p className="text-green-600">Registered</p>
+            <p className="text-red">Deleted</p>
           </div>
           <div className="flex justify-between items-center w-full py-2">
-            <p>Regsitration date</p>
-            <p>U10892</p>
+            <p>Deletion date</p>
+            <p>{deletedUsers?.deletionDate || "----"}</p>
           </div>
         </div>
       </div>
     </div>
   );
 };
+export default UserDelProfile;

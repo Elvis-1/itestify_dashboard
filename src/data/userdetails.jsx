@@ -2,279 +2,163 @@ export const regUsers = [
   {
     id: 1,
     userId: "U102334",
-    name: "John Stone",
-    email: "johnstone@gmail.com",
+    name: "Alice Johnson",
+    email: "alice.johnson@example.com",
     regDate: "8th Aug 2024",
     lastLogin: "8th Aug 2024, 10:00 am",
   },
   {
     id: 2,
-    userId: "U102334",
-    name: "John Stone",
-    email: "johnstone@gmail.com",
+    userId: "U102335",
+    name: "Bob Smith",
+    email: "bob.smith@example.com",
     regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
+    lastLogin: "8th Aug 2024, 10:15 am",
   },
   {
     id: 3,
-    userId: "U102334",
+    userId: "U102336",
     name: "Emmanuel Akin",
-    email: "johnstone@gmail.com",
+    email: "emmanuel.akin@example.com",
     regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
+    lastLogin: "8th Aug 2024, 10:30 am",
   },
   {
     id: 4,
-    userId: "U102334",
+    userId: "U102337",
     name: "Alexander Justin",
-    email: "johnstone@gmail.com",
+    email: "alexander.justin@example.com",
     regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
+    lastLogin: "8th Aug 2024, 10:45 am",
   },
   {
     id: 5,
-    userId: "U102334",
+    userId: "U102338",
     name: "Hamilton Stanley",
-    email: "johnstone@gmail.com",
+    email: "hamilton.stanley@example.com",
     regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
+    lastLogin: "8th Aug 2024, 11:00 am",
   },
   {
     id: 6,
-    userId: "U102334",
+    userId: "U102339",
     name: "John Boyega",
-    email: "johnstone@gmail.com",
+    email: "john.boyega@example.com",
     regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
+    lastLogin: "8th Aug 2024, 11:15 am",
   },
   {
     id: 7,
-    userId: "U102334",
+    userId: "U102340",
     name: "John Wick",
-    email: "johnwicke@gmail.com",
+    email: "john.wick@example.com",
     regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
+    lastLogin: "8th Aug 2024, 11:30 am",
   },
   {
     id: 8,
-    userId: "U102334",
-    name: "John Stone",
-    email: "johnstone@gmail.com",
+    userId: "U102341",
+    name: "Sophia Turner",
+    email: "sophia.turner@example.com",
     regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
+    lastLogin: "8th Aug 2024, 11:45 am",
   },
   {
     id: 9,
-    userId: "U102134",
+    userId: "U102342",
     name: "Emma Stone",
-    email: "emmastone@gmail.com",
+    email: "emma.stone@example.com",
     regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
+    lastLogin: "8th Aug 2024, 12:00 pm",
   },
   {
     id: 10,
-    userId: "U102134",
-    name: "Emma Stone",
-    email: "emmastone@gmail.com",
-    regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
-  },
-  {
-    id: 11,
-    userId: "U102134",
-    name: "Emma Stone",
-    email: "emmastone@gmail.com",
-    regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
-  },
-  {
-    id: 12,
-    userId: "U102134",
-    name: "Emma Stone",
-    email: "emmastone@gmail.com",
-    regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
-  },
-  {
-    id: 13,
-    userId: "U102134",
-    name: "Emma Stone",
-    email: "emmastone@gmail.com",
-    regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
-  },
-  {
-    id: 14,
-    userId: "U102134",
-    name: "Emma Stone",
-    email: "emmastone@gmail.com",
-    regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
-  },
-  {
-    id: 15,
-    userId: "U102134",
-    name: "Emma Stone",
-    email: "emmastone@gmail.com",
-    regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
-  },
-  {
-    id:16,
-    userId: "U102134",
-    name: "Emma Stone",
-    email: "emmastone@gmail.com",
-    regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
-  },
-
-  {
-    id: 17,
-    userId: "U102134",
-    name: "Emma Stone",
-    email: "emmastone@gmail.com",
-    regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
-  },
-  {
-    id: 18,
-    userId: "U102134",
-    name: "Emma Stone",
-    email: "emmastone@gmail.com",
-    regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
-  },
-  {
-    id: 19,
-    userId: "U102134",
-    name: "Emma Stone",
-    email: "emmastone@gmail.com",
-    regDate: "8th Aug 2024",
-    lastLogin: "8th Aug 2024, 10:00 am",
-  },
-];
-export const GuestUsers = [
-    {
-      id: 1,
-      guestId: "U102335",
-      numOfSessions: Math.floor(Math.random() * 100),
-      lastLogin: "8th Aug 2024, 11:00 am",
-    },
-    {
-      id: 2,
-      guestId: "U102336",
-      numOfSessions: Math.floor(Math.random() * 100),
-      lastLogin: "7th Aug 2024, 9:30 am",
-    },
-    {
-      id: 3,
-      guestId: "U102337",
-      numOfSessions: Math.floor(Math.random() * 100),
-      lastLogin: "6th Aug 2024, 8:15 pm",
-    },
-    {
-      id: 4,
-      guestId: "U102338",
-      numOfSessions: Math.floor(Math.random() * 100),
-      lastLogin: "5th Aug 2024, 2:45 pm",
-    },
-    {
-      id: 5,
-      guestId: "U102339",
-      numOfSessions: Math.floor(Math.random() * 100),
-      lastLogin: "4th Aug 2024, 3:10 pm",
-    },
-    {
-      id: 6,
-      guestId: "U102340",
-      numOfSessions: Math.floor(Math.random() * 100),
-      lastLogin: "3rd Aug 2024, 1:00 pm",
-    },
-    {
-      id: 7,
-      guestId: "U102341",
-      numOfSessions: Math.floor(Math.random() * 100),
-      lastLogin: "2nd Aug 2024, 10:30 am",
-    },
-    {
-      id: 8,
-      guestId: "U102342",
-      numOfSessions: Math.floor(Math.random() * 100),
-      lastLogin: "1st Aug 2024, 12:00 pm",
-    },
-    {
-      id: 9,
-      guestId: "U102343",
-      numOfSessions: Math.floor(Math.random() * 100),
-      lastLogin: "31st July 2024, 5:00 pm",
-    },
-    {
-      id: 10,
-      guestId: "U102344",
-      numOfSessions: Math.floor(Math.random() * 100),
-      lastLogin: "30th July 2024, 4:20 pm",
-    },
-     {
-       id: 11,
-       guestId: "U102345",
-       numOfSessions: Math.floor(Math.random() * 100),
-       lastLogin: "29th July 2024, 6:15 pm",
-     },
-     {
-       id: 12,
-       guestId: "U102346",
-       numOfSessions: Math.floor(Math.random() * 100),
-       lastLogin: "28th July 2024, 7:45 am",
-     },
-     {
-       id:13,
-       guestId:"U102347",
-       numOfSessions : Math.floor(Math.random() *100),
-       lastLogin:"27th July,2024 ,8 :00 am"
-     },
-     {
-       id :14,
-       guestId:"U102348",
-       numOfSessions :Math.floor(Math.random()*100),
-       lastLogin:"26th July ,2024 ,9 :30 am"
-     },
-     {
-       id :15,
-       guestId:"U102349",
-       numOfSessions :Math.floor(Math.random()*100),
-       lastLogin:"25th July ,2024 ,10 :15 am"
-     },
-     {
-       id :16,
-       guestId:"U102350",
-       numOfSessions :Math.floor(Math.random()*100),
-       lastLogin:"24th July ,2024 ,11 :00 am"
-     },
-     {
-       id :17,
-       guestId:"U102351",
-       numOfSessions :Math.floor(Math.random()*100),
-       lastLogin:"23rd July ,2024 ,12 :45 pm"
-     },
-     {
-        id :18,
-        guestId:"U102352",
-        numOfSessions :Math.floor(Math.random()*100),
-        lastLogin:"22nd July ,2024 ,1 :30 pm"
-     },
-     {
-        id :19,
-        guestId:"U102353",
-        numOfSessions :Math.floor(Math.random()*100),
-        lastLogin:"21st July ,2024 ,2 :15 pm"
-     },
-     {
-        id :20,
-        guestId:"U102354",
-        numOfSessions :Math.floor(Math.random()*100),
-        lastLogin:"20th July ,2024 ,3 :00 pm"
-     }
-
+    userId: "U102343",
+    name: "Michael Brown",
+    email: "michael.brown@example.com",
+    regDate: "9th Aug 2024",
+    lastLogin: "9th Aug 2024, 09:00 am"
+   },
+   {
+     id:11,
+     userId:"U102344", 
+     name:"Sarah Connor", 
+     email:"sarah.connor@example.com", 
+     regDate:"9th Aug 2024", 
+     lastLogin:"9th Aug 2024,09.15 am"
+   },
+   {
+     id :12,
+     userId :"U102345", 
+     name :"Chris Evans", 
+     email :"chris.evans@example.com", 
+     regDate :"9th Aug,2024", 
+     lastLogin :"9th Aug,2024,09.30 am"
+   },
+   {
+     id :13,
+     userId :"U102346", 
+     name :"Natalie Portman", 
+     email :"natalie.portman@example.com", 
+     regDate :"9th Aug,2024", 
+     lastLogin :"9th Aug,2024,09.45 am"
+   },
+   {
+     id :14,
+     userId :"U102347", 
+     name :"Leonardo DiCaprio", 
+     email :"leonardo.dicaprio@example.com", 
+     regDate :"9th Aug,2024", 
+     lastLogin :"9th Aug,2024,10.00 am"
+   },
+   {
+     id :15,
+     userId :"U102348", 
+     name :"Scarlett Johansson", 
+     email :"scarlett.johansson@example.com", 
+     regDate :"9th Aug,2024", 
+     lastLogin :"9th Aug,2024,10.15 am"
+   },
+   {
+     id :16,
+     userId :"U102349", 
+     name :"Tom Holland", 
+     email :"tom.holland@example.com", 
+     regDate :"9th Aug,2024", 
+     lastLogin :"9th Aug,2024,10.30 am"
+   },
+   {
+      id :17,
+      userId :"U102350", 
+      name :"Emma Watson", 
+      email :"emma.watson@example.com", 
+      regDate :"9th Aug,2024", 
+      lastLogin :"9th Aug,2024,10.45 am"
+   },
+   {
+      id :18,
+      userId :"U102351", 
+      name :"Chris Hemsworth", 
+      email :"chris.hemsworth@example.com", 
+      regDate :"9th Aug,2024", 
+      lastLogin :"9th Aug,2024,11.00 am"
+   },
+   {
+      id :19,
+      userId :"U102352", 
+      name :"Robert Downey Jr.", 
+      email :"robert.downeyjr@example.com", 
+      regDate :"9th Aug,2024", 
+      lastLogin :"9th Aug,2024,11.15 am"
+   },
+   {
+      id :20,
+      userId :"U102353",  
+      name : "Gal Gadot",  
+      email : "gal.gadot@example.com",  
+      regDate : "9th Aug ,2024",  
+      lastLogin : "9th Aug ,2024 ,11.30am" 
+   }
 ];
 export const DeletedUsers=[
     {

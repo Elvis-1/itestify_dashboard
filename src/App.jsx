@@ -7,7 +7,8 @@ import CreatePassword from "./pages/CreatePassword";
 import Dashboard from "./pages/Dashboard";
 import Overview from "./component/Overview";
 import { DarkModeContextProvider } from "./context/DarkModeContext";
-import Users from "./component/Users";
+import Users from "./pages/Users";
+import Donations from "./pages/Donations";
 
 function App() {
   return (
@@ -20,6 +21,7 @@ function App() {
               <Route path="/dashboard" element={<Dashboard />}>
                 <Route path="" element={<Overview />} />
                 <Route path="/dashboard/users" element={<Users />} />
+                <Route path="/dashboard/donations" element={<Donations />} />
               </Route>
             </Routes>
           </BrowserRouter>
