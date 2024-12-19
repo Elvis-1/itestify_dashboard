@@ -2,6 +2,7 @@ import React from 'react'
 import logo from '../assets/icons/Logo.png'
 
 function LogoDisplay() {
+  
   return (
     <div>
         <div className='flex items-center gap-2'>

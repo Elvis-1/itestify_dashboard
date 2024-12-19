@@ -111,7 +111,7 @@ function CreatePassword() {
                     }
                   </li>
                   <li>
-                    password match
+                    Password match
                     {
                       validations.match ?
                       <CheckOutlined style={{ fontSize: '15px', color: 'green' }} />: ""

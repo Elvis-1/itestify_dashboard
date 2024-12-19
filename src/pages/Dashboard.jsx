@@ -25,15 +25,27 @@ import { MdOutlineSettings } from "react-icons/md"
 import { FaRegUser } from "react-icons/fa6"
 import { FaRegMoneyBill1 } from "react-icons/fa6"
 
-import { Link, Outlet } from 'react-router-dom'
+import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { DarkModeContext } from '../context/DarkModeContext';
 
 function Dashbord() {
   const [showTestimonyMenu, setShowTestimonyMenu] = useState(false)
   const [showAnalyticsMenu, setShowAnalyticsMenu] = useState(false)
   const [showInspirationalMenu, setShowInspirationalMenu] = useState(false)
+  const [showAllTestimonies, setShowAllTestimonies] = useState(true)
   
   const {isDarkMode, toggleTheme} = useContext(DarkModeContext)
+
+  const navigate = useNavigate()
+
+  function handleTestimonies() {
+    setShowAllTestimonies(!showAllTestimonies)
+    if(showAllTestimonies){
+        navigate('all-testimonies')
+    }else{
+      navigate('upload-testimonies')
+    }
+  }
 
   return (
     <div className={`flex min-h-screen border ${isDarkMode ? "bg-black text-white" : "bg-white text-black"}`}>
@@ -70,7 +82,7 @@ function Dashbord() {
              <p className='opacity-[0.7]'>Users</p>
           </div>
 
-          <div className='font-sans flex items-center gap-1 p-3 text-[13px]'>
+          <div className='font-sans flex items-center gap-1 p-3 text-[13px] hover:bg-[#9966CC] active:bg-[#9966CC]'>
             <CiChat1 style={{ fontSize: '20px' }} />
              <div onClick={() => setShowTestimonyMenu(!showTestimonyMenu)} className='flex items-center justify-between w-[100%] cursor-pointer'>
                 <p className='opacity-[0.7]'>Testimonies</p>
@@ -82,9 +94,21 @@ function Dashbord() {
           </div>
           {showTestimonyMenu ?
           <div className=' cursor-pointer text-[13px] flex flex-col items-center'>
-            <input type='button' value={'All Testimonies'} placeholder='All Testimonies' className='ml-[-85px] border-none outline-none p-2 bg-tranparent'/>
-            <input type='button' value={'Uploaded Testimonies'} placeholder='All Testimonies' className='ml-[-40px] border-none outline-none p-2 bg-transparent'/>
-          </div>: ""
+            {/* dynamically navigating to each testimonies component */}
+            <Link to='all-testimonies'>
+              <input type='button' value={'All Testimonies'}
+              placeholder='All Testimonies' 
+              className='ml-[-65px] border-none outline-none p-2 bg-tranparent cursor-pointer'
+              onClick={handleTestimonies}/>
+            </Link>
+            <Link to='upload-testimonies'>
+              <input type='button' value={'Upload Testimonies'} 
+              placeholder='upload Testimonies' 
+              className='ml-[-40px] border-none outline-none p-2 bg-transparent cursor-pointer'
+              onClick={handleTestimonies}/>
+            </Link>
+
+          </div>:""
           }
 
 
@@ -120,9 +144,9 @@ function Dashbord() {
             </div>
           </div>
         
-          <div className='flex items-center gap-2 w-[90%] m-[auto] font-sans font-bold mt-2'>
+          <div className='flex items-center gap-2 w-[90%] m-[auto] font-sans mt-2'>
             <CiChat1 style={{ fontSize: '20px' }} />
-            <p className='font-sans text-[#fff] text-[13px] mb-2 opacity-[0.8]'>Reviews</p>
+            <p className='font-sans text-[13px] mb-2 opacity-[0.8]'>Reviews</p>
           </div>
 
 
@@ -178,10 +202,10 @@ function Dashbord() {
       {/* whole side bar ends here */}
 
         {/* main dashboard section starts here */}
-        <div className='flex-[4] min-h-screen'>
+        <div className='flex-[6] min-h-screen'>
 
           {/* main dashboard section header starts here */}
-          <div className={`flex items-center justify-between w-[80%] h-[50px]
+          <div className={`flex items-center justify-between w-[88%] h-[50px]
              fixed z-[1000] top-0 p-3 mb-[100px]
              ${isDarkMode ? "bg-[#313131] text-white" : "bg-white text-black border-b border-b-slate-200"}`}>
               <div className='h-[50px] opacity-[0.7] w-[130px] mt-5 font-sans'>
