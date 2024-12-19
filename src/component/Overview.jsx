@@ -42,7 +42,7 @@ function Overview() {
                   </tr>
                 </thead>
                 {userData.map((data) => (
-                    <tbody>
+                    <tbody key={data.id}>
                       <tr>
                         <td>{data.id}</td>
                         <td>{data.category}</td>

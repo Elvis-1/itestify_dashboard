@@ -7,6 +7,9 @@ import CreatePassword from './pages/CreatePassword';
 import Dashboard from './pages/Dashboard';
 import Overview from './component/Overview';
 import { DarkModeContextProvider } from './context/DarkModeContext';
+import AllTestimonies from './component/AllTestimonies';
+import UploadTestimonies from './component/UploadTestimonies';
+import VideoPlayer from './component/VideoPlayer';
 
 
  function App() {
@@ -20,6 +23,8 @@ import { DarkModeContextProvider } from './context/DarkModeContext';
           <Route path='/create-password' element={<CreatePassword/>}/>
           <Route path='/dashboard' element={<Dashboard/>}>
               <Route path='' element={<Overview/>}/>
+              <Route path='all-testimonies' element={<AllTestimonies/>}/>
+              <Route path='upload-testimonies' element={<UploadTestimonies/>}/>
           </Route>
         </Routes>
       </BrowserRouter>
