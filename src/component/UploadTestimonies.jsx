@@ -76,13 +76,25 @@ function UploadTestimonies() {
 
           {uploadDropDown &&
           <div className='pt-2 border mt-2 w-[97%] m-[auto] rounded-xl'>
-            <p onClick={() => setUploadCategory('Healing')} 
+            <p onClick={() => {
+              setUploadCategory('Healing')
+              setUploadDropDown(false)
+            }} 
             className='border-b w-[100%] pl-2 cursor-pointer'>Healing</p>
-            <p onClick={() => setUploadCategory('Deliverance')} 
+            <p onClick={() => {
+              setUploadCategory('Deliverance')
+              setUploadDropDown(false)
+            }} 
             className='border-b w-[100%] pl-2 cursor-pointer'>Deliverance</p>
-            <p onClick={() => setUploadCategory('Faith')}
+            <p onClick={() => {
+              setUploadCategory('Faith')
+              setUploadDropDown(false)
+            }}
             className='border-b w-[100%] pl-2 cursor-pointer'>Faith</p>
-            <p onClick={() => setUploadCategory('Salvation')}
+            <p onClick={() => {
+              setUploadCategory('Salvation')
+              setUploadDropDown(false)
+            }}
             className='pl-2 cursor-pointer'>Salvation</p>
           </div>}
 
@@ -142,9 +154,15 @@ function UploadTestimonies() {
 
           {roleDropDown &&
           <div className='pt-2 border mt-2 w-[97%] m-[auto] rounded-xl mb-4'>
-            <p onClick={() => setRole('Super Admin')} 
+            <p onClick={() => {
+              setRole('Super Admin')
+              setRoleDropDown(false)
+            }} 
             className='border-b w-[100%] pl-2 cursor-pointer'>Super Admin</p>
-            <p onClick={() => setRole('Admin')} 
+            <p onClick={() => {
+              setRole('Admin')
+              setRoleDropDown(false)
+            }} 
             className='w-[100%] pl-2 cursor-pointer'>Admin</p>
           </div>}
         </div>

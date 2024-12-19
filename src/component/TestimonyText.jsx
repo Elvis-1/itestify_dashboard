@@ -978,7 +978,7 @@ function TestimonyText() {
                         <div className='ml-[20px] mt-4'>{item.likes}</div>
                         <div className='ml-[20px] mt-4'>{item.comments}</div>
                         <div className='ml-[20px] mt-4'>{item.shares}</div>
-                        <div className={`ml-[-5px] mt-4 w-[100%] m-[auto] text-center rounded p-1 ${item.status === 'Rejected' ? 
+                        <div className={`ml-[-5px] mt-3 w-[90%]  m-[auto] text-center rounded-xl p-1 ${item.status === 'Rejected' ? 
                         'text-red-600 border border-red-600' : item.status === 'Pending' ? 
                         'text-yellow-400 border border-yellow-500' : 'text-green-700 border border-green-700'}`}>
                             {item.status}
