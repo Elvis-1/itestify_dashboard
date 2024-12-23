@@ -1,6 +1,10 @@
-import React from "react";
+import { useState } from "react";
 
-const UseSortandSearch = () => {
+const useSort = () => {
+  const [sort, setSort] = useState({
+    keyToSort: "serialno",
+    direction: "descending"
+  });
   const sortHeader = (header) => {
     setSort({
       keyToSort: header.key,
@@ -22,10 +26,8 @@ const UseSortandSearch = () => {
       a[sort.keyToSort] > b[sort.keyToSort] ? -1 : 1
     );
   };
-  // return (
-  //   <div></div>
-  // )
-  return { sortHeader, sortArray };
+
+  return { sortHeader, sortArray, sort,setSort};
 };
 
-export default UseSortandSearch;
+export default useSort;

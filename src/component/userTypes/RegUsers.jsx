@@ -5,6 +5,8 @@ import { MdOutlineMoreHoriz } from "react-icons/md";
 import { SearchOutlined } from "@ant-design/icons";
 import { LuChevronsUpDown } from "react-icons/lu";
 import UserRegProfile from "../Popups/UserRegProfile";
+import useSort from "../../context/useSort";
+import usePagination from "../../context/usePagination";
 
 const RegUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
