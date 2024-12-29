@@ -8,9 +8,15 @@ import { RiFilter3Line } from "react-icons/ri";
 import useSort from "../../context/useSort";
 import Pagination from "../Pagination";
 import usePagination from "../../context/usePagination";
+import { DonationsDetails } from "../Popups/DonationsDetails";
+import { VerifyDonations } from "../Popups/VerifyDonations";
 const Pending = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [searchItem, setSearchItem] = useState("");
+  const [isOpenOptions, setIsOpenOptions] = useState(-1);
+  const toggleOptions = (index) => {
+    setIsOpenOptions(isOpenOptions === index ? -1 : index);
+  };
   const pendingDonations = UsersDonations.filter(
     (item) => item.status === "Pending"
   );
@@ -61,9 +67,30 @@ const Pending = () => {
   const handleSearch = (e) => {
     setSearchItem(e.target.value);
   };
+  const [isUserDetails, setIsUserDetails] = useState(false);
+  const [eachUser, setEachUser] = useState(null);
+  const openProfileModal = (id) => {
+    const userProfileMatch = pendingDonations.find((user) => user.id === id);
+    setIsOpenOptions(false);
+    if (userProfileMatch) {
+      setEachUser(userProfileMatch);
+      setIsUserDetails(true);
+      console.log(userProfileMatch);
+    } else {
+      console.error("User not found");
+    }
+  };
+  const [isVerified, setIsVerified] = useState(false)
+  const openVerifyModal=(id)=>{
+    setIsOpenOptions(false)
+    setIsVerified(!isVerified)
+
+  }
 
   return (
     <div className="p-4 bg-near-black rounded-lg">
+       {isUserDetails && <DonationsDetails setIsUserDetails={setIsUserDetails} pendingDonations={eachUser}/>}
+      {isVerified && <VerifyDonations setIsVerified={setIsVerified}/>}
       <div className={`flex justify-between items-center w-full pb-3`}>
         <h3 className="py-5">Donations</h3>
         <div className="flex items-center gap-4">
@@ -154,7 +181,45 @@ const Pending = () => {
               <td>{data.amount}</td>
               <td>{data.currency}</td>
               <td>
-                <i>
+                {isOpenOptions === data.id && (
+                  <div
+                    className={`rounded-lg ${
+                      isDarkMode
+                        ? `text-white bg-[#292929]`
+                        : `text-black bg-white`
+                    } w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
+                  >
+                    <p
+                      onClick={() => {
+                        openVerifyModal(data.id)
+                      }}
+                      className="border-b-[1px] border-gray-300 p-2"
+                    >
+                      Verify
+                    </p>
+                    <p
+                      onClick={() => {
+                        openProfileModal(data.id);
+                      }}
+                      className="border-b-[1px] border-gray-300 p-2 "
+                    >
+                      View Details
+                    </p>
+                    <p
+                      // onClick={() => {
+                      //   handleDeleteById(data.id);
+                      // }}
+                      className="p-2 text-[#E53935]"
+                    >
+                      Mark as failed
+                    </p>
+                  </div>
+                )}
+                <i
+                  onClick={() => {
+                    toggleOptions(data.id);
+                  }}
+                >
                   <BsThreeDotsVertical />
                 </i>
               </td>

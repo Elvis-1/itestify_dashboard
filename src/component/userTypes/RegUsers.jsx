@@ -12,20 +12,7 @@ const RegUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [registeredUsers, setRegisteredUsers] = useState(regUsers);
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
-  const [profile, setProfile] = useState(false);
-
-  const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 9;
-  const lastIndex = currentPage * usersPerPage;
-  const firstIndex = lastIndex - usersPerPage;
-  const users = registeredUsers.slice(firstIndex, lastIndex);
-  const npage = Math.ceil(registeredUsers.length / usersPerPage);
-
   const [searchItem, setSearchItem] = useState("");
-  const [sort, setSort] = useState({
-    keyToSort: "serialno",
-    direction: "descending",
-  });
 
   const tableHeaders = [
     {
@@ -56,20 +43,8 @@ const RegUsers = () => {
   const toggleOptions = (index) => {
     setIsOpenOptions(isOpenOptions === index ? -1 : index);
   };
-
-  //<---------------Pagination Function------------------->
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-  const nextPage = () => {
-    if (currentPage !== npage) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
-
   //<--------------------User Profile dtails-------------------->
+  const [profile, setProfile] = useState(false);
   const [eachUser, setEachUser] = useState(null);
   const openProfileModal = (id) => {
     const userProfileMatch = registeredUsers.find((user) => user.id === id);
@@ -82,35 +57,14 @@ const RegUsers = () => {
       console.error("User not found");
     }
   };
-
-  //<-------------------Sort Table header detils-------------------->
-  const sortHeader = (header) => {
-    setSort({
-      keyToSort: header.key,
-      direction:
-        header.key === sort.keyToSort
-          ? sort.direction === "ascending"
-            ? "descending"
-            : "ascending"
-          : "descending",
-    });
-  };
-  const sortArray = (array) => {
-    if (sort.direction === "ascending") {
-      return array.sort((a, b) =>
-        a[sort.keyToSort] > b[sort.keyToSort] ? 1 : -1
-      );
-    }
-    return array.sort((a, b) =>
-      a[sort.keyToSort] > b[sort.keyToSort] ? -1 : 1
-    );
-  };
-
+  const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
+    usePagination(registeredUsers);
+  const { sort, sortHeader, sortArray } = useSort();
   return (
     <div className="">
       <div
         className={`flex justify-between items-center w-full  rounded-t-xl mt-5 px-4 ${
-          isDarkMode ? `dark-mode`:`bg-white `
+          isDarkMode ? `dark-mode` : `bg-white `
         }`}
       >
         <h3 className="py-5 text-lg">User Management</h3>
@@ -141,6 +95,7 @@ const RegUsers = () => {
           </div>
         </div>
       </div>
+      {/* <<----------------------------Profile Modal -------------------------->> */}
       {profile && (
         <UserRegProfile setProfile={setProfile} registeredUsers={eachUser} />
       )}
@@ -160,7 +115,9 @@ const RegUsers = () => {
             <tr>
               {tableHeaders.map((header, index) => (
                 <th
-                  className={`cursor-pointer  border-b-2${isDarkMode? ` border-b-[#333333] ` : ` border-b-off-white`}`}
+                  className={`cursor-pointer  border-b-2${
+                    isDarkMode ? ` border-b-[#333333] ` : ` border-b-off-white`
+                  }`}
                   onClick={() => {
                     sortHeader(header);
                   }}
@@ -197,7 +154,9 @@ const RegUsers = () => {
               <tbody className="relative" key={data.id}>
                 <tr
                   className={` ${
-                    isDarkMode ? `hover:bg-[#313131]` : `hover:bg-off-white text-black`
+                    isDarkMode
+                      ? `hover:bg-[#313131]`
+                      : `hover:bg-off-white text-black`
                   }`}
                 >
                   <td>{data.id}</td>
@@ -206,11 +165,15 @@ const RegUsers = () => {
                   <td>{data.email}</td>
                   <td>{data.regDate}</td>
                   <td>{data.lastLogin}</td>
-                  <td >
+                  <td>
                     {isOpenOptions === data.id && (
                       <div
                         onClick={() => openProfileModal(data.id)}
-                        className={`rounded-lg ${isDarkMode? `text-white bg-[#292929]`: `text-black bg-white`}  w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
+                        className={`rounded-lg ${
+                          isDarkMode
+                            ? `text-white bg-[#292929]`
+                            : `text-black bg-white`
+                        }  w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
                       >
                         <p className="p-2 text-center">View profile</p>
                       </div>
@@ -231,23 +194,27 @@ const RegUsers = () => {
 
       {/* ----------------------------------------PAgination-------------------------------------------- */}
       <div className="flex justify-between items-center w-full pt-24 pb-12 px-4">
-        {regUsers.length === 0 ? (
+        {registeredUsers.length === 0 ? (
           <p>Showing 0 of 0</p>
         ) : (
           <p>
-            Showing {` ${firstIndex + 1} - ${lastIndex}`} of {regUsers.length}
+            Showing {` ${firstIndex + 1} - ${lastIndex}`} of {registeredUsers.length}
           </p>
         )}
         <div className="flex gap-2 items-center">
           <button
             className="px-4 py-2 border-2 border-[#575757] rounded-md hover:border-[#9966CC]"
-            onClick={prevPage}
+            onClick={() => {
+              currentPage > 1 && setCurrentPage(currentPage - 1);
+            }}
           >
             Previous
           </button>
           <button
             className="px-4 py-2 border-2 border-[#9966CC] rounded-md text-[#9966CC]"
-            onClick={nextPage}
+            onClick={() => {
+              currentPage !== npage && setCurrentPage(currentPage + 1);
+            }}
           >
             Next
           </button>

@@ -7,11 +7,17 @@ import { DarkModeContext } from "../../context/DarkModeContext";
 import Pagination from "../Pagination";
 import usePagination from "../../context/usePagination";
 import useSort from "../../context/useSort";
+import FilterDonations from "../Popups/FilterDonations";
+import { DonationsDetails } from "../Popups/DonationsDetails";
 
 const AllDonations = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [userDonation, setUserDonation] = useState(UsersDonations);
   const [searchItem, setSearchItem] = useState("");
+  const [isFilter, setIsFilter] = useState(false);
+  const showFilterModal = () => {
+    setIsFilter(!isFilter);
+  };
   const {
     currentPage,
     setCurrentPage,
@@ -70,9 +76,10 @@ const AllDonations = () => {
 
     setUserDonation(filteredItems);
   };
-
+ 
   return (
     <div>
+      {isFilter && <FilterDonations  setIsFilter={setIsFilter}/>}
       <div className="p-4 bg-near-black rounded-lg">
         <div className={`flex justify-between items-center w-full  pb-3`}>
           <h3 className="py-5 ">Donations</h3>
@@ -100,7 +107,10 @@ const AllDonations = () => {
                 onChange={handleSearch}
               />
             </div>
-            <div className="flex justify-center items-center gap-1 p-2 rounded-md border-2 border-primary cursor-pointer ">
+            <div
+              onClick={showFilterModal}
+              className="flex justify-center items-center gap-1 p-2 rounded-md border-2 border-primary cursor-pointer "
+            >
               <i>
                 <RiFilter3Line fill="#9966cc" />
               </i>

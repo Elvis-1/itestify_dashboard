@@ -20,14 +20,14 @@ const Pagination = ({
       )}
       <div className="flex gap-2 items-center">
         <button
-          className="px-4 py-2 border-2 border-[#575757] rounded-md hover:border-[#9966CC]"
+          className="btn-primary border-gray-300 bg-transparent text-gray-300"
           onClick={() => setCurrentPage((prev) => prev - 1)}
           disabled={currentPage === 1}
         >
           Previous
         </button>
         <button
-          className="px-4 py-2 border-2 border-[#9966CC] rounded-md text-[#9966CC]"
+          className="btn-secondary border-[#9966CC] rounded-md text-[#9966CC]"
           onClick={() => setCurrentPage((prev) => prev + 1)}
           disabled={currentPage === npage}
         >

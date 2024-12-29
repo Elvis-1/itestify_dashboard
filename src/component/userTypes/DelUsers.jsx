@@ -7,6 +7,9 @@ import DeleteRecordsModal from "../Popups/DeleteRecordsModal";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { SearchOutlined } from "@ant-design/icons";
 import UserDelProfile from "../Popups/UserDelProfile.jsx";
+import useSort from "../../context/useSort";
+import usePagination from "../../context/usePagination";
+
 
 const DelUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -19,12 +22,7 @@ const DelUsers = () => {
 );
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
   const [deleteRecordModal, setDeleteRecordModal] = useState(false);
-  const [profile, setProfile] = useState(false);
   const [searchItem, setSearchItem] = useState("");
-  const [sort, setSort] = useState({
-    keyToSort: "name",
-    direction: "ascending",
-  });
   const tableHeaders = [
     {
       key: "serialno",
@@ -54,25 +52,9 @@ const DelUsers = () => {
   const toggleOptions = (index) => {
     setIsOpenOptions(isOpenOptions === index ? -1 : index);
   };
-  //Pagination Function
-  const [currentPage, setCurrentPage] = useState(1);
-  const usersPerPage = 9;
-  const lastIndex = currentPage * usersPerPage;
-  const firstIndex = lastIndex - usersPerPage;
-  const delUsersIndex = deletedUsers.slice(firstIndex, lastIndex);
-  const npage = Math.ceil(DeletedUsers.length / usersPerPage);
 
-  const prevPage = () => {
-    if (currentPage > 1) {
-      setCurrentPage(currentPage - 1);
-    }
-  };
-  const nextPage = () => {
-    if (currentPage !== npage) {
-      setCurrentPage(currentPage + 1);
-    }
-  };
   //<--------------------User Profile dtails-------------------->
+  const [profile, setProfile] = useState(false);
   const [eachUser, setEachUser] = useState(null);
   const openProfileModal = (id) => {
     const userProfileMatch = deletedUsers.find((user) => user.id === id);
@@ -123,28 +105,9 @@ const DelUsers = () => {
     setIsOpenOptions(false);
     
   };
-  const sortHeader = (header) => {
-    setSort({
-      keyToSort: header.key,
-      direction:
-        header.key === sort.keyToSort
-          ? sort.direction === "ascending"
-            ? "descending"
-            : "ascending"
-          : "descending",
-    });
-    console.log(header);
-  };
-  const sortArray = (array) => {
-    if (sort.direction === "ascending") {
-      return array.sort((a, b) =>
-        a[sort.keyToSort] > b[sort.keyToSort] ? 1 : -1
-      );
-    }
-    return array.sort((a, b) =>
-      a[sort.keyToSort] > b[sort.keyToSort] ? -1 : 1
-    );
-  };
+  const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
+    usePagination(deletedUsers);
+  const { sort, sortHeader, sortArray } = useSort();
 
   return (
     <div>
@@ -255,7 +218,7 @@ const DelUsers = () => {
                 <th>Action</th>
               </tr>
             </thead>
-            {sortArray(delUsersIndex)
+            {sortArray(users)
               .filter((item) => {
                 const searchTerm = searchItem.toLowerCase().trim();
                 return (
@@ -336,13 +299,17 @@ const DelUsers = () => {
         <div className="flex gap-2 items-center">
           <button
             className="px-4 py-2 border-2 border-[#575757] rounded-md hover:border-[#9966CC]"
-            onClick={prevPage}
+            onClick={() => {
+              currentPage > 1 && setCurrentPage(currentPage - 1);
+            }}
           >
             Previous
           </button>
           <button
             className="px-4 py-2 border-2 border-[#9966CC] rounded-md text-[#9966CC]"
-            onClick={nextPage}
+            onClick={() => {
+              currentPage !== npage && setCurrentPage(currentPage + 1);
+            }}
           >
             Next
           </button>

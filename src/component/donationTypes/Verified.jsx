@@ -12,6 +12,10 @@ import usePagination from "../../context/usePagination";
 const Verified = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [searchItem, setSearchItem] = useState("");
+  const [isOpenOptions, setIsOpenOptions] = useState(-1);
+  const toggleOptions = (index) => {
+    setIsOpenOptions(isOpenOptions === index ? -1 : index);
+  };
   const filteredDonations = useMemo(() => {
     return UsersDonations.filter((item) => item.status === "Verified").filter(
       (item) =>
@@ -113,7 +117,7 @@ const Verified = () => {
             </p>
           </div>
         ) : (
-          <tbody>
+          <tbody className="relative text-xs">
             {sortArray(users).map((data) => (
               <tr
                 key={data.id}
@@ -137,7 +141,27 @@ const Verified = () => {
                 <td>{data.amount}</td>
                 <td>{data.currency}</td>
                 <td>
-                  <i>
+                {isOpenOptions === data.id && (
+                        <div className={`rounded-lg ${isDarkMode? `text-white bg-[#292929]`: `text-black bg-white`} w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}>
+                          <p
+                            onClick={() => {
+                              openProfileModal(data.id);
+                            }}
+                            className="border-b-[1px] border-gray-300 p-2"
+                          >
+                            View Details
+                          </p>
+                          <p
+                            onClick={() => {
+                              handleDeleteById(data.id);
+                            }}
+                            className="p-2 text-[#E53935]"
+                          >
+                            Mark as failed
+                          </p>
+                        </div>
+                      )}
+                  <i onClick={()=>{toggleOptions(data.id)}}>
                     <BsThreeDotsVertical />
                   </i>
                 </td>

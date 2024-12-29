@@ -11,6 +11,10 @@ import usePagination from "../../context/usePagination";
 const Failed = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [searchItem, setSearchItem] = useState("");
+  const [isOpenOptions, setIsOpenOptions] = useState(-1);
+  const toggleOptions = (index) => {
+    setIsOpenOptions(isOpenOptions === index ? -1 : index);
+  };
   const failedDonations = UsersDonations.filter(
     (item) => item.status === "Failed"
   );
@@ -55,7 +59,7 @@ const Failed = () => {
     },
     {
       key: "reason",
-      label: "Reason",
+      Label: "Reason",
     },
     {
       key: "actions",
@@ -160,7 +164,19 @@ const Failed = () => {
               <td>{data.currency}</td>
               <td>Reason for Failed</td>
               <td>
-                <i>
+              {isOpenOptions === data.id && (
+                        <div className={`rounded-lg ${isDarkMode? `text-white bg-[#292929]`: `text-black bg-white`} w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}>
+                          <p
+                            onClick={() => {
+                              openProfileModal(data.id);
+                            }}
+                            className="border-b-[1px] border-gray-300 p-2"
+                          >
+                            View details
+                          </p>
+                        </div>
+                      )}
+                <i onClick={()=>{toggleOptions(data.id)}}>
                   <BsThreeDotsVertical />
                 </i>
               </td>
