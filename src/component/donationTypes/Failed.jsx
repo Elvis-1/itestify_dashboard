@@ -72,7 +72,9 @@ const Failed = () => {
   };
 
   return (
-    <div className="p-4 bg-near-black rounded-lg">
+    <div className={`p-4 ${
+      isDarkMode ? `bg-near-black` : `bg-off-white`
+    } rounded-lg relative`}>
       <div className={`flex justify-between items-center w-full pb-3`}>
         <h3 className="py-5">Donations</h3>
         <div className="flex items-center gap-4">
@@ -105,6 +107,9 @@ const Failed = () => {
           </div>
         </div>
       </div>
+      <div className={`table-container ${
+          isDarkMode ? `bg-black` : `bg-white `
+        }`}>
       <table
         className={`custom-table font-sans text-[14px] ${
           isDarkMode ? `dark-mode` : `light-mode`
@@ -184,6 +189,7 @@ const Failed = () => {
           </tbody>
         ))}
       </table>
+      </div>
       <Pagination
         data={filteredDonations}
         currentPage={currentPage}

@@ -80,17 +80,25 @@ const Pending = () => {
       console.error("User not found");
     }
   };
-  const [isVerified, setIsVerified] = useState(false)
-  const openVerifyModal=(id)=>{
-    setIsOpenOptions(false)
-    setIsVerified(!isVerified)
-
-  }
+  const [isVerified, setIsVerified] = useState(false);
+  const openVerifyModal = (id) => {
+    setIsOpenOptions(false);
+    setIsVerified(!isVerified);
+  };
 
   return (
-    <div className="p-4 bg-near-black rounded-lg">
-       {isUserDetails && <DonationsDetails setIsUserDetails={setIsUserDetails} pendingDonations={eachUser}/>}
-      {isVerified && <VerifyDonations setIsVerified={setIsVerified}/>}
+    <div
+      className={`p-4 ${
+        isDarkMode ? `bg-near-black` : `bg-off-white`
+      } rounded-lg relative`}
+    >
+      {isUserDetails && (
+        <DonationsDetails
+          setIsUserDetails={setIsUserDetails}
+          pendingDonations={eachUser}
+        />
+      )}
+      {isVerified && <VerifyDonations setIsVerified={setIsVerified} />}
       <div className={`flex justify-between items-center w-full pb-3`}>
         <h3 className="py-5">Donations</h3>
         <div className="flex items-center gap-4">
@@ -123,6 +131,9 @@ const Pending = () => {
           </div>
         </div>
       </div>
+      <div className={`table-container ${
+          isDarkMode ? `bg-black` : `bg-white `
+        }`}>
       <table
         className={`custom-table font-sans text-[14px] ${
           isDarkMode ? `dark-mode` : `light-mode`
@@ -191,7 +202,7 @@ const Pending = () => {
                   >
                     <p
                       onClick={() => {
-                        openVerifyModal(data.id)
+                        openVerifyModal(data.id);
                       }}
                       className="border-b-[1px] border-gray-300 p-2"
                     >
@@ -227,6 +238,7 @@ const Pending = () => {
           </tbody>
         ))}
       </table>
+      </div>
       <Pagination
         data={filteredDonations}
         currentPage={currentPage}

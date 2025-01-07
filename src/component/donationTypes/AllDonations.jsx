@@ -76,11 +76,15 @@ const AllDonations = () => {
 
     setUserDonation(filteredItems);
   };
- 
+
   return (
     <div>
-      {isFilter && <FilterDonations  setIsFilter={setIsFilter}/>}
-      <div className="p-4 bg-near-black rounded-lg">
+      {isFilter && <FilterDonations setIsFilter={setIsFilter} />}
+      <div
+        className={`p-4 ${
+          isDarkMode ? `bg-near-black` : `bg-off-white`
+        } rounded-lg relative`}
+      >
         <div className={`flex justify-between items-center w-full  pb-3`}>
           <h3 className="py-5 ">Donations</h3>
           <div className="flex items-center gap-4">
@@ -118,82 +122,83 @@ const AllDonations = () => {
             </div>
           </div>
         </div>
-
-        <div className="table-container">
-          <table
-            className={`custom-table font-sans text-[14px] ${
-              isDarkMode ? `dark-mode` : `light-mode`
-            } `}
-          >
-            <thead>
-              <tr>
-                {tableHeaders.map((header, index) => (
-                  <th
-                    className={`cursor-pointer border-b-2 text-[10px] ${
-                      isDarkMode
-                        ? ` border-b-[#333333]  bg-off-black  `
-                        : ` border-b-off-white`
-                    }`}
-                    onClick={() => {
-                      sortHeader(header);
-                    }}
-                    key={index}
-                  >
-                    <div className="flex items-center gap-1">
-                      {header.Label}
-                      <i>
-                        <LuChevronsUpDown
-                          direction={
-                            sort.keyToSort === header.key
-                              ? sort.direction
-                              : "ascending"
-                          }
-                        />
-                      </i>
-                    </div>
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            {sortedData.map((data) => (
-              <tbody className="relative text-xs" key={data.id}>
-                <tr
-                  className={` ${
+        <div className={`table-container ${
+          isDarkMode ? `bg-black` : `bg-white `
+        }`}>
+        <table
+          className={`custom-table font-sans text-[14px] ${
+            isDarkMode ? `dark-mode` : `light-mode`
+          } `}
+        >
+          <thead>
+            <tr>
+              {tableHeaders.map((header, index) => (
+                <th
+                  className={`cursor-pointer border-b-2 text-[10px] ${
                     isDarkMode
-                      ? `hover:bg-[#313131]`
-                      : `hover:bg-off-white text-black`
+                      ? ` border-b-[#333333]  bg-off-black  `
+                      : ` border-b-off-white`
                   }`}
+                  onClick={() => {
+                    sortHeader(header);
+                  }}
+                  key={index}
                 >
-                  <td>{data.id}</td>
-                  <td>
-                    <img
-                      className="w-10 h-8"
-                      src={data.image}
-                      alt="donation-receipt"
-                    />
-                  </td>
-                  <td>{data.verificationCode}</td>
-                  <td>{data.email}</td>
-                  <td>{data.date}</td>
-                  <td>{data.amount}</td>
-                  <td>{data.currency}</td>
-                  <td>
-                    <button
-                      className={`border-2 py-2 px-3 rounded-2xl w-20 ${
-                        data.status === "Pending"
-                          ? `border-yellow-500 text-yellow-500 `
-                          : data.status === "Verified"
-                          ? `border-green-500 text-green-500 `
-                          : `border-red text-red `
-                      }`}
-                    >
-                      {data.status}
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            ))}
-          </table>
+                  <div className="flex items-center gap-1">
+                    {header.Label}
+                    <i>
+                      <LuChevronsUpDown
+                        direction={
+                          sort.keyToSort === header.key
+                            ? sort.direction
+                            : "ascending"
+                        }
+                      />
+                    </i>
+                  </div>
+                </th>
+              ))}
+            </tr>
+          </thead>
+          {sortedData.map((data) => (
+            <tbody className="relative text-xs" key={data.id}>
+              <tr
+                className={` ${
+                  isDarkMode
+                    ? `hover:bg-[#313131]`
+                    : `hover:bg-off-white text-black`
+                }`}
+              >
+                <td>{data.id}</td>
+                <td>
+                  <img
+                    className="w-10 h-8"
+                    src={data.image}
+                    alt="donation-receipt"
+                  />
+                </td>
+                <td>{data.verificationCode}</td>
+                <td>{data.email}</td>
+                <td>{data.date}</td>
+                <td>{data.amount}</td>
+                <td>{data.currency}</td>
+                <td>
+                  <button
+                    className={`border-2 py-2 px-3 rounded-2xl w-20 ${
+                      data.status === "Pending"
+                        ? `border-yellow-500 text-yellow-500 `
+                        : data.status === "Verified"
+                        ? `border-green-500 text-green-500 `
+                        : `border-red text-red `
+                    }`}
+                  >
+                    {data.status}
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          ))}
+        </table>
         </div>
       </div>
       <Pagination

@@ -39,11 +39,15 @@ const Verified = () => {
 
   const handleSearch = (e) => {
     setSearchItem(e.target.value);
-    console.log(filteredDonations)
+    console.log(filteredDonations);
   };
 
   return (
-    <div className="p-4 bg-near-black rounded-lg">
+    <div
+      className={`p-4 ${
+        isDarkMode ? `bg-near-black` : `bg-off-white`
+      } rounded-lg relative`}
+    >
       <div className={`flex justify-between items-center w-full pb-3`}>
         <h3 className="py-5">Donations</h3>
         <div className="flex items-center gap-4">
@@ -76,6 +80,9 @@ const Verified = () => {
           </div>
         </div>
       </div>
+      <div className={`table-container ${
+          isDarkMode ? `bg-black` : `bg-white `
+        }`}>
       <table
         className={`custom-table font-sans text-[14px] ${
           isDarkMode ? `dark-mode` : `light-mode`
@@ -141,27 +148,37 @@ const Verified = () => {
                 <td>{data.amount}</td>
                 <td>{data.currency}</td>
                 <td>
-                {isOpenOptions === data.id && (
-                        <div className={`rounded-lg ${isDarkMode? `text-white bg-[#292929]`: `text-black bg-white`} w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}>
-                          <p
-                            onClick={() => {
-                              openProfileModal(data.id);
-                            }}
-                            className="border-b-[1px] border-gray-300 p-2"
-                          >
-                            View Details
-                          </p>
-                          <p
-                            onClick={() => {
-                              handleDeleteById(data.id);
-                            }}
-                            className="p-2 text-[#E53935]"
-                          >
-                            Mark as failed
-                          </p>
-                        </div>
-                      )}
-                  <i onClick={()=>{toggleOptions(data.id)}}>
+                  {isOpenOptions === data.id && (
+                    <div
+                      className={`rounded-lg ${
+                        isDarkMode
+                          ? `text-white bg-[#292929]`
+                          : `text-black bg-white`
+                      } w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
+                    >
+                      <p
+                        onClick={() => {
+                          openProfileModal(data.id);
+                        }}
+                        className="border-b-[1px] border-gray-300 p-2"
+                      >
+                        View Details
+                      </p>
+                      <p
+                        onClick={() => {
+                          handleDeleteById(data.id);
+                        }}
+                        className="p-2 text-[#E53935]"
+                      >
+                        Mark as failed
+                      </p>
+                    </div>
+                  )}
+                  <i
+                    onClick={() => {
+                      toggleOptions(data.id);
+                    }}
+                  >
                     <BsThreeDotsVertical />
                   </i>
                 </td>
@@ -170,6 +187,7 @@ const Verified = () => {
           </tbody>
         )}
       </table>
+      </div>
       <Pagination
         data={filteredDonations}
         currentPage={currentPage}

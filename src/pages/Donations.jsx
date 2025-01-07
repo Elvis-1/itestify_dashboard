@@ -41,7 +41,7 @@ const Donations = () => {
             <div key={index}>
               <p
                 onClick={() => setUserType(user.user)}
-                className={`cursor-pointer border-b-2 pb-1 text-sm ${
+                className={`cursor-pointer border-b-[2px] pb-1 text-sm ${
                   userType === user.user
                     ? "border-b-primary"
                     : "border-b-transparent"

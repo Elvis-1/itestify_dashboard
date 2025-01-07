@@ -103,7 +103,7 @@ const RegUsers = () => {
       {/* --------------------------------Table Details ---------------------------------------- */}
       <div
         className={`table-container ${
-          isDarkMode ? `bg-off-black` : `bg-white `
+          isDarkMode ? `bg-black` : `bg-white `
         }`}
       >
         <table

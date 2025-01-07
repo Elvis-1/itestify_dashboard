@@ -1,6 +1,7 @@
-import React, { useState } from "react";
-
+import React, { useContext, useState } from "react";
+import { DarkModeContext } from "../../context/DarkModeContext";
 const FilterDonations = ({ setIsFilter }) => {
+  const { isDarkMode } = useContext(DarkModeContext);
   const [selectedCurrency, setSelectedCurrency] = useState(null);
   const [selectedOption, setSelectedOption] = useState(null);
   const radioButtons = [
@@ -22,18 +23,25 @@ const FilterDonations = ({ setIsFilter }) => {
       setIsFilter(false);
     }
   };
-  const clearAllInput = () => {
+  const clearAllInput = (e) => {
     setSelectedCurrency(null);
     setSelectedOption(null);
+    e.preventDefault();
   };
 
   return (
     <div className="fixed inset-0 z-50 mt-24 mr-16 h-auto flex justify-end items-center">
       <div
-        className="fixed inset-0 bg-opacity-50 bg-near-black"
+        className={`fixed inset-0 bg-opacity-50 ${
+          isDarkMode ? `bg-near-black` : `bg-white `
+        }`}
         onClick={handleBackdropClick}
       />
-      <div className="relative z-10 bg-black shadow-2xl rounded-lg w-[380px]">
+      <div
+        className={`relative z-10 ${
+          isDarkMode ? ` bg-black` : `bg-white`
+        } shadow-2xl rounded-lg w-[380px] z-[999999]`}
+      >
         <h3 className="text-[16px] p-3 border-b-[1px] border-b-off-white">
           Filter
         </h3>
@@ -49,7 +57,9 @@ const FilterDonations = ({ setIsFilter }) => {
                   Minimum
                 </label>
                 <input
-                  className="bg-off-black p-1 rounded-md outline-none text-sm placeholder:text-xs"
+                  className={`${
+                    isDarkMode ? `bg-off-black` : `bg-off-white`
+                  } p-1 rounded-md outline-none text-sm placeholder:text-xs`}
                   type="number"
                   placeholder="e.g 500"
                 />
@@ -59,7 +69,9 @@ const FilterDonations = ({ setIsFilter }) => {
                   Maximum
                 </label>
                 <input
-                  className="bg-off-black p-1 rounded-md outline-none text-sm placeholder:text-xs"
+                  className={`${
+                    isDarkMode ? `bg-off-black` : `bg-off-white`
+                  } p-1 rounded-md outline-none text-sm placeholder:text-xs`}
                   type="number"
                   placeholder="e.g 50000000"
                 />
@@ -75,7 +87,9 @@ const FilterDonations = ({ setIsFilter }) => {
               <div className="flex flex-col gap-2 w-full">
                 <div className="relative w-full">
                   <select
-                    className="appearance-none bg-off-black p-1 rounded-md outline-none text-sm w-full cursor-pointer"
+                    className={`appearance-none ${
+                      isDarkMode ? `bg-off-black` : `bg-off-white`
+                    } p-1 rounded-md outline-none text-sm w-full cursor-pointer`}
                     name="currency"
                     id="currency"
                     value={selectedCurrency}
@@ -131,7 +145,9 @@ const FilterDonations = ({ setIsFilter }) => {
                   From
                 </label>
                 <input
-                  className="bg-off-black p-1 rounded-md outline-none text-sm placeholder:text-xs"
+                  className={`${
+                    isDarkMode ? `bg-off-black` : `bg-off-white`
+                  } p-1 rounded-md outline-none text-sm placeholder:text-xs`}
                   type="date"
                   id="from"
                 />
@@ -141,7 +157,9 @@ const FilterDonations = ({ setIsFilter }) => {
                   To
                 </label>
                 <input
-                  className="bg-off-black p-1 rounded-md outline-none text-sm placeholder:text-xs  "
+                  className={`${
+                    isDarkMode ? `bg-off-black` : `bg-off-white`
+                  } p-1 rounded-md outline-none text-sm placeholder:text-xs`}
                   type="date"
                   id="to"
                 />
@@ -149,10 +167,21 @@ const FilterDonations = ({ setIsFilter }) => {
             </div>
           </div>
           <div className="flex justify-end items-end ml-auto my-12 gap-3 p-3">
-            <button className="btn-secondary" onClick={clearAllInput}>
+            <button
+              className={`btn-secondary ${
+                isDarkMode ? `` : `text-primary border-near-black `
+              }`}
+              onClick={clearAllInput}
+            >
               Clear all
             </button>
-            <button className="btn-primary">Apply</button>
+            <button
+              className={`btn-primary ${
+                isDarkMode ? `` : `hover:text-off-black`
+              }`}
+            >
+              Apply
+            </button>
           </div>
         </form>
       </div>

@@ -65,6 +65,7 @@ const DelUsers = () => {
       console.log(userProfileMatch);
     } else {
       console.error("User not found");
+      return <div>User not found!</div>
     }
   };
   const [selectedUsers, setSelectedUsers] = useState([]);
@@ -173,7 +174,7 @@ const DelUsers = () => {
       ) : (
         <div
           className={`table-container ${
-            isDarkMode ? `bg-off-black` : `bg-white`
+            isDarkMode ? `bg-black` : `bg-white`
           }`}
         >
           <table

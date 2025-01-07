@@ -26,7 +26,8 @@
   width: 100%;
   overflow-x: auto;
   /* margin: 20px 0; */
-  /* background-color: ; */
+  background-color: black;
+  min-height: 30rem;
 }
 
 .custom-table {
