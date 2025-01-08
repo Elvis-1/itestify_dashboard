@@ -4,10 +4,22 @@
     padding-left: 5px;
 }
 
+.ant-input-password-icon {
+    color: white !important; /* Changes the eye icon color */
+  }
+  
+
 .my-switch.ant-switch-checked {
     background-color: black !important;
 }
 
+.manage-settings-switch.ant-switch-checked {
+    background-color: #9966CC !important;
+}
+
+.manage-settings-switch{
+    background-color: grey !important;
+}
 
 .my-switch.ant-switch-checked .ant-switch-handle {
     background-color: black !important;

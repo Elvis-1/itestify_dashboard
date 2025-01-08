@@ -48,7 +48,7 @@ function Dashbord() {
   }
 
   return (
-    <div className={`flex min-h-screen border ${isDarkMode ? "bg-black text-white" : "bg-white text-black"}`}>
+    <div className={`flex min-h-screen border fixed overflow-hidden w-[100%] ${isDarkMode ? "bg-black text-white" : "bg-white text-black"}`}>
 
       {/* whole side bar starts here */}
       <div className={`flex-1 w-[100%] min-h-screen ${isDarkMode ? "bg-[#313131] text-white" : "bg-white text-black border-r border-r-slate-100"}`}>
@@ -205,7 +205,7 @@ function Dashbord() {
         <div className='flex-[6] min-h-screen'>
 
           {/* main dashboard section header starts here */}
-          <div className={`flex items-center justify-between w-[88%] h-[50px]
+          <div className={`flex items-center justify-between w-[85.5%] h-[50px]
              fixed z-[1000] top-0 p-3 mb-[100px]
              ${isDarkMode ? "bg-[#313131] text-white" : "bg-white text-black border-b border-b-slate-200"}`}>
               <div className='h-[50px] opacity-[0.7] w-[130px] mt-5 font-sans'>

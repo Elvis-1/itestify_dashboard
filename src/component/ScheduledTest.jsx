@@ -1,8 +1,10 @@
-import React, {useState, useContext} from 'react'
+import React, {useState, useContext, useRef} from 'react'
 import { CiSearch } from 'react-icons/ci'
 import { IoFilterOutline } from 'react-icons/io5'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 import { FaCaretDown, FaCaretUp } from "react-icons/fa6";
+import { CalendarOutlined } from '@ant-design/icons';
+import videoData from '../data/TestimonyVideoData';
 
 import scheduledVideo from '../data/ScheduledData'
 
@@ -21,6 +23,9 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
     const [scheduledDetails, setScheduledDetails] = useState([])
     const [scheduledUploadModal, setScheduleUploadModal] = useState(false)
     const [scheduledDeleteModal, setScheduleDeleteModal] = useState(false)
+    const [scheduleFilterModal, setScheduleFilterModal] = useState(false)
+    const [filterDate1, setFilterDate1] = useState('')
+    const [filterDate2, setFilterDate2] = useState('')
 
     const [filterDropDown, setFilterDropDown] = useState(false)
     const [selectTestType, setSelectTestType] = useState('select')
@@ -98,6 +103,7 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
        setScheduledEditModal(false)
        setScheduleUploadModal(false)
        setScheduleDeleteModal(false)
+       setScheduleFilterModal(false)
     };
 
     function handleDetail(id) {
@@ -124,8 +130,208 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
             </div>
         ]
     }
+
+     //function fo filter modal footer button
+     function filterModalFooterButton() {
+        return[
+            <div className='mt-[50px]'>
+                <button 
+                onClick={handleReset}
+                className='border border-[#9966CC]outline-none p-1 rounded w-[100px] text-[#9966CC]'>Clear All</button>
+                <button
+                onClick={handleFiltering}
+                className='bg-[#9966CC] ml-2 
+                border-none outline-none 
+                rounded p-1 w-[100px]'>Apply</button>
+            </div>
+        ]
+    }
+
+    function handleFiltering() {
+        const getFilterData = videoData.filter((item) => {
+            const itemDate = new Date(item.date_uploaded);
+         
+            if(filterDate1 !== "" && filterDate2 !== "" 
+                && selectTestType !== "") {
+    
+                const isWithinDateRange =
+                (!filterDate1 || itemDate >= new Date(filterDate1)) &&
+                (!filterDate2 || itemDate <= new Date(filterDate2));
+    
+                const matchesCategory =
+                !selectTestType || item.category === selectTestType;
+    
+                return (
+                    isWithinDateRange &&
+                    matchesCategory
+                );
+    
+            }else{
+                return (item.date_uploaded === filterDate1 || item.date_uploaded === filterDate2
+                    || item.category === selectTestType
+                )
+            }
+           
+        });
+    
+        setGetFilterData(getFilterData); // Update filtered data
+        setFilterModal(false); // Close filter modal
+    }
+    
+    function handleReset() {
+        setSelectTestType('Select')
+        setFilterDate1('')
+        setFilterDate2('')
+    }
+    function handleFilterDate1(event) {
+        setFilterDate1(event.target.value)
+    }
+    
+    //function handling the second date input
+    function handleFilterDate2(event) {
+        setFilterDate2(event.target.value)
+    }
+
+    const dateInputRef1 = useRef(null);
+    const dateInputRef2 = useRef(null);
+    const handleFromDateIconClick = () => {
+        if (dateInputRef1.current) {
+            dateInputRef1.current.showPicker(); 
+        }
+    };
+
+    const handleToDateIconClick = () => {
+        if (dateInputRef2.current) {
+            dateInputRef2.current.showPicker(); 
+        }
+    };
   return (
     <div className={`${!isDarkMode ? 'border h-[350px] rounded-xl' : 'border-none'}`}>
+
+         {/* Schedule filter modal */}
+        <Modal
+        open={scheduleFilterModal}
+        onCancel={handleCloseModal}
+        footer={filterModalFooterButton}
+        closeIcon={<span style={{ color: 'white', fontSize: '12px', marginTop: '-15px' }}>X</span>}
+        styles={{
+            content: {
+                backgroundColor: '#0B0B0B',
+                width: '330px',
+                height: 'auto',
+                color: 'white',
+                margin: '0 auto',
+                borderRadius: '8px',
+                marginLeft: '100%',
+                marginTop: '50px'
+            },
+            body: {
+                backgroundColor: '#1717171',
+                color: 'white',
+               
+            },
+        }}
+        >
+
+            <div>
+                <h3 className='text-white text-[13px] font-sans pb-2 mt-[-10px]'>Filter</h3>
+                <hr className='opacity-[0.2] text-gray-300 w-[117%] ml-[-25px] '/>
+
+                <div>
+                    {/* Date picker section */}
+                    
+                    <div className='flex items-center justify-between mb-[-15px] mt-2 w-[110%] ml-[-15px]'>
+                        <h3 className='text-[14px]'>Date Range</h3>
+                        <button 
+                        onClick={() => {
+                            setFilterDate1('')
+                            setFilterDate2('')
+                        }}
+                        className='outline-none 
+                        border-none p-1 text-[#9966CC] rounded'>Clear</button>
+                    </div>
+
+                    <div className='flex items-center justify-between mt-4 gap-2 ml-[-10px]'>
+                        <div>
+                            <p>From</p>
+                            <div className='flex items-center rounded-xl w-[150px] p-1 bg-[#171717] mt-1 cursor-pointer'>
+                                <CalendarOutlined onClick={handleFromDateIconClick} className="text-white ml-2"/>
+                                <input type="date"
+                                ref={dateInputRef1}
+                                placeholder='dd/mm/yyyy'
+                                value={filterDate1}
+                                onChange={handleFilterDate1}
+                                className='no-icon border cursor-pointer'/>
+                            </div>
+                        </div>
+
+                        <div>
+                            <p>To</p>
+                            <div className='flex items-center rounded-xl w-[150px] p-1 bg-[#171717] mt-1 cursor-pointer'>
+                                <CalendarOutlined onClick={handleToDateIconClick} className="text-white ml-2"/>
+                                <input type="date"
+                                ref={dateInputRef2}
+                                placeholder='dd/mm/yyyy'
+                                value={filterDate2}
+                                onChange={handleFilterDate2}
+                                className='no-icon border cursor-pointer'/>
+                            </div>
+                        </div>
+                    </div>
+                    <hr className='opacity-[0.2] text-gray-300 w-[117%] ml-[-25px] mt-3'/>
+
+                    {/* category section */}
+                    <div className='flex items-center justify-between mt-2 w-[110%] ml-[-15px]'>
+                        <h3 className='text-[14px]'>Category</h3>
+                        <button 
+                        onClick={() => setSelectTestType('Select')}
+                        className='outline-none 
+                        border-none p-1 text-[#9966CC] rounded'>Clear</button>
+                    </div>
+
+                    <div onClick={() => setFilterDropDown(!filterDropDown)} 
+                    className='flex items-center justify-center w-[110%] 
+                    ml-[-15px] bg-[#171717] p-1 rounded-xl cursor-pointer'>
+                       <p className=' text-white
+                       font-sans p-1 w-[100%] rounded'>{selectTestType}</p>
+                       {filterDropDown  ? <FaCaretUp/> : <FaCaretDown/>}
+                    </div>
+
+                    {filterDropDown ? 
+                    <div className='flex flex-col rounded-xl cursor-pointer p-1 opacity-[0.6] mt-3 border overflow-hidden w-[110%] ml-[-13px]'>
+                        <div 
+                            onClick={() => setSelectTestType('Healing')}
+                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1'>
+                            <input type='button' 
+                            value='Healing'
+                            onClick={() => setSelectTestType('Healing')} />
+                        </div>
+                        <div 
+                            onClick={() => setSelectTestType('Deliverance')}
+                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1 cursor-pointer'>
+                            <input  type='button' 
+                            value='Deliverance'
+                            onClick={() => setSelectTestType('Deliverance')} />
+                        </div>
+                        <div
+                            onClick={() => setSelectTestType('Faith')}
+                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1'>
+                            <input type='button' 
+                            value='Faith'
+                            onClick={() => setSelectTestType('Faith')} />
+                        </div>
+                        <div 
+                            onClick={() => setSelectTestType('Salvation')}
+                            className='w-[110%] ml-[-15px] pl-5 pb-1'>
+                            <input type='button' 
+                            value='Salvation' 
+                            onClick={() => setSelectTestType('Salvation')}/>
+                        </div>
+                    </div>: ""}
+                </div>
+            </div>
+
+        </Modal>
         
         {/* call to action modal */}
         <Modal
@@ -449,185 +655,187 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
                 <input 
                 onChange={(e) => setSearchQuery(e.target.value)} value={searchQuery}
                 type="search" 
-                placeholder='search by name,category'
+                placeholder='Search by name,category'
                 className='w-[187px] bg-transparent pl-[10px] p-1 outline-none border-none' />
             </div>
-            <div className='flex items-center justify-center w-[60px] rounded border border-[#9966CC] text-[#9966CC]'>
+            <div onClick={()=> setScheduleFilterModal(true)} className='flex items-center justify-center w-[60px] rounded border border-[#9966CC] text-[#9966CC]'>
                 <IoFilterOutline />
                 <button className='text-[12px] outline-none border-none'>Filter</button>
             </div>
            </div>    
         </div>
 
-        {/* table header begins */}
-        <div className={` h-10 grid grid-cols-8 text-[11px]
-            ${isDarkMode ? "bg-[#313131] text-white" : "bg-slate-100 text-black border-b border-b-slate-200"}`}>
-           <div className='p-2 flex items-center'>
-                S/N
-                <div className='flex flex-col'>
-                    <IoIosArrowUp
-                    onClick={() => sortData('id')}
-                    size={10}
-                    className='ml-2 cursor-pointer'
-                    />
-                    <IoIosArrowDown
-                    onClick={() => sortData('id')}
-                    size={10}
-                    className='ml-2 cursor-pointer'
-                    />
+        <div className='w-[100%] h-[240px] m-[auto]'>
+            {/* table header begins */}
+            <div className={` h-10 grid grid-cols-8 text-[11px]
+                ${isDarkMode ? "bg-[#313131] text-white" : "bg-slate-100 text-black border-b border-b-slate-200"}`}>
+            <div className='p-2 flex items-center'>
+                    S/N
+                    <div className='flex flex-col'>
+                        <IoIosArrowUp
+                        onClick={() => sortData('id')}
+                        size={10}
+                        className='ml-2 cursor-pointer'
+                        />
+                        <IoIosArrowDown
+                        onClick={() => sortData('id')}
+                        size={10}
+                        className='ml-2 cursor-pointer'
+                        />
+                    </div>
+            </div>
+            <div className='p-2 flex items-center ml-[-15px]'>
+                    Thumbnail
+                    <div className='flex flex-col'>
+                        <IoIosArrowUp
+                        onClick={() => sortData('thumbnail')}
+                        size={10}
+                        className='ml-2 cursor-pointer'
+                        />
+                        <IoIosArrowDown
+                        onClick={() => sortData('thumbnail')}
+                        size={10}
+                        className='ml-2 cursor-pointer'
+                        />
+                    </div>
+            </div>
+            <div className='p-2 flex items-center'>
+                    Title
+                    <div className='flex flex-col'>
+                        <IoIosArrowUp
+                        onClick={() => sortData('title')}
+                        size={10}
+                        className='ml-2 cursor-pointer'
+                        />
+                        <IoIosArrowDown
+                        onClick={() => sortData('title')}
+                        size={10}
+                        className='ml-2 cursor-pointer'
+                        />
+                    </div>
+            </div>
+            <div className='p-2 flex items-center'>
+                    Category
+                    <div className='flex flex-col'>
+                        <IoIosArrowUp
+                        onClick={() => sortData('category')}
+                        size={10}
+                        className='ml-2 cursor-pointer'
+                        />
+                        <IoIosArrowDown
+                        onClick={() => sortData('category')}
+                        size={10}
+                        className='ml-2 cursor-pointer'
+                        />
+                    </div>
+            </div>
+            <div className='p-2 flex items-center'>
+                    Source
+                    <div className='flex flex-col'>
+                        <IoIosArrowUp
+                        onClick={() => sortData('source')}
+                        size={10}
+                        className='ml-2 cursor-pointer'
+                        />
+                        <IoIosArrowDown
+                        onClick={() => sortData('source')}
+                        size={10}
+                        className='ml-2 cursor-pointer'
+                        />
+                    </div>
+            </div>
+            <div className='p-2 flex items-center ml-[-10px]'>
+                    Scheduled Date
+                    <div className='flex flex-col'>
+                        <IoIosArrowUp
+                        onClick={() => sortData('scheduled_date')}
+                        size={10}
+                        className='ml-1 cursor-pointer'
+                        />
+                        <IoIosArrowDown
+                        onClick={() => sortData('scheduled_date')}
+                        size={10}
+                        className='ml-1 cursor-pointer'
+                        />
+                    </div>
+            </div>
+            <div className='p-2 flex items-center'>
+                    Time
+                    <div className='flex flex-col'>
+                        <IoIosArrowUp
+                        onClick={() => sortData('time')}
+                        size={10}
+                        className='ml-1 cursor-pointer'
+                        />
+                        <IoIosArrowDown
+                        onClick={() => sortData('time')}
+                        size={10}
+                        className='ml-1 cursor-pointer'
+                        />
+                    </div>
+            </div>
+            <div className='p-2 flex items-center'>Action</div>
+            
+            </div>
+
+
+            {/* Data Rows */}
+            {sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => (
+                <div
+                onClick={() => {
+                    setScheduledDetails(item.id)
+                }}
+                key={item.id}
+                className={`border-b border-white  text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-8
+                    ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}
+                >
+                        <div className='p-2 flex items-center'>{item.id}</div>
+                        <div className='p-2 flex items-center ml-[-10px]'>
+                            <img src={item.thumbnail} alt="" />
+                        </div>
+                        <div className='pl-2 flex items-center'>{item.title}</div>
+
+                        <div className='p-2 flex items-center'>{item.category}</div>
+                        <div className='p-2 flex items-center'>{item.source}</div>
+                        <div className='pl-1 flex items-center'>{item.scheduled_date}</div>
+
+                
+                        <div className='p-2 flex items-center'>{item.time}</div>
+                        <div onClick={() => setScheduledActionModal(true)}
+                        className='p-2 flex items-center ml-3'>{item.action}</div>
                 </div>
-           </div>
-           <div className='p-2 flex items-center ml-[-15px]'>
-                Thumbnail
-                <div className='flex flex-col'>
-                    <IoIosArrowUp
-                    onClick={() => sortData('thumbnail')}
-                    size={10}
-                    className='ml-2 cursor-pointer'
-                    />
-                    <IoIosArrowDown
-                    onClick={() => sortData('thumbnail')}
-                    size={10}
-                    className='ml-2 cursor-pointer'
-                    />
-                </div>
-           </div>
-           <div className='p-2 flex items-center'>
-                Title
-                <div className='flex flex-col'>
-                    <IoIosArrowUp
-                    onClick={() => sortData('title')}
-                    size={10}
-                    className='ml-2 cursor-pointer'
-                    />
-                    <IoIosArrowDown
-                    onClick={() => sortData('title')}
-                    size={10}
-                    className='ml-2 cursor-pointer'
-                    />
-                </div>
-           </div>
-           <div className='p-2 flex items-center'>
-                Category
-                <div className='flex flex-col'>
-                    <IoIosArrowUp
-                    onClick={() => sortData('category')}
-                    size={10}
-                    className='ml-2 cursor-pointer'
-                    />
-                    <IoIosArrowDown
-                    onClick={() => sortData('category')}
-                    size={10}
-                    className='ml-2 cursor-pointer'
-                    />
-                </div>
-           </div>
-           <div className='p-2 flex items-center'>
-                Source
-                <div className='flex flex-col'>
-                    <IoIosArrowUp
-                    onClick={() => sortData('source')}
-                    size={10}
-                    className='ml-2 cursor-pointer'
-                    />
-                    <IoIosArrowDown
-                    onClick={() => sortData('source')}
-                    size={10}
-                    className='ml-2 cursor-pointer'
-                    />
-                </div>
-           </div>
-           <div className='p-2 flex items-center ml-[-10px]'>
-                Scheduled Date
-                <div className='flex flex-col'>
-                    <IoIosArrowUp
-                    onClick={() => sortData('scheduled_date')}
-                    size={10}
-                    className='ml-1 cursor-pointer'
-                    />
-                    <IoIosArrowDown
-                    onClick={() => sortData('scheduled_date')}
-                    size={10}
-                    className='ml-1 cursor-pointer'
-                    />
-                </div>
-           </div>
-           <div className='p-2 flex items-center'>
-                Time
-                <div className='flex flex-col'>
-                    <IoIosArrowUp
-                    onClick={() => sortData('time')}
-                    size={10}
-                    className='ml-1 cursor-pointer'
-                    />
-                    <IoIosArrowDown
-                    onClick={() => sortData('time')}
-                    size={10}
-                    className='ml-1 cursor-pointer'
-                    />
-                </div>
-           </div>
-           <div className='p-2 flex items-center'>Action</div>
-           
+            ))}
+            {/* end of Data row */}
         </div>
 
 
-         {/* Data Rows */}
-         {sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => (
-            <div
-            onClick={() => {
-                setScheduledDetails(item.id)
-            }}
-            key={item.id}
-            className={`border-b border-white  text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-8
-                ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}
-            >
-                    <div className='p-2 flex items-center'>{item.id}</div>
-                    <div className='p-2 flex items-center ml-[-10px]'>
-                        <img src={item.thumbnail} alt="" />
-                    </div>
-                    <div className='pl-2 flex items-center'>{item.title}</div>
-
-                    <div className='p-2 flex items-center'>{item.category}</div>
-                    <div className='p-2 flex items-center'>{item.source}</div>
-                    <div className='pl-1 flex items-center'>{item.scheduled_date}</div>
-
-             
-                    <div className='p-2 flex items-center'>{item.time}</div>
-                    <div onClick={() => setScheduledActionModal(true)}
-                    className='p-2 flex items-center ml-3'>{item.action}</div>
-            </div>
-          ))}
-        {/* end of Data row */}
-
-
         {/* Pagination */}
-            <div className='flex justify-between items-center mt-10'>
-                <div className={`text-[12px] ml-[10px]
-                    ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
-                    Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, scheduledVideo.length)} of {scheduledVideo.length}
-                </div>
-                <div className='text-[13px] mr-5 flex items-center gap-3'>
-                    <button
-                        onClick={handlePrevPage}
-                        disabled={page === 1}
-                        className={`w-[90px] p-2 rounded-xl ${page === 1 ? 
-                            'opacity-[0.5] text-gray-500 border border-gray-500' : 
-                            "border border-[#9966CC] text-[#9966CC]"}`}
-                    >
-                        Previous
-                    </button>
-                    <button
-                        onClick={handleNextPage}
-                        disabled={page === totalPages}
-                        className={`w-[90px] p-2 rounded-xl ${page === totalPages ? 
-                            'opacity-[0.5] text-gray-500 border border-gray-500' : 
-                            "border border-[#9966CC] text-[#9966CC]"}`}
-                    >
-                        Next
-                    </button>
-                </div>
+        <div className='flex justify-between items-center mt-1'>
+            <div className={`text-[12px] ml-[10px]
+                ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
+                Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, scheduledVideo.length)} of {scheduledVideo.length}
             </div>
+            <div className='text-[13px] mr-5 flex items-center gap-3'>
+                <button
+                    onClick={handlePrevPage}
+                    disabled={page === 1}
+                    className={`w-[90px] p-2 rounded-xl ${page === 1 ? 
+                        'opacity-[0.5] text-gray-500 border border-gray-500' : 
+                        "border border-[#9966CC] text-[#9966CC]"}`}
+                >
+                    Previous
+                </button>
+                <button
+                    onClick={handleNextPage}
+                    disabled={page === totalPages}
+                    className={`w-[90px] p-2 rounded-xl ${page === totalPages ? 
+                        'opacity-[0.5] text-gray-500 border border-gray-500' : 
+                        "border border-[#9966CC] text-[#9966CC]"}`}
+                >
+                    Next
+                </button>
+            </div>
+        </div>
         {/* end of Pagination */}
     </div>
     </div>

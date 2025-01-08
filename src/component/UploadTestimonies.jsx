@@ -9,6 +9,7 @@ function UploadTestimonies() {
   const [uploadDropDown, setUploadDropDown] = useState(false)
   const [role, setRole] = useState('Select Role')
   const [roleDropDown, setRoleDropDown] = useState(false)
+  const [uploadType, setUploadType] = useState('')
 
   function handleChange(e) {
     setUploadStatus(e.target.value)
@@ -35,13 +36,33 @@ function UploadTestimonies() {
           <div>
             <h2 className='ml-4 mt-8 text-[12px]'>Thumbnail</h2>
             <div className='flex items-center ml-4 gap-1'>
-              <input type="radio" name='thumbnail' value="Custom Upload" id='custom'/>
-              <label htmlFor="custom" className='text-[12px] mt-1'>Custom Upload</label>
+            <div className={`w-[16px] h-[16px] rounded-full 
+              border border-[#9966CC] mr-1 cursor-pointer
+              ${uploadType === 'Custom Upload' ? 
+              'bg-[#9966CC]' : 'bg-transparent'}`}></div>
+              <input type="radio" 
+              name='thumbnail' 
+              value="Custom Upload" 
+              id='custom'
+              checked={uploadType === 'Custom Upload'}
+              onChange={(e) => setUploadType(e.target.value)}
+              className='hidden peer'/>
+              <label htmlFor="custom" className='text-[12px] mt-1 cursor-pointer'>Custom Upload</label>
             </div>
            
             <div className='flex items-center ml-4 gap-1 mb-4'>
-              <input type="radio" name='thumbnail' value="Auto Generate" id='auto'/>
-              <label htmlFor="auto" className='text-[12px] mt-1'>Auto Generate</label>
+            <div className={`w-[16px] h-[16px] rounded-full 
+              border border-[#9966CC] mr-1 cursor-pointer
+              ${uploadType === 'Auto Generate' ? 
+              'bg-[#9966CC]' : 'bg-transparent'}`}></div>
+
+              <input type="radio" name='thumbnail' 
+              value="Auto Generate" 
+              id='auto'
+              checked={uploadType === 'Auto Generate'}
+              onChange={(e) => setUploadType(e.target.value)}
+              className='hidden peer'/>
+              <label htmlFor="auto" className='text-[12px] mt-1 cursor-pointer'>Auto Generate</label>
             </div>
             
           </div>
@@ -102,11 +123,17 @@ function UploadTestimonies() {
             <p className='pl-2 pb-1'>Upload Status</p>
             <div className='flex items-center gap-5'>
               <div className='flex items-center text-[15px] ml-2 gap-2'>
+                <div className={`w-[16px] h-[16px] rounded-full 
+                border border-[#9966CC] mr-1 cursor-pointer
+                ${uploadStatus === 'Upload' ? 
+                'bg-[#9966CC]' : 'bg-transparent'}`}></div>
                 <input type="radio" 
                 name='status' 
                 value='Upload'
                 id='Upload'
-                onChange={handleChange} />
+                checked={uploadStatus === 'Upload'}
+                onChange={handleChange}
+                className='hidden peer' />
                 <label 
                 htmlFor='Upload' 
                 className='cursor-pointer'
@@ -114,11 +141,17 @@ function UploadTestimonies() {
               </div>
 
               <div className='flex items-center text-[15px] ml-2 gap-2'>
+              <div className={`w-[16px] h-[16px] rounded-full 
+                border border-[#9966CC] mr-1 cursor-pointer
+                ${uploadStatus === 'Schedule' ? 
+                'bg-[#9966CC]' : 'bg-transparent'}`}></div>
                 <input type="radio" 
                 name='status' 
                 id='Schedule'
                 value='Schedule'
-                onChange={handleChange} 
+                checked={uploadStatus === 'Schedule'}
+                onChange={handleChange}
+                className='hidden peer'
                 />
                 <label htmlFor='Schedule' 
                 className='cursor-pointer'
@@ -127,11 +160,17 @@ function UploadTestimonies() {
               </div>
 
               <div className='flex items-center text-[15px] ml-2 gap-2 cursor-pointer'>
+              <div className={`w-[16px] h-[16px] rounded-full 
+                border border-[#9966CC] mr-1 cursor-pointer
+                ${uploadStatus === 'Draft' ? 
+                'bg-[#9966CC]' : 'bg-transparent'}`}></div>
                 <input type="radio" 
                 name='status'
                 value="Draft"
+                checked={uploadStatus === 'Draft'}
                 onChange={handleChange}
-                id='draft' />
+                id='draft' 
+                className='hidden peer'/>
                 <label htmlFor='draft' 
                 className='cursor-pointer'
                 onClick={() => setUploadStatus('Draft')}>Draft</label>

@@ -1,4 +1,4 @@
-import React, { useState, useContext } from 'react'
+import React, { useState, useContext, useRef } from 'react'
 import { CiSearch } from "react-icons/ci";
 import { IoFilterOutline } from "react-icons/io5";
 
@@ -65,6 +65,9 @@ function TestimonyText() {
     const startIndex = (currentPage - 1) * itemsPerPage;
     testimonyData.slice(startIndex, startIndex + itemsPerPage);
     const totalPages = Math.ceil(testimonyData.length / itemsPerPage);
+
+    
+
 
 
     // sortData logic
@@ -344,6 +347,21 @@ function TestimonyText() {
         }
     } 
 
+    
+    const dateInputRef1 = useRef(null);
+    const dateInputRef2 = useRef(null);
+    const handleFromDateIconClick = () => {
+        if (dateInputRef1.current) {
+            dateInputRef1.current.showPicker(); 
+        }
+    };
+
+    const handleToDateIconClick = () => {
+        if (dateInputRef2.current) {
+            dateInputRef2.current.showPicker(); 
+        }
+    };
+
   return (
     <div className={`${!isDarkMode ? 'border h-[400px] rounded-xl w-[98%] m-[auto]' : 'border-none'}`}>
         
@@ -509,7 +527,7 @@ function TestimonyText() {
             content: {
                 backgroundColor: '#0B0B0B',
                 width: '330px',
-                height: '530px',
+                height: 'auto',
                 color: 'white',
                 margin: '0 auto',
                 borderRadius: '8px',
@@ -539,15 +557,16 @@ function TestimonyText() {
                             setFilterDate2('')
                         }}
                         className='outline-none 
-                        border-none p-1 text-[#9966CC] rounded'>Reset</button>
+                        border-none p-1 text-[#9966CC] rounded'>Clear</button>
                     </div>
 
                     <div className='flex items-center justify-between mt-4 gap-2 ml-[-10px]'>
                         <div>
                             <p>From</p>
-                            <div className='rounded-xl w-[150px] p-1 bg-[#171717] mt-1 cursor-pointer'>
-                                <CalendarOutlined/>
-                                <input type="date" 
+                            <div className='flex items-center rounded-xl w-[150px] p-1 bg-[#171717] mt-1 cursor-pointer'>
+                                <CalendarOutlined onClick={handleFromDateIconClick} className="text-white ml-2" />
+                                <input type="date"
+                                ref={dateInputRef1}
                                 placeholder='dd/mm/yyyy'
                                 value={filterDate1}
                                 onChange={handleFilterDate1}
@@ -557,9 +576,10 @@ function TestimonyText() {
                        
                         <div>
                             <p>To</p>
-                            <div className='rounded-xl w-[150px] p-1 bg-[#171717] mt-1 cursor-pointer'>
-                                <CalendarOutlined/>
-                                <input type="date" 
+                            <div className='flex items-center rounded-xl w-[150px] p-1 bg-[#171717] mt-1 cursor-pointer'>
+                                <CalendarOutlined onClick={handleToDateIconClick} className="text-white ml-2"/>
+                                <input type="date"
+                                ref={dateInputRef2}
                                 placeholder='dd/mm/yyyy'
                                 value={filterDate2}
                                 onChange={handleFilterDate2}
@@ -575,7 +595,7 @@ function TestimonyText() {
                         <button 
                         onClick={() => setSelectTestType('Select')}
                         className='outline-none 
-                        border-none p-1 text-[#9966CC] rounded'>Reset</button>
+                        border-none p-1 text-[#9966CC] rounded'>Clear</button>
                     </div>
 
                     <div onClick={() => setFilterDropDown(!filterDropDown)} 
@@ -589,32 +609,56 @@ function TestimonyText() {
                     {filterDropDown ? 
                     <div className='flex flex-col rounded-xl cursor-pointer p-1 opacity-[0.6] mt-3 border overflow-hidden w-[110%] ml-[-13px]'>
                         <div 
-                            onClick={() => setSelectTestType('Healing')}
+                            onClick={() => {
+                                setSelectTestType('Healing')
+                                setFilterDropDown(false)
+                            }}
                             className='w-[110%] ml-[-15px] border-b pl-5 pb-1'>
                             <input type='button' 
                             value='Healing'
-                            onClick={() => setSelectTestType('Healing')} />
+                            onClick={() => {
+                                setSelectTestType('Healing')
+                                setFilterDropDown(false)
+                            }} />
                         </div>
                         <div 
-                            onClick={() => setSelectTestType('Deliverance')}
+                            onClick={() => {
+                                setSelectTestType('Deliverance')
+                                setFilterDropDown(false)
+                            }}
                             className='w-[110%] ml-[-15px] border-b pl-5 pb-1 cursor-pointer'>
                             <input  type='button' 
                             value='Deliverance'
-                            onClick={() => setSelectTestType('Deliverance')} />
+                            onClick={() => {
+                                setSelectTestType('Deliverance')
+                                setFilterDropDown(false)
+                            }} />
                         </div>
                         <div
-                            onClick={() => setSelectTestType('Faith')}
+                            onClick={() => {
+                                setSelectTestType('Faith')
+                                setFilterDropDown(false)
+                            }}
                             className='w-[110%] ml-[-15px] border-b pl-5 pb-1'>
                             <input type='button' 
                             value='Faith'
-                            onClick={() => setSelectTestType('Faith')} />
+                            onClick={() => {
+                                setSelectTestType('Faith')
+                                setFilterDropDown(false)
+                            }} />
                         </div>
                         <div 
-                            onClick={() => setSelectTestType('Salvation')}
+                            onClick={() => {
+                                setSelectTestType('Salvation')
+                                setFilterDropDown(false)
+                            }}
                             className='w-[110%] ml-[-15px] pl-5 pb-1'>
                             <input type='button' 
                             value='Salvation' 
-                            onClick={() => setSelectTestType('Salvation')}/>
+                            onClick={() => {
+                                setSelectTestType('Salvation')
+                                setFilterDropDown(false)
+                            }}/>
                         </div>
                     </div>: ""}
 
@@ -709,7 +753,7 @@ function TestimonyText() {
                 color: 'white',
                 margin: '0 auto',
                 borderRadius: '8px',
-                marginLeft: '118%',
+                marginLeft: '130%',
                 marginTop: '120px'
             },
             body: {
@@ -828,10 +872,10 @@ function TestimonyText() {
                         <CiSearch size={20}/>
                         <input 
                         onChange={(e) => setSearchQuery(e.target.value)} value={searchQuery} type="search" 
-                        placeholder='search by name,category'
+                        placeholder='Search by name,category'
                         className='w-[187px] bg-transparent pl-[10px] p-1 outline-none border-none' />
                     </div>
-                    <div className='flex items-center justify-center w-[60px] rounded border border-[#9966CC] text-[#9966CC]'>
+                    <div onClick={showFilterModal} className=' cursor-pointer flex items-center justify-center w-[60px] rounded border border-[#9966CC] text-[#9966CC]'>
                         <IoFilterOutline />
                         <button 
                         onClick={showFilterModal}
@@ -841,7 +885,7 @@ function TestimonyText() {
             </div>
 
             {/* table section begins here */}
-            <div className='w-[100%] m-[auto]'>
+            <div className='w-[100%] m-[auto] h-[250px]'>
 
                 {/* Table Header Section */}
                 <div className={`w-[100%] h-[50px] text-[14px] m-[auto] bg-[#313131] grid grid-cols-9 items-center justify-between
@@ -992,37 +1036,37 @@ function TestimonyText() {
                 ))}
                 {/* end of Data row */}
 
-                {/* Pagination */}
-                <div className='flex justify-between items-center mt-10'>
-                    <div className={`text-[12px] ml-[10px]
-                    ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
-                       Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, testimonyData.length)} of {testimonyData.length}
-                    </div>
-                    <div className='text-[13px] mr-5 flex items-center gap-3'>
-                    <button
-                        onClick={handlePrevPage}
-                        disabled={currentPage === 1}
-                        className={`w-[90px] p-2 rounded-xl ${currentPage === 1 ? 
-                            'opacity-[0.5] text-gray-500 border border-gray-500' : 
-                            "border border-[#9966CC] text-[#9966CC]"}`}
-                    >
-                        Previous
-                    </button>
-                    <button
-                        onClick={handleNextPage}
-                        disabled={currentPage === totalPages}
-                        className={`w-[90px] p-2 rounded-xl ${currentPage === totalPages ? 
-                            'opacity-[0.5] text-gray-500 border border-gray-500' : 
-                            "border border-[#9966CC] text-[#9966CC]"}`}
-                    >
-                        Next
-                    </button>
-                    </div>
-                </div>
-                {/* end of Pagination */}
             </div>
             {/* table section ends here */}
 
+            {/* Pagination */}
+            <div className='flex justify-between items-center mt-10'>
+                <div className={`text-[12px] ml-[10px]
+                ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
+                    Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, testimonyData.length)} of {testimonyData.length}
+                </div>
+                <div className='text-[13px] mr-5 flex items-center gap-3'>
+                <button
+                    onClick={handlePrevPage}
+                    disabled={currentPage === 1}
+                    className={`w-[90px] p-2 rounded-xl ${currentPage === 1 ? 
+                        'opacity-[0.5] text-gray-500 border border-gray-500' : 
+                        "border border-[#9966CC] text-[#9966CC]"}`}
+                >
+                    Previous
+                </button>
+                <button
+                    onClick={handleNextPage}
+                    disabled={currentPage === totalPages}
+                    className={`w-[90px] p-2 rounded-xl ${currentPage === totalPages ? 
+                        'opacity-[0.5] text-gray-500 border border-gray-500' : 
+                        "border border-[#9966CC] text-[#9966CC]"}`}
+                >
+                    Next
+                </button>
+                </div>
+            </div>
+            {/* end of Pagination */}
         </div>
     </div>
   )

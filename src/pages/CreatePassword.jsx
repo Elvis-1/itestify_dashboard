@@ -54,7 +54,7 @@ function CreatePassword() {
                   value={password1}
                   onChange={(e) => setPassword1(e.target.value)}
                   className='border-none outline-none'
-                  placeholder='Enter code'
+                  placeholder='Enter Password'
                   prefix={<LockOutlined className='text-white'/>}
                   style={{backgroundColor:'#313131', color: 'white'}} 
                   />
@@ -67,7 +67,7 @@ function CreatePassword() {
                   value={password2}
                   onChange={(e) => setPassword2(e.target.value)}
                   className='border-none outline-none'
-                  placeholder='Enter code'
+                  placeholder='Enter Password'
                   prefix={<LockOutlined className='text-white'/>}
                   style={{backgroundColor:'#313131', color: 'white'}} 
                   />

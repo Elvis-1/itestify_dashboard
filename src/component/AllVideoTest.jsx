@@ -1,4 +1,4 @@
-import React, {useState, useContext} from 'react'
+import React, {useState, useContext, useRef} from 'react'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 import { IoTrashOutline } from "react-icons/io5";
 import videoData from '../data/TestimonyVideoData';
@@ -252,13 +252,27 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
             clearTimeout(successTimer)
         }
     }
+
+    const dateInputRef1 = useRef(null);
+    const dateInputRef2 = useRef(null);
+    const handleFromDateIconClick = () => {
+        if (dateInputRef1.current) {
+          dateInputRef1.current.showPicker(); 
+        }
+    };
+
+    const handleToDateIconClick = () => {
+        if (dateInputRef2.current) {
+          dateInputRef2.current.showPicker(); 
+        }
+    };
      
   return (
     <div className={`${!isDarkMode ? 'border h-[350px] rounded-xl' : 'border-none'}`}>
          
 
-         {/* all video filter modal */}
-         <Modal
+        {/* all video filter modal */}
+        <Modal
         open={filterModal}
         onCancel={handleCloseModal}
         footer={filterModalFooterButton}
@@ -297,15 +311,16 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                             setFilterDate2('')
                         }}
                         className='outline-none 
-                        border-none p-1 text-[#9966CC] rounded'>Reset</button>
+                        border-none p-1 text-[#9966CC] rounded'>Clear</button>
                     </div>
 
                     <div className='flex items-center justify-between mt-4 gap-2 ml-[-10px]'>
                         <div>
                             <p>From</p>
-                            <div className='rounded-xl w-[150px] p-1 bg-[#171717] mt-1 cursor-pointer'>
-                                <CalendarOutlined/>
-                                <input type="date" 
+                            <div className='flex items-center rounded-xl w-[150px] p-1 bg-[#171717] mt-1 cursor-pointer'>
+                                <CalendarOutlined onClick={handleFromDateIconClick} className="text-white ml-2"/>
+                                <input type="date"
+                                ref={dateInputRef1}
                                 placeholder='dd/mm/yyyy'
                                 value={filterDate1}
                                 onChange={handleFilterDate1}
@@ -315,9 +330,10 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
 
                         <div>
                             <p>To</p>
-                            <div className='rounded-xl w-[150px] p-1 bg-[#171717] mt-1 cursor-pointer'>
-                                <CalendarOutlined/>
-                                <input type="date" 
+                            <div className='flex items-center rounded-xl w-[150px] p-1 bg-[#171717] mt-1 cursor-pointer'>
+                                <CalendarOutlined onClick={handleToDateIconClick} className="text-white ml-2"/>
+                                <input type="date"
+                                ref={dateInputRef2}
                                 placeholder='dd/mm/yyyy'
                                 value={filterDate2}
                                 onChange={handleFilterDate2}
@@ -333,7 +349,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                         <button 
                         onClick={() => setSelectTestType('Select')}
                         className='outline-none 
-                        border-none p-1 text-[#9966CC] rounded'>Reset</button>
+                        border-none p-1 text-[#9966CC] rounded'>Clear</button>
                     </div>
 
                     <div onClick={() => setFilterDropDown(!filterDropDown)} 
@@ -453,8 +469,8 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
 
         </Modal>
 
-         {/* testimony video details modal */}
-         <Modal
+        {/* testimony video details modal */}
+        <Modal
             open={openVideoViewModal}
             onCancel={handleCloseModal}
             footer={null}
@@ -467,7 +483,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                     height: `${details.status === 'Uploaded' ? "620px" : 
                         details.status === 'Scheduled' ? '520px' : '490px'}`,
                     color: 'white',
-                    margin: '0 auto',
+                    margin: '-40px auto',
                     borderRadius: '8px',
                 },
                 body: {
@@ -610,7 +626,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 color: 'white',
                 margin: '0 auto',
                 borderRadius: '8px',
-                marginLeft: '118%',
+                marginLeft: '133%',
                 marginTop: '120px'
             },
             body: {
@@ -951,7 +967,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 <input 
                 onChange={(e) => setSearchQuery(e.target.value)} value={searchQuery}
                     type="search" 
-                placeholder='search by name,category'
+                placeholder='Search by name,category'
                 className={` w-[187px] bg-transparent pl-[10px] p-1 outline-none border-none
                 ${isDarkMode ? "text-white" : " text-black"}`} />
             </div>
@@ -965,7 +981,8 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
 
        
 
-         {/* Table Header Section */}
+         <div className='w-[100%] m-[auto] h-[220px]'> 
+            {/* Table Header Section */}
             <div className={`w-[100%] h-[50px] text-[11px] m-[auto] bg-[#313131] grid grid-cols-4
                 ${isDarkMode ? "text-white" : "bg-slate-100 text-black border-b border-b-slate-200"}`
             }>
@@ -1153,7 +1170,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                     </div>
                 </div>
             </div>
-        {/* end of table header section */}
+            {/* end of table header section */}
 
              {/* Data Rows */}
              {sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => (
@@ -1205,10 +1222,11 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 </div>
             </div>
              ))}
-        {/* end of Data row */}
+            {/* end of Data row */}
+        </div>
 
           {/* Pagination */}
-          <div className='flex justify-between items-center mt-10'>
+          <div className='flex justify-between items-center mt-6'>
             <div className={`text-[12px] ml-[10px]
                     ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
                 Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, videoData.length)} of {videoData.length}
