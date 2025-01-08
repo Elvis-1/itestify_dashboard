@@ -29,14 +29,14 @@ const Donations = () => {
         onClick={() => {
           setIsSettingsModal(!isSettingsModal);
         }}
-        className="flex justify-end gap-1 p-2 rounded-md border-2 
+        className="flex justify-end gap-1 p-2  rounded-md border-2 
         border-primary cursor-pointer ml-auto"
       >
         <RiSettings5Line fill="#9966cc" />
         <span className="text-primary text-sm">Manage Settings</span>
       </button>
-      <div>
-        <div className="flex gap-3 pb-3">
+      <div className={`${isDarkMode? `bg-lightBlack` : `bg-white`} rounded-lg mt-6`}>
+        <div className="flex gap-3 p-3 py-4">
           {donateUserType.map((user, index) => (
             <div key={index}>
               <p

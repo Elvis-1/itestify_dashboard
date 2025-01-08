@@ -7,7 +7,7 @@ import { LuChevronsUpDown } from "react-icons/lu";
 import UserRegProfile from "../Popups/UserRegProfile";
 import useSort from "../../context/useSort";
 import usePagination from "../../context/usePagination";
-
+import Pagination from "../Pagination";
 const RegUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [registeredUsers, setRegisteredUsers] = useState(regUsers);
@@ -61,7 +61,7 @@ const RegUsers = () => {
     usePagination(registeredUsers);
   const { sort, sortHeader, sortArray } = useSort();
   return (
-    <div className="">
+    <div className="relative">
       <div
         className={`flex justify-between items-center w-full  rounded-t-xl mt-5 px-4 ${
           isDarkMode ? `dark-mode` : `bg-white `
@@ -102,8 +102,8 @@ const RegUsers = () => {
 
       {/* --------------------------------Table Details ---------------------------------------- */}
       <div
-        className={`table-container ${
-          isDarkMode ? `bg-black` : `bg-white `
+        className={`table-container  ${
+          isDarkMode ? `bg-lightBlack` : `bg-white `
         }`}
       >
         <table
@@ -111,11 +111,11 @@ const RegUsers = () => {
             isDarkMode ? `dark-mode` : `light-mode`
           } `}
         >
-          <thead>
+          <thead className={`${isDarkMode?`bg-[#0d0d0d]`:`bg-off-white`}`}>
             <tr>
               {tableHeaders.map((header, index) => (
                 <th
-                  className={`cursor-pointer  border-b-2${
+                  className={`cursor-pointer  border-b-2 ${
                     isDarkMode ? ` border-b-[#333333] ` : ` border-b-off-white`
                   }`}
                   onClick={() => {
@@ -190,36 +190,18 @@ const RegUsers = () => {
               </tbody>
             ))}
         </table>
+         {/* ----------------------------------------PAgination-------------------------------------------- */}
+      <Pagination
+        data={registeredUsers}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        firstIndex={firstIndex}
+        lastIndex={lastIndex}
+        npage={npage}
+      />
       </div>
 
-      {/* ----------------------------------------PAgination-------------------------------------------- */}
-      <div className="flex justify-between items-center w-full pt-24 pb-12 px-4">
-        {registeredUsers.length === 0 ? (
-          <p>Showing 0 of 0</p>
-        ) : (
-          <p>
-            Showing {` ${firstIndex + 1} - ${lastIndex}`} of {registeredUsers.length}
-          </p>
-        )}
-        <div className="flex gap-2 items-center">
-          <button
-            className="px-4 py-2 border-2 border-[#575757] rounded-md hover:border-[#9966CC]"
-            onClick={() => {
-              currentPage > 1 && setCurrentPage(currentPage - 1);
-            }}
-          >
-            Previous
-          </button>
-          <button
-            className="px-4 py-2 border-2 border-[#9966CC] rounded-md text-[#9966CC]"
-            onClick={() => {
-              currentPage !== npage && setCurrentPage(currentPage + 1);
-            }}
-          >
-            Next
-          </button>
-        </div>
-      </div>
+     
     </div>
   );
 };

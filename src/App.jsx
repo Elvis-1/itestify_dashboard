@@ -13,19 +13,19 @@ import Donations from "./pages/Donations";
 function App() {
   return (
     <div>
-        <DarkModeContextProvider>
-          <BrowserRouter>
-            <Routes>
-              <Route path="/" element={<Home />} />
-              <Route path="/create-password" element={<CreatePassword />} />
-              <Route path="/dashboard" element={<Dashboard />}>
-                <Route path="" element={<Overview />} />
-                <Route path="/dashboard/users" element={<Users />} />
-                <Route path="/dashboard/donations" element={<Donations />} />
-              </Route>
-            </Routes>
-          </BrowserRouter>
-        </DarkModeContextProvider>
+      <DarkModeContextProvider>
+        <BrowserRouter>
+          <Routes>
+            <Route path="/" element={<Home />} />
+            <Route path="/create-password" element={<CreatePassword />} />
+            <Route path="/dashboard" element={<Dashboard />}>
+              <Route path="" element={<Overview />} />
+              <Route path="/dashboard/users" element={<Users />} />
+              <Route path="/dashboard/donations" element={<Donations />} />
+            </Route>
+          </Routes>
+        </BrowserRouter>
+      </DarkModeContextProvider>
     </div>
   );
 }

@@ -150,7 +150,7 @@ function Dashbord() {
 
           <Link to="/dashboard/donations">
             {" "}
-            <div className="font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]">
+            <div className="font-sans flex items-center gap-1 p-3 text-[13px] hover:bg-[#9966CC] focus:bg-[#9966CC] active:bg-[#9966CC] cursor-pointer">
               <FaRegMoneyBill1 style={{ fontSize: "20px" }} />
               <p className="opacity-[0.7]">Donations</p>
             </div>

@@ -90,7 +90,7 @@ export const DonationsSettings = ({ setIsSettingsModal }) => {
   ];
 
   return (
-    <div className="fixed inset-0 z-10 flex items-center justify-center overflow-y-scroll -top-48 ">
+    <div className="fixed inset-0 z-10 flex items-center justify-center overflow-y-scroll -top-48">
       <div
         className={`fixed inset-0 bg-opacity-50 ${
           isDarkMode ? "bg-black" : "bg-off-white"
@@ -100,7 +100,7 @@ export const DonationsSettings = ({ setIsSettingsModal }) => {
       <div
         className={`relative z-10 ${
           isDarkMode ? `bg-black` : `bg-white`
-        } shadow-2xl rounded-lg w-[420px] px-3 mt-[40rem]`}
+        } shadow-2xl rounded-lg w-[420px] px-3 mt-[40rem] modal`}
       >
         <div className="flex justify-between items-center p-3 border-b-[1px] border-b-near-white">
           <h2 className="text-xl">Donations</h2>

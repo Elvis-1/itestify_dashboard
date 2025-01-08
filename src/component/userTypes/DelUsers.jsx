@@ -9,17 +9,16 @@ import { SearchOutlined } from "@ant-design/icons";
 import UserDelProfile from "../Popups/UserDelProfile.jsx";
 import useSort from "../../context/useSort";
 import usePagination from "../../context/usePagination";
-
-
+import Pagination from "../Pagination.jsx";
 const DelUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [deletedUsers, setDeletedUsers] = useState(
     // () => {
     // const storedData = localStorage.getItem("planData");
     // return storedData ? JSON.parse(storedData) :
-     DeletedUsers
-  // }
-);
+    DeletedUsers
+    // }
+  );
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
   const [deleteRecordModal, setDeleteRecordModal] = useState(false);
   const [searchItem, setSearchItem] = useState("");
@@ -65,12 +64,12 @@ const DelUsers = () => {
       console.log(userProfileMatch);
     } else {
       console.error("User not found");
-      return <div>User not found!</div>
+      return <div>User not found!</div>;
     }
   };
+  // User Selection State
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
-  // User Selection State
 
   // Handle Individual User Selection
   const handleUserSelect = (userId) => {
@@ -88,15 +87,16 @@ const DelUsers = () => {
     setSelectedUsers(!selectAll ? allUserIds : []);
   };
 
-  // Handle Deleting Selected Recors
-  const handleDeleteSelected = (id) => {
-    setDeletedUsers((prev) =>
-      prev.filter((User) => !selectedUsers.includes(User.id))
-    );
-    setSelectedUsers([]);
-    const newArray = selectedUsers.filter((items) => items.id !== id);
-    setSelectedUsers(newArray);
-    setDeleteRecordModal(false);
+  // Handle Deleting Selected Records
+  const handleDeleteSelected = () => {
+    if (selectedUsers.length > 0) {
+      setDeletedUsers((prev) =>
+        prev.filter((user) => !selectedUsers.includes(user.id))
+      );
+      setSelectedUsers([]);
+      setSelectAll(false);
+      setDeleteRecordModal(false);
+    }
   };
   const handleDeleteById = (userId) => {
     setDeletedUsers((prev) => {
@@ -104,14 +104,14 @@ const DelUsers = () => {
       return newUserList;
     });
     setIsOpenOptions(false);
-    
   };
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
     usePagination(deletedUsers);
   const { sort, sortHeader, sortArray } = useSort();
 
   return (
-    <div>
+    <div className="relative">
+      {/* <---------------delete modal----------------> */}
       {deleteRecordModal && (
         <DeleteRecordsModal
           onConfirm={handleDeleteSelected}
@@ -120,11 +120,12 @@ const DelUsers = () => {
         />
       )}
       <div
-        className={`flex justify-between items-center w-full  rounded-t-xl mt-5 px-4 ${
+        className={`flex justify-between items-center  rounded-t-xl mt-5 px-4 ${
           isDarkMode ? `dark-mode` : `bg-white `
         }`}
       >
         <h3 className="py-5 text-lg">User Management</h3>
+        {/* <-------------------------------------------------Delete Button--------------------------------------------> */}
         <div className="flex items-center gap-4">
           {(selectAll || selectedUsers.length > 0) && (
             <div
@@ -139,6 +140,7 @@ const DelUsers = () => {
               </p>
             </div>
           )}
+          {/* <---------------------------------------------Search Input-------------------------------------------> */}
           <div
             className={`flex justify-left items-center gap-2  p-3 rounded-lg w-[300px] ${
               isDarkMode ? `bg-off-black` : `bg-off-white`
@@ -167,6 +169,7 @@ const DelUsers = () => {
       {profile && (
         <UserDelProfile setProfile={setProfile} deletedUsers={eachUser} />
       )}
+      {/* <----------------------------------Table Data---------------------------------------------> */}
       {deletedUsers.length === 0 ? (
         <div className="text-center font-bold text-xl pt-10">
           No deleted accounts!{" "}
@@ -174,15 +177,17 @@ const DelUsers = () => {
       ) : (
         <div
           className={`table-container ${
-            isDarkMode ? `bg-black` : `bg-white`
+            isDarkMode ? `bg-lightBlack` : `bg-white`
           }`}
         >
           <table
-            className={`custom-table font-san text-[14px] ${
+            className={`custom-table font-san text-[14px]  ${
               isDarkMode ? `dark-mode` : `light-mode`
             } `}
           >
-            <thead>
+            <thead
+              className={`${isDarkMode ? `bg-[#0d0d0d]` : `bg-off-white`}`}
+            >
               <tr>
                 <th>
                   <input
@@ -229,7 +234,7 @@ const DelUsers = () => {
                   item.userId.toLowerCase().includes(searchTerm)
                 );
               })
-              .map(data => (
+              .map((data) => (
                 <tbody className="relative" key={data.id}>
                   <tr
                     className={` ${
@@ -254,8 +259,15 @@ const DelUsers = () => {
                     <td>{data.deletionDate}</td>
                     <td>{data.reason}</td>
                     <td>
+                      {/* <----------------------------------Option dropdown-----------------------------------------> */}
                       {isOpenOptions === data.id && (
-                        <div className={`rounded-lg ${isDarkMode? `text-white bg-[#292929]`: `text-black bg-white`} w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}>
+                        <div
+                          className={`rounded-lg ${
+                            isDarkMode
+                              ? `text-white bg-[#292929]`
+                              : `text-black bg-white`
+                          } w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
+                        >
                           <p
                             onClick={() => {
                               openProfileModal(data.id);
@@ -286,36 +298,17 @@ const DelUsers = () => {
                 </tbody>
               ))}
           </table>
+          {/* <---------------------------------------------Pagination --------------------------------------------> */}
+          <Pagination
+            data={deletedUsers}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            firstIndex={firstIndex}
+            lastIndex={lastIndex}
+            npage={npage}
+          />
         </div>
       )}
-      <div className="flex justify-between items-center w-full pt-24 pb-12 px-4">
-        {deletedUsers.length === 0 ? (
-          <p>Showing 0 of 0</p>
-        ) : (
-          <p>
-            Showing {` ${firstIndex + 1} - ${lastIndex}`} of{" "}
-            {deletedUsers.length}
-          </p>
-        )}
-        <div className="flex gap-2 items-center">
-          <button
-            className="px-4 py-2 border-2 border-[#575757] rounded-md hover:border-[#9966CC]"
-            onClick={() => {
-              currentPage > 1 && setCurrentPage(currentPage - 1);
-            }}
-          >
-            Previous
-          </button>
-          <button
-            className="px-4 py-2 border-2 border-[#9966CC] rounded-md text-[#9966CC]"
-            onClick={() => {
-              currentPage !== npage && setCurrentPage(currentPage + 1);
-            }}
-          >
-            Next
-          </button>
-        </div>
-      </div>
     </div>
   );
 };

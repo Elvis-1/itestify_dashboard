@@ -40,7 +40,7 @@ const FilterDonations = ({ setIsFilter }) => {
       <div
         className={`relative z-10 ${
           isDarkMode ? ` bg-black` : `bg-white`
-        } shadow-2xl rounded-lg w-[380px] z-[999999]`}
+        } shadow-2xl rounded-lg w-[380px] z-[999999] modal`}
       >
         <h3 className="text-[16px] p-3 border-b-[1px] border-b-off-white">
           Filter

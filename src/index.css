@@ -11,4 +11,5 @@
     .center-div{
         @apply flex justify-center items-center;
     }
+   
   }

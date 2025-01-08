@@ -12,7 +12,7 @@ const UserRegProfile = ({ registeredUsers, setProfile }) => {
       className={`fixed
       } inset-0 z-50 bg-opacity-50 top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full  max-w-md shadow-lg `}
     >
-      <div>
+      <div className="modal">
         <i
           onClick={() => {
             setProfile(false);
@@ -21,7 +21,7 @@ const UserRegProfile = ({ registeredUsers, setProfile }) => {
         >
           <MdClose />
         </i>
-        <div className={`h-36 w-full relative  rounded-t-2xl  ${isDarkMode ? `bg-[#292929] ` : `bg-off-white `}`}>
+        <div className={`h-36 w-full relative  rounded-t-2xl  ${isDarkMode ? `bg-[#292929] ` : `bg-off-white`}`}>
 
           <img
             className="flex justify-center items-center w-24 h-24 absolute top-[60%] left-[38%]"

@@ -8,7 +8,6 @@ import Pagination from "../Pagination";
 import usePagination from "../../context/usePagination";
 import useSort from "../../context/useSort";
 import FilterDonations from "../Popups/FilterDonations";
-import { DonationsDetails } from "../Popups/DonationsDetails";
 
 const AllDonations = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -80,135 +79,133 @@ const AllDonations = () => {
   return (
     <div>
       {isFilter && <FilterDonations setIsFilter={setIsFilter} />}
-      <div
-        className={`p-4 ${
-          isDarkMode ? `bg-near-black` : `bg-off-white`
-        } rounded-lg relative`}
-      >
-        <div className={`flex justify-between items-center w-full  pb-3`}>
-          <h3 className="py-5 ">Donations</h3>
-          <div className="flex items-center gap-4">
-            {/*---------------------------------------- Search Bar  ---------------------------------*/}
-            <div
-              className={`flex justify-left items-center gap-2  p-3 rounded-lg w-[300px] ${
-                isDarkMode ? `bg-off-black` : `bg-off-white`
-              } ]
+      <div className={`rounded-lg relative`}>
+        <div className={`table-container rounded-t-2xl h-[40rem]`}>
+          <div className={`flex justify-between items-center w-full py-2 px-3`}>
+            <h3 className="py-5 ">Donations</h3>
+            <div className="flex items-center gap-4">
+              {/*---------------------------------------- Search Bar  ---------------------------------*/}
+              <div
+                className={`flex justify-left items-center gap-2 p-3 rounded-lg w-[300px] ${
+                  isDarkMode ? `bg-off-black` : `bg-off-white`
+                } ]
                             `}
-            >
-              <SearchOutlined
-                style={{
-                  fill: isDarkMode ? "black" : "white",
-                  fontSize: "16px",
-                }}
-              />
-              <input
-                className="border-none outline-none bg-transparent w-[200px] text-xs placeholder:text-xs"
-                type="text"
-                name="search"
-                id="search-user"
-                placeholder="Search by Email"
-                value={searchItem}
-                onChange={handleSearch}
-              />
-            </div>
-            <div
-              onClick={showFilterModal}
-              className="flex justify-center items-center gap-1 p-2 rounded-md border-2 border-primary cursor-pointer "
-            >
-              <i>
-                <RiFilter3Line fill="#9966cc" />
-              </i>
-              <p className=" text-primary text-sm">Filter</p>
+              >
+                <SearchOutlined
+                  style={{
+                    fill: isDarkMode ? "black" : "white",
+                    fontSize: "16px",
+                  }}
+                />
+                <input
+                  className="border-none outline-none bg-transparent w-[200px] text-xs placeholder:text-xs"
+                  type="text"
+                  name="search"
+                  id="search-user"
+                  placeholder="Search by Email"
+                  value={searchItem}
+                  onChange={handleSearch}
+                />
+              </div>
+              <div
+                onClick={showFilterModal}
+                className="flex justify-center items-center gap-1 p-2 rounded-md border-2 border-primary cursor-pointer "
+              >
+                <i>
+                  <RiFilter3Line fill="#9966cc" />
+                </i>
+                <p className=" text-primary text-sm">Filter</p>
+              </div>
             </div>
           </div>
-        </div>
-        <div className={`table-container ${
-          isDarkMode ? `bg-black` : `bg-white `
-        }`}>
-        <table
-          className={`custom-table font-sans text-[14px] ${
-            isDarkMode ? `dark-mode` : `light-mode`
-          } `}
-        >
-          <thead>
-            <tr>
-              {tableHeaders.map((header, index) => (
-                <th
-                  className={`cursor-pointer border-b-2 text-[10px] ${
-                    isDarkMode
-                      ? ` border-b-[#333333]  bg-off-black  `
-                      : ` border-b-off-white`
-                  }`}
-                  onClick={() => {
-                    sortHeader(header);
-                  }}
-                  key={index}
-                >
-                  <div className="flex items-center gap-1">
-                    {header.Label}
-                    <i>
-                      <LuChevronsUpDown
-                        direction={
-                          sort.keyToSort === header.key
-                            ? sort.direction
-                            : "ascending"
-                        }
-                      />
-                    </i>
-                  </div>
-                </th>
-              ))}
-            </tr>
-          </thead>
-          {sortedData.map((data) => (
-            <tbody className="relative text-xs" key={data.id}>
-              <tr
-                className={` ${
-                  isDarkMode
-                    ? `hover:bg-[#313131]`
-                    : `hover:bg-off-white text-black`
-                }`}
-              >
-                <td>{data.id}</td>
-                <td>
-                  <img
-                    className="w-10 h-8"
-                    src={data.image}
-                    alt="donation-receipt"
-                  />
-                </td>
-                <td>{data.verificationCode}</td>
-                <td>{data.email}</td>
-                <td>{data.date}</td>
-                <td>{data.amount}</td>
-                <td>{data.currency}</td>
-                <td>
-                  <button
-                    className={`border-2 py-2 px-3 rounded-2xl w-20 ${
-                      data.status === "Pending"
-                        ? `border-yellow-500 text-yellow-500 `
-                        : data.status === "Verified"
-                        ? `border-green-500 text-green-500 `
-                        : `border-red text-red `
+          <table
+            className={`custom-table font-sans text-[14px] ${
+              isDarkMode ? `dark-mode` : `light-mode`
+            } `}
+          >
+            <thead
+              className={`${isDarkMode ? `bg-[#0d0d0d]` : `bg-off-white`}`}
+            >
+              <tr>
+                {tableHeaders.map((header, index) => (
+                  <th
+                    className={`cursor-pointer border-b-2 text-[10px] ${
+                      isDarkMode
+                        ? ` border-b-[#333333]  bg-off-black  `
+                        : ` border-b-off-white`
                     }`}
+                    onClick={() => {
+                      sortHeader(header);
+                    }}
+                    key={index}
                   >
-                    {data.status}
-                  </button>
-                </td>
+                    <div className="flex items-center gap-1">
+                      {header.Label}
+                      <i>
+                        <LuChevronsUpDown
+                          direction={
+                            sort.keyToSort === header.key
+                              ? sort.direction
+                              : "ascending"
+                          }
+                        />
+                      </i>
+                    </div>
+                  </th>
+                ))}
               </tr>
-            </tbody>
-          ))}
-        </table>
+            </thead>
+            {sortedData.map((data) => (
+              <tbody className="relative text-xs" key={data.id}>
+                <tr
+                  className={` ${
+                    isDarkMode
+                      ? `hover:bg-[#313131]`
+                      : `hover:bg-off-white text-black`
+                  }`}
+                >
+                  <td>{data.id}</td>
+                  <td>
+                    <img
+                      className="w-10 h-8"
+                      src={data.image}
+                      alt="donation-receipt"
+                    />
+                  </td>
+                  <td>{data.verificationCode}</td>
+                  <td>{data.email}</td>
+                  <td>{data.date}</td>
+                  <td>{data.amount}</td>
+                  <td>{data.currency}</td>
+                  <td>
+                    <button
+                      className={`border-2 py-2 px-3 rounded-2xl w-20 ${
+                        data.status === "Pending"
+                          ? `border-yellow-500 text-yellow-500 `
+                          : data.status === "Verified"
+                          ? `border-green-500 text-green-500 `
+                          : `border-red text-red `
+                      }`}
+                    >
+                      {data.status}
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            ))}
+          </table>
+          {/* <-------------------------------------Pagination-------------------------------------> */}
+
+          <Pagination
+            data={userDonation}
+            currentPage={currentPage}
+            setCurrentPage={setCurrentPage}
+            firstIndex={firstIndex}
+            lastIndex={lastIndex}
+            npage={npage}
+          />
         </div>
       </div>
-      <Pagination
-        data={userDonation}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        firstIndex={firstIndex}
-        lastIndex={lastIndex}
-        npage={npage}
-      />
     </div>
   );
 };
