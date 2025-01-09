@@ -6,11 +6,13 @@ import Verified from "../component/donationTypes/Verified";
 import Pending from "../component/donationTypes/Pending";
 import Failed from "../component/donationTypes/Failed";
 import { DonationsSettings } from "../component/Popups/DonationsSettings";
+import SuccessModal from "../component/Popups/SuccessModal";
 
 const Donations = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [userType, setUserType] = useState("All");
   const [isSettingsModal, setIsSettingsModal] = useState(false);
+  const [isSuccessModal, setISSuccessModal] = useState(false);
 
   const donateUserType = [
     { user: "All" },
@@ -21,10 +23,16 @@ const Donations = () => {
 
   return (
     <div className="m-5">
-     {isSettingsModal && <DonationsSettings
-        isSettingsModal={isSettingsModal}
-        setIsSettingsModal={setIsSettingsModal}
-      />}
+      {isSettingsModal && (
+        <DonationsSettings
+          isSettingsModal={isSettingsModal}
+          setIsSettingsModal={setIsSettingsModal}
+          setISSuccessModal={setISSuccessModal}
+        />
+      )}
+      {isSuccessModal && (
+        <SuccessModal sucessMessage="Settings Saved Successfully!" />
+      )}
       <button
         onClick={() => {
           setIsSettingsModal(!isSettingsModal);
@@ -35,7 +43,11 @@ const Donations = () => {
         <RiSettings5Line fill="#9966cc" />
         <span className="text-primary text-sm">Manage Settings</span>
       </button>
-      <div className={`${isDarkMode? `bg-lightBlack` : `bg-white`} rounded-lg mt-6`}>
+      <div
+        className={`${
+          isDarkMode ? `bg-lightBlack` : `bg-white`
+        } rounded-lg mt-6`}
+      >
         <div className="flex gap-3 p-3 py-4">
           {donateUserType.map((user, index) => (
             <div key={index}>

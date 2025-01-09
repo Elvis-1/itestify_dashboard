@@ -1,7 +1,7 @@
 import React, { useContext, useState } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { MdClose } from "react-icons/md";
-export const DonationsSettings = ({ setIsSettingsModal }) => {
+export const DonationsSettings = ({ setIsSettingsModal,setISSuccessModal }) => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [characters, setCharacters] = useState("");
   const [donationMethods, setDonationMethods] = useState({
@@ -32,6 +32,13 @@ export const DonationsSettings = ({ setIsSettingsModal }) => {
       });
     }
   };
+  const saveSettings = () => {
+    setIsSettingsModal(false);
+    setISSuccessModal(true);
+  };
+  setTimeout(() => {
+    setISSuccessModal(false);
+  }, 5000);
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       setIsSettingsModal(false);
@@ -216,7 +223,9 @@ export const DonationsSettings = ({ setIsSettingsModal }) => {
           >
             Cancel
           </button>
-          <button className="btn-primary p-2 text-xs">Save Settings</button>
+          <button onClick={saveSettings} className="btn-primary p-2 text-xs">
+            Save Settings
+          </button>
         </div>
       </div>
     </div>

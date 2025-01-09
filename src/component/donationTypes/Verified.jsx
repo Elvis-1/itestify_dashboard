@@ -11,14 +11,15 @@ import usePagination from "../../context/usePagination";
 import useProfile from "../../context/useProfile";
 import FailedDonation from "../Popups/FailedDonation";
 import useVerifiedandFailed from "../../context/useVerifiedandFailed";
+import FailedStatus from "../Popups/FailedStatus";
+import SuccessModal from "../Popups/SuccessModal";
 
 const Verified = () => {
-
-//Usestates 
+  //Usestates
   const { isDarkMode } = useContext(DarkModeContext);
   const [searchItem, setSearchItem] = useState("");
 
-//filtered donations
+  //filtered donations
   const filteredDonations = useMemo(() => {
     return UsersDonations.filter((item) => item.status === "Verified").filter(
       (item) =>
@@ -26,20 +27,20 @@ const Verified = () => {
         item.email?.toLowerCase().includes(searchItem.toLowerCase())
     );
   }, [searchItem]);
-//toogle dropdown options for the action 
+  //toogle dropdown options for the action
   const toggleOptions = (index) => {
     setIsOpenOptions(isOpenOptions === index ? -1 : index);
   };
-//Search function
+  //Search function
   const handleSearch = (e) => {
     setSearchItem(e.target.value);
     console.log(filteredDonations);
   };
- 
-  
+
   // <---------------------------------------Custom Hooks-------------------------------------->
   const { sort, sortHeader, sortArray } = useSort();
-  const { isFailed, setIsFailed } = useVerifiedandFailed();
+  const { isFailedModal, setISFailedModal, isSuccessModal, setIsSuccessModal } =
+    useVerifiedandFailed();
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
     usePagination(filteredDonations);
   const {
@@ -51,7 +52,7 @@ const Verified = () => {
     setIsOpenOptions,
   } = useProfile({ donationType: filteredDonations });
 
-//Table headers data 
+  //Table headers data
   const tableHeaders = [
     { key: "serialno", Label: "S/N" },
     { key: "paymentReceipt", Label: "Payment receipt" },
@@ -63,7 +64,6 @@ const Verified = () => {
     { key: "actions", Label: "Action" },
   ];
 
-
   return (
     <div className={` rounded-lg relative`}>
       {isUserDetails && (
@@ -72,34 +72,41 @@ const Verified = () => {
           DonationUser={eachUser}
         />
       )}
-      {isFailed&& <FailedDonation setIsFailed={setIsFailed} />}
+      {isFailedModal && (
+        <FailedStatus
+          setISFailedModal={setISFailedModal}
+          setISSuccessModal={setIsSuccessModal}
+        />
+      )}
+      {isSuccessModal && (
+        <SuccessModal sucessMessage="Status Changed to “Mark as Failed”" />
+      )}
 
       <div className={`table-container rounded-t-2xl h-[40rem] relative`}>
         <div className={`flex justify-between items-center w-full pb-3 px-3`}>
           <h3 className="py-5">Donations</h3>
-    
-            <div
-              className={`flex justify-left items-center gap-2 p-3 rounded-lg w-[300px] ${
-                isDarkMode ? `bg-off-black` : `bg-off-white`
-              }`}
-            >
-              <SearchOutlined
-                style={{
-                  fill: isDarkMode ? "black" : "white",
-                  fontSize: "16px",
-                }}
-              />
-              <input
-                className="border-none outline-none bg-transparent w-[200px] text-xs placeholder:text-xs"
-                type="text"
-                name="search"
-                id="search-user"
-                placeholder="Search by Email"
-                value={searchItem}
-                onChange={handleSearch}
-              />
-            </div>
-         
+
+          <div
+            className={`flex justify-left items-center gap-2 p-3 rounded-lg w-[300px] ${
+              isDarkMode ? `bg-off-black` : `bg-off-white`
+            }`}
+          >
+            <SearchOutlined
+              style={{
+                fill: isDarkMode ? "black" : "white",
+                fontSize: "16px",
+              }}
+            />
+            <input
+              className="border-none outline-none bg-transparent w-[200px] text-xs placeholder:text-xs"
+              type="text"
+              name="search"
+              id="search-user"
+              placeholder="Search by Email"
+              value={searchItem}
+              onChange={handleSearch}
+            />
+          </div>
         </div>
         <table
           className={`custom-table font-sans text-[14px] ${
@@ -185,7 +192,7 @@ const Verified = () => {
                         </p>
                         <p
                           onClick={() => {
-                            setIsFailed(true)
+                            setISFailedModal(true);
                             setIsOpenOptions(null);
                           }}
                           className="p-2 text-[#E53935]"

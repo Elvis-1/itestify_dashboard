@@ -2,9 +2,17 @@ import React, { useContext } from "react";
 import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
 
-export const VerifyDonations = ({ setIsVerified }) => {
+export const VerifyDonations = ({ setIsVerified,setIsSuccessModal }) => {
   const { isDarkMode } = useContext(DarkModeContext);
-
+  const SaveVerification = () => {
+    // if (reason !== "") {
+      setIsVerified(false);
+      setIsSuccessModal(true);
+    // }
+  };
+  setTimeout(() => {
+    setIsSuccessModal(false);
+  }, 5000);
   return (
     <div className="fixed inset-0 z-50 ">
       {/* Non-clickable overlay */}
@@ -75,7 +83,7 @@ export const VerifyDonations = ({ setIsVerified }) => {
             >
               Cancel
             </button>
-            <button className="btn-primary">Save</button>
+            <button onClick={SaveVerification} className="btn-primary">Save</button>
           </div>
         </div>
       </div>

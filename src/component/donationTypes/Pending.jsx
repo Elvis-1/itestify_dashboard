@@ -13,6 +13,7 @@ import { VerifyDonations } from "../Popups/VerifyDonations";
 import useProfile from "../../context/useProfile";
 import FailedDonation from "../Popups/FailedDonation";
 import useVerifiedandFailed from "../../context/useVerifiedandFailed";
+import SuccessModal from "../Popups/SuccessModal";
 
 const Pending = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -98,6 +99,9 @@ const Pending = () => {
     isFailed,
     setIsFailed,
     openFailedModal,
+    isSuccessModal,
+    setIsSuccessModal,
+    donaStatus,
   } = useVerifiedandFailed();
   return (
     <div className={` rounded-lg relative`}>
@@ -107,8 +111,27 @@ const Pending = () => {
           DonationUser={eachUser}
         />
       )}
-      {isVerified && <VerifyDonations setIsVerified={setIsVerified} />}
-      {isFailed && <FailedDonation setIsFailed={setIsFailed} />}
+      {isVerified && (
+        <VerifyDonations
+          setIsVerified={setIsVerified}
+          setIsSuccessModal={setIsSuccessModal}
+        />
+      )}
+      {isFailed && (
+        <FailedDonation
+          setIsFailed={setIsFailed}
+          setIsSuccessModal={setIsSuccessModal}
+        />
+      )}
+      {isSuccessModal && (
+        <SuccessModal
+          sucessMessage={
+            donaStatus === "Failed"
+              ? "Donation Marked as Failed!"
+              : "Donation Verified Successfully!"
+          }
+        />
+      )}
 
       <div className={`table-container rounded-t-2xl h-[40rem]`}>
         <div className={`flex justify-between items-center w-full pb-3 px-3`}>

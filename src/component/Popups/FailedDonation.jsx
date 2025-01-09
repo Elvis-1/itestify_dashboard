@@ -1,9 +1,19 @@
-import React, { useContext } from "react";
+import React, { useContext, useState } from "react";
 import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
-const FailedDonation = ({setIsFailed}) => {
-  const { isDarkMode } = useContext(DarkModeContext);
 
+const FailedDonation = ({ setIsFailed, setIsSuccessModal }) => {
+  const { isDarkMode } = useContext(DarkModeContext);
+  const [reason, setReason] = useState("");
+  const confirmFailed = () => {
+    if (reason !== "") {
+      setIsFailed(false);
+      setIsSuccessModal(true);
+    }
+  };
+  setTimeout(() => {
+    setIsSuccessModal(false);
+  }, 5000);
   return (
     <div className="fixed inset-0 z-50 ">
       {/* Non-clickable overlay */}
@@ -33,13 +43,16 @@ const FailedDonation = ({setIsFailed}) => {
 
           {/* Content */}
           <div className="p-4 space-y-4">
-            {/* Amount Input */}
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium" htmlFor="amount">
-              Reason why donation is marked as failed
+                Reason why donation is marked as failed
               </label>
               <textarea
+                onChange={(e) => {
+                  setReason(e.target.value);
+                }}
                 id="amount"
+                value={reason}
                 className={`p-2 rounded-lg outline-none text-sm h-[300px] ${
                   isDarkMode ? "bg-[#313131]" : "bg-off-white"
                 }`}
@@ -59,7 +72,9 @@ const FailedDonation = ({setIsFailed}) => {
             >
               Cancel
             </button>
-            <button className="btn-primary">Confirm</button>
+            <button onClick={confirmFailed} className="btn-primary">
+              Confirm
+            </button>
           </div>
         </div>
       </div>

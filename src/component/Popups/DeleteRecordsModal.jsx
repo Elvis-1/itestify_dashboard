@@ -1,7 +1,6 @@
 import React, { useContext } from "react";
 import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
-
 const DeleteRecordsModal = ({
   selectAll,
   selectedUsers,
@@ -9,7 +8,6 @@ const DeleteRecordsModal = ({
   onConfirm,
 }) => {
   const { isDarkMode } = useContext(DarkModeContext);
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center">
       <div
@@ -31,7 +29,7 @@ const DeleteRecordsModal = ({
         >
           <h1 className="font-bold text-lg">
             Delete
-            {selectAll  || (selectedUsers && selectedUsers.length > 1)
+            {selectAll || (selectedUsers && selectedUsers.length > 1)
               ? `All Records`
               : `Record`}
             ?

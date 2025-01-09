@@ -10,6 +10,7 @@ import UserDelProfile from "../Popups/UserDelProfile.jsx";
 import useSort from "../../context/useSort";
 import usePagination from "../../context/usePagination";
 import Pagination from "../Pagination.jsx";
+import SuccessModal from "../Popups/SuccessModal.jsx";
 const DelUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [deletedUsers, setDeletedUsers] = useState(
@@ -21,6 +22,7 @@ const DelUsers = () => {
   );
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
   const [deleteRecordModal, setDeleteRecordModal] = useState(false);
+  const [isSuccessModal, setIsSuccessModal] = useState(false);
   const [searchItem, setSearchItem] = useState("");
   const tableHeaders = [
     {
@@ -96,6 +98,8 @@ const DelUsers = () => {
       setSelectedUsers([]);
       setSelectAll(false);
       setDeleteRecordModal(false);
+      setIsSuccessModal(true);
+      console.log(isSuccessModal);
     }
   };
   const handleDeleteById = (userId) => {
@@ -104,11 +108,15 @@ const DelUsers = () => {
       return newUserList;
     });
     setIsOpenOptions(false);
+    setIsSuccessModal(true);
+    console.log(isSuccessModal);
   };
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
     usePagination(deletedUsers);
   const { sort, sortHeader, sortArray } = useSort();
-
+  setTimeout(() => {
+    setIsSuccessModal(false);
+  }, 3000);
   return (
     <div className="relative">
       {/* <---------------delete modal----------------> */}
@@ -117,8 +125,11 @@ const DelUsers = () => {
           onConfirm={handleDeleteSelected}
           onCancel={() => setDeleteRecordModal(false)}
           selectAll={selectAll}
+          isSuccessModal={isSuccessModal}
+          setIsSuccessModal={setIsSuccessModal}
         />
       )}
+      {isSuccessModal && <SuccessModal sucessMessage="Deleted Successfully!" />}
       <div
         className={`flex justify-between items-center  rounded-t-xl mt-5 px-4 ${
           isDarkMode ? `dark-mode` : `bg-white `
@@ -167,7 +178,7 @@ const DelUsers = () => {
         </div>
       </div>
       {profile && (
-        <UserDelProfile setProfile={setProfile} deletedUsers={eachUser}/>
+        <UserDelProfile setProfile={setProfile} deletedUsers={eachUser} />
       )}
       {/* <----------------------------------Table Data---------------------------------------------> */}
       {deletedUsers.length === 0 ? (
