@@ -4,20 +4,21 @@ import { DarkModeContext } from "../../context/DarkModeContext";
 import { LuChevronsUpDown } from "react-icons/lu";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { SearchOutlined } from "@ant-design/icons";
-import { RiFilter3Line } from "react-icons/ri";
 import useSort from "../../context/useSort";
 import Pagination from "../Pagination";
 import DonationsDetails from "../Popups/DonationsDetails";
 import usePagination from "../../context/usePagination";
 import useProfile from "../../context/useProfile";
+import FailedDonation from "../Popups/FailedDonation";
+import useVerifiedandFailed from "../../context/useVerifiedandFailed";
 
 const Verified = () => {
+
+//Usestates 
   const { isDarkMode } = useContext(DarkModeContext);
   const [searchItem, setSearchItem] = useState("");
-  const toggleOptions = (index) => {
-    setIsOpenOptions(isOpenOptions === index ? -1 : index);
-  };
 
+//filtered donations
   const filteredDonations = useMemo(() => {
     return UsersDonations.filter((item) => item.status === "Verified").filter(
       (item) =>
@@ -25,7 +26,22 @@ const Verified = () => {
         item.email?.toLowerCase().includes(searchItem.toLowerCase())
     );
   }, [searchItem]);
-
+//toogle dropdown options for the action 
+  const toggleOptions = (index) => {
+    setIsOpenOptions(isOpenOptions === index ? -1 : index);
+  };
+//Search function
+  const handleSearch = (e) => {
+    setSearchItem(e.target.value);
+    console.log(filteredDonations);
+  };
+ 
+  
+  // <---------------------------------------Custom Hooks-------------------------------------->
+  const { sort, sortHeader, sortArray } = useSort();
+  const { isFailed, setIsFailed } = useVerifiedandFailed();
+  const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
+    usePagination(filteredDonations);
   const {
     openProfileModal,
     isUserDetails,
@@ -35,9 +51,7 @@ const Verified = () => {
     setIsOpenOptions,
   } = useProfile({ donationType: filteredDonations });
 
-  const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
-    usePagination(filteredDonations);
-  const { sort, sortHeader, sortArray } = useSort();
+//Table headers data 
   const tableHeaders = [
     { key: "serialno", Label: "S/N" },
     { key: "paymentReceipt", Label: "Payment receipt" },
@@ -49,10 +63,6 @@ const Verified = () => {
     { key: "actions", Label: "Action" },
   ];
 
-  const handleSearch = (e) => {
-    setSearchItem(e.target.value);
-    console.log(filteredDonations);
-  };
 
   return (
     <div className={` rounded-lg relative`}>
@@ -62,8 +72,9 @@ const Verified = () => {
           DonationUser={eachUser}
         />
       )}
+      {isFailed&& <FailedDonation setIsFailed={setIsFailed} />}
 
-      <div className={`table-container rounded-t-2xl h-[40rem]`}>
+      <div className={`table-container rounded-t-2xl h-[40rem] relative`}>
         <div className={`flex justify-between items-center w-full pb-3 px-3`}>
           <h3 className="py-5">Donations</h3>
     
@@ -135,7 +146,7 @@ const Verified = () => {
               {sortArray(users).map((data) => (
                 <tr
                   key={data.id}
-                  className={`${
+                  className={`relative ${
                     isDarkMode
                       ? `hover:bg-[#313131]`
                       : `hover:bg-off-white text-black`
@@ -166,6 +177,7 @@ const Verified = () => {
                         <p
                           onClick={() => {
                             openProfileModal(data.id);
+                            setIsOpenOptions(null);
                           }}
                           className="border-b-[1px] border-gray-300 p-2"
                         >
@@ -173,7 +185,8 @@ const Verified = () => {
                         </p>
                         <p
                           onClick={() => {
-                            handleDeleteById(data.id);
+                            setIsFailed(true)
+                            setIsOpenOptions(null);
                           }}
                           className="p-2 text-[#E53935]"
                         >

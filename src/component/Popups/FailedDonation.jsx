@@ -1,8 +1,7 @@
 import React, { useContext } from "react";
 import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
-
-export const VerifyDonations = ({ setIsVerified }) => {
+const FailedDonation = ({setIsFailed}) => {
   const { isDarkMode } = useContext(DarkModeContext);
 
   return (
@@ -22,11 +21,11 @@ export const VerifyDonations = ({ setIsVerified }) => {
         >
           {/* Header */}
           <div className="flex items-center justify-between w-full border-b border-gray-300 p-3">
-            <h1 className="text-lg">Verify Details</h1>
+            <h1 className="text-lg">Failed Donation</h1>
             <button
               className="cursor-pointer"
               aria-label="Close Modal"
-              onClick={() => setIsVerified(false)}
+              onClick={() => setIsFailed(false)}
             >
               <MdClose />
             </button>
@@ -37,48 +36,35 @@ export const VerifyDonations = ({ setIsVerified }) => {
             {/* Amount Input */}
             <div className="flex flex-col gap-2">
               <label className="text-sm font-medium" htmlFor="amount">
-                Amount
+              Reason why donation is marked as failed
               </label>
-              <input
+              <textarea
                 id="amount"
-                className={`p-2 rounded-md outline-none text-sm ${
-                  isDarkMode ? "bg-gray-800" : "bg-gray-100"
+                className={`p-2 rounded-lg outline-none text-sm h-[300px] ${
+                  isDarkMode ? "bg-[#313131]" : "bg-off-white"
                 }`}
                 type="number"
-                placeholder="Enter amount"
-              />
-            </div>
-
-            {/* Currency Input */}
-            <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium" htmlFor="currency">
-                Currency
-              </label>
-              <input
-                id="currency"
-                className={`p-2 rounded-md outline-none text-sm uppercase ${
-                  isDarkMode ? "bg-gray-800" : "bg-gray-100"
-                }`}
-                placeholder="Enter currency (e.g., USD)"
-                type="text"
-              />
+                placeholder="Type here..."
+              ></textarea>
             </div>
           </div>
 
           {/* Buttons */}
           <div className="flex items-center gap-3 mt-6 justify-end">
             <button
-              onClick={() => setIsVerified(false)}
+              onClick={() => setIsFailed(false)}
               className={`btn-secondary ${
                 isDarkMode ? `` : `text-primary border-near-black `
               }`}
             >
               Cancel
             </button>
-            <button className="btn-primary">Save</button>
+            <button className="btn-primary">Confirm</button>
           </div>
         </div>
       </div>
     </div>
   );
 };
+
+export default FailedDonation;

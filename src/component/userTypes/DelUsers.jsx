@@ -167,7 +167,7 @@ const DelUsers = () => {
         </div>
       </div>
       {profile && (
-        <UserDelProfile setProfile={setProfile} deletedUsers={eachUser} />
+        <UserDelProfile setProfile={setProfile} deletedUsers={eachUser}/>
       )}
       {/* <----------------------------------Table Data---------------------------------------------> */}
       {deletedUsers.length === 0 ? (

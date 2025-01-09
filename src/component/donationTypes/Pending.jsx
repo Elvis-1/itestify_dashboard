@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo } from "react";
+import React, { useContext, useState, useMemo, useRef, useEffect } from "react";
 import { UsersDonations } from "../../data/donations";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { LuChevronsUpDown } from "react-icons/lu";
@@ -8,15 +8,19 @@ import { RiFilter3Line } from "react-icons/ri";
 import useSort from "../../context/useSort";
 import Pagination from "../Pagination";
 import usePagination from "../../context/usePagination";
-import  DonationsDetails  from "../Popups/DonationsDetails";
+import DonationsDetails from "../Popups/DonationsDetails";
 import { VerifyDonations } from "../Popups/VerifyDonations";
 import useProfile from "../../context/useProfile";
+import FailedDonation from "../Popups/FailedDonation";
+import useVerifiedandFailed from "../../context/useVerifiedandFailed";
 
 const Pending = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [searchItem, setSearchItem] = useState("");
+  const dropdownRef = useRef(null);
+
   const toggleOptions = (index) => {
-    setIsOpenOptions(isOpenOptions === index ? -1 : index);
+    setIsOpenOptions(isOpenOptions === index ? null : index);
   };
   const pendingDonations = UsersDonations.filter(
     (item) => item.status === "Pending"
@@ -68,13 +72,33 @@ const Pending = () => {
   const handleSearch = (e) => {
     setSearchItem(e.target.value);
   };
-  const { openProfileModal, isUserDetails, setIsUserDetails, eachUser,isOpenOptions, setIsOpenOptions } = useProfile({ donationType: pendingDonations });
-  const [isVerified, setIsVerified] = useState(false);
-  const openVerifyModal = (id) => {
-    setIsOpenOptions(false);
-    setIsVerified(!isVerified);
-  };
+  const {
+    openProfileModal,
+    isUserDetails,
+    setIsUserDetails,
+    eachUser,
+    isOpenOptions,
+    setIsOpenOptions,
+  } = useProfile({ donationType: pendingDonations });
 
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpenOptions(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
+  const {
+    isVerified,
+    setIsVerified,
+    openVerifyModal,
+    isFailed,
+    setIsFailed,
+    openFailedModal,
+  } = useVerifiedandFailed();
   return (
     <div className={` rounded-lg relative`}>
       {isUserDetails && (
@@ -84,33 +108,32 @@ const Pending = () => {
         />
       )}
       {isVerified && <VerifyDonations setIsVerified={setIsVerified} />}
+      {isFailed && <FailedDonation setIsFailed={setIsFailed} />}
 
       <div className={`table-container rounded-t-2xl h-[40rem]`}>
         <div className={`flex justify-between items-center w-full pb-3 px-3`}>
           <h3 className="py-5">Donations</h3>
-         
-            <div
-              className={`flex justify-left items-center gap-2 p-3 rounded-lg w-[300px] ${
-                isDarkMode ? `bg-off-black` : `bg-off-white`
-              }`}
-            >
-              <SearchOutlined
-                style={{
-                  fill: isDarkMode ? "black" : "white",
-                  fontSize: "16px",
-                }}
-              />
-              <input
-                className="border-none outline-none bg-transparent w-[200px] text-xs placeholder:text-xs"
-                type="text"
-                name="search"
-                id="search-user"
-                placeholder="Search by Email"
-                value={searchItem}
-                onChange={handleSearch}
-              />
-          
-           
+
+          <div
+            className={`flex justify-left items-center gap-2 p-3 rounded-lg w-[300px] ${
+              isDarkMode ? `bg-off-black` : `bg-off-white`
+            }`}
+          >
+            <SearchOutlined
+              style={{
+                fill: isDarkMode ? "black" : "white",
+                fontSize: "16px",
+              }}
+            />
+            <input
+              className="border-none outline-none bg-transparent w-[200px] text-xs placeholder:text-xs"
+              type="text"
+              name="search"
+              id="search-user"
+              placeholder="Search by Email"
+              value={searchItem}
+              onChange={handleSearch}
+            />
           </div>
         </div>
         <table
@@ -151,7 +174,7 @@ const Pending = () => {
           {sortArray(users).map((data) => (
             <tbody className="relative text-xs" key={data.id}>
               <tr
-                className={` ${
+                className={`relative ${
                   isDarkMode
                     ? `hover:bg-[#313131]`
                     : `hover:bg-off-white text-black`
@@ -173,6 +196,7 @@ const Pending = () => {
                 <td>
                   {isOpenOptions === data.id && (
                     <div
+                      ref={dropdownRef}
                       className={`rounded-lg ${
                         isDarkMode
                           ? `text-white bg-[#292929]`
@@ -182,6 +206,7 @@ const Pending = () => {
                       <p
                         onClick={() => {
                           openVerifyModal(data.id);
+                          setIsOpenOptions(null);
                         }}
                         className="border-b-[1px] border-gray-300 p-2"
                       >
@@ -190,15 +215,17 @@ const Pending = () => {
                       <p
                         onClick={() => {
                           openProfileModal(data.id);
+                          setIsOpenOptions(null);
                         }}
                         className="border-b-[1px] border-gray-300 p-2 "
                       >
                         View Details
                       </p>
                       <p
-                        // onClick={() => {
-                        //   handleDeleteById(data.id);
-                        // }}
+                        onClick={() => {
+                          openFailedModal(data.id);
+                          setIsOpenOptions(null);
+                        }}
                         className="p-2 text-[#E53935]"
                       >
                         Mark as failed

@@ -28,7 +28,7 @@ const Pagination = ({
             Previous
           </button>
           <button
-            className="btn-secondary border-[#9966CC] rounded-md text-[#9966CC]"
+            className="btn-secondary border-primary rounded-md text-primary"
             onClick={() => setCurrentPage((prev) => prev + 1)}
             disabled={currentPage === npage}
           >
