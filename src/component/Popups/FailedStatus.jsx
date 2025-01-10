@@ -14,7 +14,7 @@ const FailedStatus = ({ setISFailedModal, setISSuccessModal }) => {
       }, 2000);
     }
   };
-
+/// Change Verified to failed 
   return (
     <div>
       {" "}
