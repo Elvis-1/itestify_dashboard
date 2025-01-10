@@ -35,6 +35,30 @@ function Dashbord() {
   const [showInspirationalMenu, setShowInspirationalMenu] = useState(false);
 
   const { isDarkMode, toggleTheme } = useContext(DarkModeContext);
+import { Link, Outlet, useNavigate } from 'react-router-dom'
+import { DarkModeContext } from '../context/DarkModeContext';
+
+function Dashbord() {
+  const [showTestimonyMenu, setShowTestimonyMenu] = useState(false)
+  const [showAnalyticsMenu, setShowAnalyticsMenu] = useState(false)
+  const [showInspirationalMenu, setShowInspirationalMenu] = useState(false)
+  const [showAllTestimonies, setShowAllTestimonies] = useState(true)
+  
+  const {isDarkMode, toggleTheme} = useContext(DarkModeContext)
+
+  const navigate = useNavigate()
+
+  function handleTestimonies() {
+    setShowAllTestimonies(!showAllTestimonies)
+    if(showAllTestimonies){
+        navigate('all-testimonies')
+    }else{
+      navigate('upload-testimonies')
+    }
+  }
+
+  return (
+    <div className={`flex min-h-screen border fixed overflow-hidden w-[100%] ${isDarkMode ? "bg-black text-white" : "bg-white text-black"}`}>
 
   return (
     <div
@@ -102,6 +126,50 @@ function Dashbord() {
                 <CaretDownFilled style={{ fontSize: "15px" }} />
               )}
             </div>
+          <div className='font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]'>
+             <UsergroupAddOutlined style={{ fontSize: '20px' }} />
+             <p className='opacity-[0.7]'>Users</p>
+          </div>
+
+          <div className='font-sans flex items-center gap-1 p-3 text-[13px] hover:bg-[#9966CC] active:bg-[#9966CC]'>
+            <CiChat1 style={{ fontSize: '20px' }} />
+             <div onClick={() => setShowTestimonyMenu(!showTestimonyMenu)} className='flex items-center justify-between w-[100%] cursor-pointer'>
+                <p className='opacity-[0.7]'>Testimonies</p>
+                {showTestimonyMenu ?
+                  <CaretUpFilled style={{ fontSize: '15px' }}/>
+                  :<CaretDownFilled style={{ fontSize: '15px' }} />
+                }
+             </div>
+          </div>
+          {showTestimonyMenu ?
+          <div className=' cursor-pointer text-[13px] flex flex-col items-center'>
+            {/* dynamically navigating to each testimonies component */}
+            <Link to='all-testimonies'>
+              <input type='button' value={'All Testimonies'}
+              placeholder='All Testimonies' 
+              className='ml-[-65px] border-none outline-none p-2 bg-tranparent cursor-pointer'
+              onClick={handleTestimonies}/>
+            </Link>
+            <Link to='upload-testimonies'>
+              <input type='button' value={'Upload Testimonies'} 
+              placeholder='upload Testimonies' 
+              className='ml-[-40px] border-none outline-none p-2 bg-transparent cursor-pointer'
+              onClick={handleTestimonies}/>
+            </Link>
+
+          </div>:""
+          }
+
+
+          <div className='font-sans flex items-center gap-1 p-3 text-[13px]'>
+             <PictureOutlined style={{ fontSize: '17px' }}/>
+             <div onClick={() => setShowInspirationalMenu(!showInspirationalMenu)} className='flex items-center justify-between w-[100%] cursor-pointer'>
+                <p className='opacity-[0.7]'>Inspirational Pictures</p>
+                {showInspirationalMenu ?
+                  <CaretUpFilled style={{ fontSize: '15px' }}/>
+                  :<CaretDownFilled style={{ fontSize: '15px' }} />
+                }
+             </div>
           </div>
           {showTestimonyMenu ? (
             <div className=" cursor-pointer text-[13px] flex flex-col items-center">
@@ -169,6 +237,11 @@ function Dashbord() {
                 </p>
               </div>
             </div>
+          </div>
+        
+          <div className='flex items-center gap-2 w-[90%] m-[auto] font-sans mt-2'>
+            <CiChat1 style={{ fontSize: '20px' }} />
+            <p className='font-sans text-[13px] mb-2 opacity-[0.8]'>Reviews</p>
           </div>
 
           <div className="flex items-center gap-2 w-[90%] m-[auto] font-sans font-bold mt-2">
@@ -254,6 +327,11 @@ function Dashbord() {
         {/* main dashboard section header starts here */}
         <div
           className={`flex items-center justify-between w-[80%] h-[50px]
+        {/* main dashboard section starts here */}
+        <div className='flex-[6] min-h-screen'>
+
+          {/* main dashboard section header starts here */}
+          <div className={`flex items-center justify-between w-[85.5%] h-[50px]
              fixed z-[1000] top-0 p-3 mb-[100px]
              ${
                isDarkMode
