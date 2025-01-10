@@ -26,7 +26,7 @@ function Login() {
             <Form.Item name='email' rules={[{required:true, message:'email is reqiured'}]}>
                 <Input
                 id='email'
-                placeholder='Enter you email'
+                placeholder='Enter Email Address'
                 className='border-none outline-none' 
                 prefix={<MailOutlined className='text-white' />}
                 style={{backgroundColor:'#313131', color: 'white'}}
