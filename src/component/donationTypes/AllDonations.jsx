@@ -5,8 +5,8 @@ import { SearchOutlined } from "@ant-design/icons";
 import { RiFilter3Line } from "react-icons/ri";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import Pagination from "../Pagination";
-import usePagination from "../../context/usePagination";
-import useSort from "../../context/useSort";
+import usePagination from "../../hooks/usePagination";
+import useSort from "../../hooks/useSort";
 import FilterDonations from "../Popups/FilterDonations";
 
 const AllDonations = () => {

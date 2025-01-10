@@ -20,7 +20,6 @@ const useVerifiedandFailed = () => {
 
    const [isSuccessModal, setIsSuccessModal] = useState(false);
    const[ isFailedModal, setISFailedModal] = useState(false);
-
   return {
     isVerified,
     setIsVerified,

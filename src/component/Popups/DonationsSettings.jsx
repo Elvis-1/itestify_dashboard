@@ -1,7 +1,10 @@
 import React, { useContext, useState } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { MdClose } from "react-icons/md";
-export const DonationsSettings = ({ setIsSettingsModal,setISSuccessModal }) => {
+export const DonationsSettings = ({
+  setIsSettingsModal,
+  setISSuccessModal,
+}) => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [characters, setCharacters] = useState("");
   const [donationMethods, setDonationMethods] = useState({
@@ -35,10 +38,11 @@ export const DonationsSettings = ({ setIsSettingsModal,setISSuccessModal }) => {
   const saveSettings = () => {
     setIsSettingsModal(false);
     setISSuccessModal(true);
+    setTimeout(() => {
+      setISSuccessModal(false);
+    }, 2000);
   };
-  setTimeout(() => {
-    setISSuccessModal(false);
-  }, 5000);
+
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       setIsSettingsModal(false);
@@ -197,9 +201,7 @@ export const DonationsSettings = ({ setIsSettingsModal,setISSuccessModal }) => {
           <h3 className="py-2 text-[16px]">NGN Donations</h3>
           <div className="grid grid-cols-2 place-items-center">
             {fields.map((field) => (
-              <div className="">
-                <InputField label={field.label} key={field.id} id={field.id} />
-              </div>
+              <InputField label={field.label} key={field.id} id={field.id} />
             ))}
           </div>
           <div className="flex flex-col gap-2 pt-1 px-2">

@@ -5,8 +5,8 @@ import { MdOutlineMoreHoriz } from "react-icons/md";
 import { SearchOutlined } from "@ant-design/icons";
 import { LuChevronsUpDown } from "react-icons/lu";
 import UserRegProfile from "../Popups/UserRegProfile";
-import useSort from "../../context/useSort";
-import usePagination from "../../context/usePagination";
+import useSort from "../../hooks/useSort";
+import usePagination from "../../hooks/usePagination";
 import Pagination from "../Pagination";
 const RegUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -111,7 +111,7 @@ const RegUsers = () => {
             isDarkMode ? `dark-mode` : `light-mode`
           } `}
         >
-          <thead className={`${isDarkMode?`bg-[#0d0d0d]`:`bg-off-white`}`}>
+          <thead className={`text-xs ${isDarkMode?`bg-[#0d0d0d]`:`bg-off-white`}`}>
             <tr>
               {tableHeaders.map((header, index) => (
                 <th

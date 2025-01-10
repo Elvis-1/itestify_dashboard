@@ -5,11 +5,11 @@ import { LuChevronsUpDown } from "react-icons/lu";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { SearchOutlined } from "@ant-design/icons";
 import { RiFilter3Line } from "react-icons/ri";
-import useSort from "../../context/useSort";
+import useSort from "../../hooks/useSort";
 import Pagination from "../Pagination";
 import DonationsDetails from "../Popups/DonationsDetails";
-import usePagination from "../../context/usePagination";
-import useProfile from "../../context/useProfile";
+import usePagination from "../../hooks/usePagination";
+import useProfile from "../../hooks/useProfile";
 const Failed = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [searchItem, setSearchItem] = useState("");

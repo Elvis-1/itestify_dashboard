@@ -4,13 +4,12 @@ import { DarkModeContext } from "../../context/DarkModeContext";
 import { LuChevronsUpDown } from "react-icons/lu";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { SearchOutlined } from "@ant-design/icons";
-import useSort from "../../context/useSort";
+import useSort from "../../hooks/useSort";
 import Pagination from "../Pagination";
 import DonationsDetails from "../Popups/DonationsDetails";
-import usePagination from "../../context/usePagination";
-import useProfile from "../../context/useProfile";
-import FailedDonation from "../Popups/FailedDonation";
-import useVerifiedandFailed from "../../context/useVerifiedandFailed";
+import usePagination from "../../hooks/usePagination";
+import useVerifiedandFailed from "../../hooks/useVerifiedandFailed";
+import useProfile from "../../hooks/useProfile";
 import FailedStatus from "../Popups/FailedStatus";
 import SuccessModal from "../Popups/SuccessModal";
 
@@ -63,6 +62,14 @@ const Verified = () => {
     { key: "currency", Label: "Currency" },
     { key: "actions", Label: "Action" },
   ];
+
+  // const [reasonInput, setReasonInput] = useState("");
+  const openFailedModal=(id)=>{
+    const userProfileMatch = filteredDonations.find((user) => user.id === id);
+    setISFailedModal(true);
+    setIsOpenOptions(null);
+
+  }
 
   return (
     <div className={` rounded-lg relative`}>
@@ -192,8 +199,7 @@ const Verified = () => {
                         </p>
                         <p
                           onClick={() => {
-                            setISFailedModal(true);
-                            setIsOpenOptions(null);
+                            openFailedModal(data.id)
                           }}
                           className="p-2 text-[#E53935]"
                         >

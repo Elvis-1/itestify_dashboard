@@ -22,7 +22,7 @@ const SuccessModal = ({sucessMessage}) => {
               >
                 <div className='flex flex-col gap-8 text-center justify-center items-center'>
                 <img className='w-28' src={CheckImage} alt="" />
-                <h3 className='text-2xl'>{sucessMessage}</h3>
+                <h3 className='text-xl'>{sucessMessage}</h3>
                
                 </div>
                 

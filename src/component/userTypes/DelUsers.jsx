@@ -7,8 +7,8 @@ import DeleteRecordsModal from "../Popups/DeleteRecordsModal";
 import { RiDeleteBin6Line } from "react-icons/ri";
 import { SearchOutlined } from "@ant-design/icons";
 import UserDelProfile from "../Popups/UserDelProfile.jsx";
-import useSort from "../../context/useSort";
-import usePagination from "../../context/usePagination";
+import useSort from "../../hooks/useSort.jsx";
+import usePagination from "../../hooks/usePagination.jsx";
 import Pagination from "../Pagination.jsx";
 import SuccessModal from "../Popups/SuccessModal.jsx";
 const DelUsers = () => {
@@ -99,7 +99,9 @@ const DelUsers = () => {
       setSelectAll(false);
       setDeleteRecordModal(false);
       setIsSuccessModal(true);
-      console.log(isSuccessModal);
+      setTimeout(() => {
+        setIsSuccessModal(false);
+      }, 2000);
     }
   };
   const handleDeleteById = (userId) => {
@@ -109,14 +111,14 @@ const DelUsers = () => {
     });
     setIsOpenOptions(false);
     setIsSuccessModal(true);
-    console.log(isSuccessModal);
+    setTimeout(() => {
+      setIsSuccessModal(false);
+    }, 2000);
   };
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
     usePagination(deletedUsers);
   const { sort, sortHeader, sortArray } = useSort();
-  setTimeout(() => {
-    setIsSuccessModal(false);
-  }, 3000);
+
   return (
     <div className="relative">
       {/* <---------------delete modal----------------> */}
@@ -197,7 +199,7 @@ const DelUsers = () => {
             } `}
           >
             <thead
-              className={`${isDarkMode ? `bg-[#0d0d0d]` : `bg-off-white`}`}
+              className={`text-xs ${isDarkMode ? `bg-[#0d0d0d]` : `bg-off-white`}`}
             >
               <tr>
                 <th>
@@ -212,7 +214,7 @@ const DelUsers = () => {
                 </th>
                 {tableHeaders.map((header, index) => (
                   <th
-                    className="cursor-pointer text-[10px]"
+                    className="cursor-pointer"
                     onClick={() => {
                       sortHeader(header);
                     }}

@@ -4,16 +4,17 @@ import { DarkModeContext } from "../../context/DarkModeContext";
 const FailedStatus = ({ setISFailedModal, setISSuccessModal }) => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [reason, setReason] = useState("");
-  const confirmFailed = (e) => {
+  const confirmFailed = (e, index) => {
     if (reason !== "") {
       e.preventDefault();
       setISFailedModal(false);
       setISSuccessModal(true);
+      setTimeout(() => {
+        setISSuccessModal(false);
+      }, 2000);
     }
   };
-  setTimeout(() => {
-    setISSuccessModal(false);
-  }, 5000);
+
   return (
     <div>
       {" "}
@@ -23,7 +24,7 @@ const FailedStatus = ({ setISFailedModal, setISSuccessModal }) => {
         onClick={() => setISFailedModal(false)}
       ></div>
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center modal">
+      <div className="fixed inset-0 z-50 flex items-center justify-center modal mt-8">
         <div
           className={`rounded-lg shadow-lg w-full max-w-sm relative z-10 modal p-4 ${
             isDarkMode
@@ -53,7 +54,11 @@ const FailedStatus = ({ setISFailedModal, setISSuccessModal }) => {
             </p>
           </div>
           <form action="">
-            <p className={`text-xs ${isDarkMode?`text-off-white`: `text-off-black`} font-normal pb-4 pt-6`}>
+            <p
+              className={`text-xs ${
+                isDarkMode ? `text-off-white` : `text-off-black`
+              } font-normal pb-4 pt-6`}
+            >
               Reason why donation is marked as failed
             </p>
             <textarea
@@ -80,8 +85,8 @@ const FailedStatus = ({ setISFailedModal, setISSuccessModal }) => {
               </button>
               <button
                 type="submit"
-                onClick={confirmFailed}
-                className="btn-primary bg-red px-4"
+                onClick={()=>{confirmFailed(index)}}
+                className="btn-primary bg-red px-4 border-[1px] border-transparent hover:border-white hover:text-red"
               >
                 Mark as failed
               </button>

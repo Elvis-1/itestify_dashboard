@@ -3,6 +3,7 @@ import React, { useState } from "react";
 const useProfile = ({ donationType }) => {
   const [isOpenOptions, setIsOpenOptions] = useState(null);
   const [isUserDetails, setIsUserDetails] = useState(false);
+  const[profile, setProfile] = useState(false)
   const [eachUser, setEachUser] = useState(null);
   const openProfileModal = (id) => {
     const userProfileMatch = donationType.find((user) => user.id === id);
@@ -23,6 +24,8 @@ const useProfile = ({ donationType }) => {
     setEachUser,
     isUserDetails,
     setIsUserDetails,
+    profile,
+    setProfile
   };
 };
 

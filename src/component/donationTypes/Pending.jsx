@@ -5,14 +5,14 @@ import { LuChevronsUpDown } from "react-icons/lu";
 import { BsThreeDotsVertical } from "react-icons/bs";
 import { SearchOutlined } from "@ant-design/icons";
 import { RiFilter3Line } from "react-icons/ri";
-import useSort from "../../context/useSort";
+import useSort from "../../hooks/useSort";
 import Pagination from "../Pagination";
-import usePagination from "../../context/usePagination";
+import usePagination from "../../hooks/usePagination";
 import DonationsDetails from "../Popups/DonationsDetails";
 import { VerifyDonations } from "../Popups/VerifyDonations";
-import useProfile from "../../context/useProfile";
+import useProfile from "../../hooks/useProfile";
 import FailedDonation from "../Popups/FailedDonation";
-import useVerifiedandFailed from "../../context/useVerifiedandFailed";
+import useVerifiedandFailed from "../../hooks/useVerifiedandFailed";
 import SuccessModal from "../Popups/SuccessModal";
 
 const Pending = () => {
@@ -103,6 +103,11 @@ const Pending = () => {
     setIsSuccessModal,
     donaStatus,
   } = useVerifiedandFailed();
+  setTimeout(() => {
+    setIsSuccessModal(false);
+  }, 2000);
+
+
   return (
     <div className={` rounded-lg relative`}>
       {isUserDetails && (

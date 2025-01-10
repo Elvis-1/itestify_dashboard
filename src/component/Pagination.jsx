@@ -1,5 +1,5 @@
 import React from "react";
-import usePagination from "../context/usePagination";
+import usePagination from "../hooks/usePagination";
 
 const Pagination = ({
   setCurrentPage,

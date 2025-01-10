@@ -14,7 +14,7 @@ const DonationsDetails = ({ setIsUserDetails, DonationUser }) => {
       ></div>
 
       {/* Modal */}
-      <div className="fixed inset-0 z-50 flex items-center justify-center modal">
+      <div className="fixed inset-0 z-50 flex items-center justify-center modal mt-5">
         <div
           className={`rounded-lg shadow-lg w-full max-w-sm ${
             isDarkMode ? "dark-mode bg-black text-white" : "bg-off-white text-black"
