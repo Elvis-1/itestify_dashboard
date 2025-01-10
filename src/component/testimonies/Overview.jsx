@@ -1,8 +1,8 @@
 import React, {useContext, useState} from 'react'
-import userData from '../data/userdata'
+import userData from '../../data/userdata'
 import { Table } from 'antd'
 
-import { DarkModeContext } from '../context/DarkModeContext';
+import { DarkModeContext } from '../../context/DarkModeContext';
 
 function Overview() {
   const {isDarkMode} = useContext(DarkModeContext)

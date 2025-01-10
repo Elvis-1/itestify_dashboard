@@ -6,7 +6,7 @@ import React, { useState, useContext } from 'react'
 
 // import { Modal } from 'antd';
 
-import { DarkModeContext } from '../context/DarkModeContext';
+import { DarkModeContext } from '../../context/DarkModeContext';
 
 import AllVideoTest from './AllVideoTest';
 import UploadedTest from './UploadedTest';

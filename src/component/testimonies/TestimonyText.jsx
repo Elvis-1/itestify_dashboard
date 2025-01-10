@@ -11,12 +11,12 @@ import { FaCaretDown, FaCaretUp } from "react-icons/fa6";
 
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
 
-import testimonyData from '../data/Testimonydata';
+import testimonyData from '../../data/Testimonydata';
 import { Modal } from 'antd';
 
-import modalpic from '../assets/images/modalPic.png'
+import modalpic from '../../assets/images/modalPic.png'
 
-import { DarkModeContext } from '../context/DarkModeContext';
+import { DarkModeContext } from '../../context/DarkModeContext';
 
 
 
@@ -778,7 +778,7 @@ function TestimonyText() {
                         showDeleteNotification(deleteStatus)
                         setActionModal(false)
                     }} 
-                    className='pl-2 pt-4 text-red-700'>Delete</button>
+                    className='pl-2 pt-4 text-red'>Delete</button>
                 </div>
             </div>
 

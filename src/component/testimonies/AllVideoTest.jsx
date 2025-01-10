@@ -1,7 +1,7 @@
 import React, {useState, useContext, useRef} from 'react'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 import { IoTrashOutline } from "react-icons/io5";
-import videoData from '../data/TestimonyVideoData';
+import videoData from '../../data/TestimonyVideoData';
 import { Modal } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
 import { FaCaretDown, FaCaretUp } from "react-icons/fa6";
@@ -11,11 +11,11 @@ import { IoFilterOutline } from 'react-icons/io5'
 
 import { CheckOutlined } from "@ant-design/icons";
 
-import '../App.css'
+import '../../App.css'
 import VideoPlayer from './VideoPlayer';
-import vid1 from '../assets/vid1.mp4'
+import vid1 from '../../assets/vid1.mp4'
 
-import { DarkModeContext } from '../context/DarkModeContext';
+import { DarkModeContext } from '../../context/DarkModeContext';
 
 
 function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setScheduled, draft, setDraft}) {
@@ -692,7 +692,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                             setDeleteVideoTest(true)
                             setVideoActionModal(false)
                         }}
-                        className='pl-2 pt-4 text-red-700'>Delete</button>
+                        className='pl-2 pt-4 text-red'>Delete</button>
                     </div>
                 </div>
     

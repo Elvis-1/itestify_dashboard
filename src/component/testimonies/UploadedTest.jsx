@@ -4,13 +4,13 @@ import { IoFilterOutline } from 'react-icons/io5'
 import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
 import { FaCaretDown, FaCaretUp } from "react-icons/fa6";
 import { CalendarOutlined } from '@ant-design/icons';
-import videoData from '../data/TestimonyVideoData';
+import videoData from '../../data/TestimonyVideoData';
 
-import uploadedVideo from '../data/UploadedVideo';
+import uploadedVideo from '../../data/UploadedVideo';
 import VideoPlayer from './VideoPlayer';
-import vid1 from '../assets/vid1.mp4'
+import vid1 from '../../assets/vid1.mp4'
 import { Modal } from 'antd';
-import { DarkModeContext } from '../context/DarkModeContext';
+import { DarkModeContext } from '../../context/DarkModeContext';
 
 function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setScheduled, draft, setDraft}) {
     const {isDarkMode} = useContext(DarkModeContext)
@@ -413,7 +413,7 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                         setUploadedActionModal(false)
                         setUploadedDeleteModal(true)
                     }}
-                    className='pl-2 pt-4 text-red-700'>Delete</button>
+                    className='pl-2 pt-4 text-red'>Delete</button>
                 </div>
             </div>
 

@@ -4,14 +4,14 @@ import Home from "./pages/Home";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import CreatePassword from "./pages/CreatePassword";
 import Dashboard from "./pages/Dashboard";
-import Overview from "./component/Overview";
+import Overview from "./component/testimonies/Overview";
 import { DarkModeContextProvider } from "./context/DarkModeContext";
 import Users from "./pages/Users";
 import Donations from "./pages/Donations";
 import { Button } from 'antd';
-import AllTestimonies from './component/AllTestimonies';
-import UploadTestimonies from './component/UploadTestimonies';
-import VideoPlayer from './component/VideoPlayer';
+import AllTestimonies from './component/testimonies/AllTestimonies';
+import UploadTestimonies from './component/testimonies/UploadTestimonies';
+import VideoPlayer from './component/testimonies/VideoPlayer';
 
 
 function App() {

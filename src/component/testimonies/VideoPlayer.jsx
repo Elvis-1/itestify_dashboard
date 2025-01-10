@@ -7,7 +7,7 @@ import { FaPlay, FaPause } from "react-icons/fa";
 import { IoVolumeHigh } from "react-icons/io5";
 import { IoSettingsOutline } from "react-icons/io5";
 import { MdFullscreen } from "react-icons/md";
-import "../App.css";
+import "../../App.css";
 
 function VideoPlayer({ children }) {
   const videoRef = useRef(null);
