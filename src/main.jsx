@@ -8,6 +8,5 @@ import '@fontsource/lora';
 
 
 createRoot(document.getElementById('root')).render(
-        <App />
-    
+        <App />  
 )

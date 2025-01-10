@@ -9,7 +9,6 @@ import videoData from '../data/TestimonyVideoData';
 import uploadedVideo from '../data/UploadedVideo';
 import VideoPlayer from './VideoPlayer';
 import vid1 from '../assets/vid1.mp4'
-
 import { Modal } from 'antd';
 import { DarkModeContext } from '../context/DarkModeContext';
 
