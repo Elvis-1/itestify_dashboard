@@ -33,6 +33,13 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
     const [editDate, setEditDate] = useState('')
     const [role, setRole] = useState('Select Role')
 
+    const [formData, setFormData] = useState({
+    title: '',
+    category: '',
+    schedule_date: '',
+    schedule_time: ''
+    });
+
 
     const itemsPerPage = 3;
 
@@ -114,7 +121,7 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
        
     }
 
-    function EditUploadedModalFooterButton() {
+    function EditScheduleModalFooterButton() {
         return[
             <div className='mt-[50px]'>
                 <button 
@@ -123,7 +130,10 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
                     Upload
                 </button>
                 <button
-               
+                onClick={() => {
+                    handleSaveEdit()
+                    handleCloseModal()
+                }}
                 className='bg-[#9966CC] ml-2 
                 border-none outline-none 
                 rounded p-2 w-[auto] h-[40px]'>Save Changes</button>
@@ -205,6 +215,24 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
             dateInputRef2.current.showPicker(); 
         }
     };
+
+    const handleSelectCategory = (category) => {
+        setSelectTestType(category);
+        setFormData((prev) => ({ ...prev, category }));
+    };
+
+    //handleChange for edit modal
+    const handleInputChange = (e) => {
+        const {name, value} = e.target
+        setFormData((prev) => ({ ...prev, [name] : value}));
+    };
+
+    //function to handle when the editted value is save
+    const handleSaveEdit = () => {
+        console.log(formData);
+    };
+
+
   return (
     <div className={`${!isDarkMode ? 'border h-[350px] rounded-xl' : 'border-none'}`}>
 
@@ -395,7 +423,7 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
         <Modal
             open={scheduledEditModal}
             onCancel={handleCloseModal}
-            footer={EditUploadedModalFooterButton}
+            footer={EditScheduleModalFooterButton}
             closeIcon={<span style={{ color: 'white', fontSize: '12px', marginTop: '-7px' }}>X</span>}
             styles={{
             content: {
@@ -425,7 +453,14 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
                 <div>
                     <div className=''>
                         <p className='mt-5 ml-[-10px]'>Title</p>
-                        <p className='bg-[#171717] mb-5 text-white rounded-xl p-2 w-[110%] ml-[-15px]'>{scheduledDetails.title}</p>
+                        <input 
+                        value={formData.title}
+                        name='title'
+                        placeholder='Edit your title'
+                        onChange={handleInputChange}
+                        className='bg-[#171717] mb-5 text-white 
+                        rounded-xl p-2 w-[110%] 
+                        ml-[-15px] outline-none border-none'/>
                     </div>
 
                     {/* category section */}
@@ -434,53 +469,36 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
                     className='flex items-center justify-center w-[110%] 
                     ml-[-15px] bg-[#171717] p-1 rounded-xl cursor-pointer'>
                        <p className=' text-white
-                       font-sans p-1 w-[100%] rounded'>{selectTestType !== "select" ? 
-                        selectTestType : scheduledDetails.category }</p>
+                       font-sans p-1 w-[100%] rounded'>{selectTestType}</p>
                        {filterDropDown  ? <FaCaretUp/> : <FaCaretDown/>}
                     </div>
 
                     {filterDropDown ? 
                     <div className='flex flex-col rounded-xl cursor-pointer p-1 opacity-[0.6] mt-3 border overflow-hidden w-[110%] ml-[-13px]'>
-                       
-                        <div 
-                            onClick={() => setSelectTestType('Healing')}
-                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1'>
-                            <input type='button' 
-                            value='Healing'
-                            onClick={() => setSelectTestType('Healing')} />
-                        </div>
-                        <div 
-                            onClick={() => setSelectTestType('Deliverance')}
-                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1 cursor-pointer'>
-                            <input  type='button' 
-                            value='Deliverance'
-                            onClick={() => setSelectTestType('Deliverance')} />
-                        </div>
-                        <div
-                            onClick={() => setSelectTestType('Faith')}
-                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1'>
-                            <input type='button' 
-                            value='Faith'
-                            onClick={() => setSelectTestType('Faith')} />
-                        </div>
-                        <div 
-                            onClick={() => setSelectTestType('Salvation')}
-                            className='w-[110%] ml-[-15px] pl-5 pb-1'>
-                            <input type='button' 
-                            value='Salvation' 
-                            onClick={() => setSelectTestType('Salvation')}/>
-                        </div>
+                       {['Healing', 'Deliverance', 'Faith', 'Salvation'].map((category) => (
+                            <div
+                                key={category}
+                                onClick={() => {
+                                    handleSelectCategory(category)
+                                    setFilterDropDown(false)
+                                }}
+                                className="w-[110%] ml-[-15px] border-b pl-5 pb-1"
+                            >
+                                <input type="button" value={category} />
+                            </div>
+                        ))}
                     </div>: ""}
 
                     
                       <>
                         <div className='mt-3'>
                         <label htmlFor="edited-date" className='ml-[-10px]'>Scheduled Date</label>
-                        <input onChange={(e) => setEditDate(e.target.value)} type='date' 
+                        <input onChange={handleInputChange} type='date' 
                         id='edited-date'
-                        value={editDate ? editDate : scheduledDetails.scheduled_date} onFocus={(e) => (e.target.type = "date")}
+                        name='schedule_date'
+                        value={formData.schedule_date} onFocus={(e) => (e.target.type = "date")}
                         onBlur={(e) => (e.target.type = "text")}
-                        placeholder='08/08/24'
+                        placeholder='edit your date'
                         className='bg-[#171717] w-[110%] ml-[-15px] p-2 border-none outline-none rounded-xl' 
                         />
                       </div>
@@ -489,8 +507,9 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
                         <div className='mt-3 flex flex-col'>
                             <label htmlFor="datePicker" className='ml-[-10px]'>Scheduled Time</label>
                             <div>
-                                <input onChange={(e) => setEditTime(e.target.value)}
-                                type='time' placeholder='08:00PM' value={editTime} 
+                                <input onChange={handleInputChange}
+                                name='schedule_time'
+                                type='time' placeholder='08/08/' value={formData.schedule_time} 
                                 className='bg-[#171717] w-[110%] ml-[-15px] p-2 border-none outline-none rounded-xl'/>
                             </div>
                         </div>

@@ -32,6 +32,12 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
     const [uploadedDeleteModal, setUploadedDeleteModal] = useState(false)
     const [uploadeFilterModal, setUploadedFilterModal] = useState(false)
 
+    const [inputValue, setInputValue] = useState("")
+    const [formData, setFormData] = useState({
+    title: '',
+    category: '',
+    });
+
     const itemsPerPage = 3;
 
     const startIndex = (page - 1) * itemsPerPage;
@@ -121,6 +127,10 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                     Cancel
                 </button>
                 <button
+                onClick={() => {
+                    handleSaveEdit()
+                    handleCloseModal()
+                }}
                 className='bg-[#9966CC] ml-2 
                 border-none outline-none 
                 rounded p-2 w-[auto] h-[40px]'>Save Changes</button>
@@ -191,6 +201,24 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
     function handleFilterDate2(event) {
         setFilterDate2(event.target.value)
     }
+
+    const handleSelectCategory = (category) => {
+        setSelectTestType(category);
+        setFormData((prev) => ({ ...prev, category }));
+    };
+
+    
+    //handleChange for edit modal
+    const handleInputChange = (e) => {
+        const newValue = e.target.value;
+        setInputValue(newValue);
+        setFormData((prev) => ({ ...prev, title: newValue }));
+    };
+
+    //function to handle when the editted value is save
+    const handleSaveEdit = () => {
+        console.log(formData);
+    };
 
     const dateInputRef1 = useRef(null);
     const dateInputRef2 = useRef(null);
@@ -508,7 +536,13 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 <div>
                     <div className=''>
                         <p className='mt-5 ml-[-10px]'>Title</p>
-                        <p className='bg-[#171717] mb-5 text-white rounded-xl p-2 w-[110%] ml-[-15px]'>{uploadedVideoDetails.title}</p>
+                        <input 
+                        value={inputValue}
+                        placeholder='Edit your title'
+                        onChange={handleInputChange}
+                        className='bg-[#171717] mb-5 text-white 
+                        rounded-xl p-2 w-[110%] 
+                        ml-[-15px] outline-none border-none'/>
                     </div>
 
                     {/* category section */}
@@ -517,40 +551,24 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                     className='flex items-center justify-center w-[110%] 
                     ml-[-15px] bg-[#171717] p-1 rounded-xl cursor-pointer'>
                        <p className=' text-white
-                       font-sans p-1 w-[100%] rounded'>{selectTestType !== 'select' ? uploadedVideoDetails.category : selectTestType}</p>
+                       font-sans p-1 w-[100%] rounded'>{selectTestType}</p>
                        {filterDropDown  ? <FaCaretUp/> : <FaCaretDown/>}
                     </div>
 
                     {filterDropDown ? 
                     <div className='flex flex-col rounded-xl cursor-pointer p-1 opacity-[0.6] mt-3 border overflow-hidden w-[110%] ml-[-13px]'>
-                        <div 
-                            onClick={() => setSelectTestType('Healing')}
-                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1'>
-                            <input type='button' 
-                            value='Healing'
-                            onClick={() => setSelectTestType('Healing')} />
-                        </div>
-                        <div 
-                            onClick={() => setSelectTestType('Deliverance')}
-                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1 cursor-pointer'>
-                            <input  type='button' 
-                            value='Deliverance'
-                            onClick={() => setSelectTestType('Deliverance')} />
-                        </div>
-                        <div
-                            onClick={() => setSelectTestType('Faith')}
-                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1'>
-                            <input type='button' 
-                            value='Faith'
-                            onClick={() => setSelectTestType('Faith')} />
-                        </div>
-                        <div 
-                            onClick={() => setSelectTestType('Salvation')}
-                            className='w-[110%] ml-[-15px] pl-5 pb-1'>
-                            <input type='button' 
-                            value='Salvation' 
-                            onClick={() => setSelectTestType('Salvation')}/>
-                        </div>
+                        {['Healing', 'Deliverance', 'Faith', 'Salvation'].map((category) => (
+                            <div
+                                key={category}
+                                onClick={() => {
+                                    handleSelectCategory(category)
+                                    setFilterDropDown(false)
+                                }}
+                                className="w-[110%] ml-[-15px] border-b pl-5 pb-1"
+                            >
+                                <input type="button" value={category} />
+                            </div>
+                        ))}
                     </div>: ""}
                     
                 </div>
