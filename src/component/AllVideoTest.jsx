@@ -1052,7 +1052,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                     </div>
                     
                     
-                    <div className='flex items-center w-[265px] ml-[-25px]'>
+                    <div className='flex items-center w-[265px]  ml-[-25px]'>
                         <div className='p-2 flex w-[150px] h-[50px] items-center'>
                             Category
                             <div className='flex flex-col'>
@@ -1212,14 +1212,14 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                     </div>
     
                     
-                    <div className='flex items-center w-[263px]'>
-                        <div className='p-2 flex  w-[150px] h-[50px] items-center'>{item.category}</div>
+                    <div className='flex items-center  w-[263px]'>
+                        <div className='p-2 flex w-[150px] h-[50px] items-center'>{item.category}</div>
                         <div className='p-2 flex  w-[153px] h-[50px] items-center'>{item.source}</div>
                         <div className='pl-1 flex text-[11px] w-[205px] h-[50px] items-center'>{item.date_uploaded}</div>
                     </div>
     
                     <div className='flex items-center w-[246px]'>
-                        <div className='p-2 flex flex-[2]  w-[50px] h-[50px] items-center'>{item.uploaded_by}</div>
+                        <div className='p-2 flex  flex-[2]  w-[50px] h-[50px] items-center'>{item.uploaded_by}</div>
                         <div className='p-2 flex flex-1  w-[50px] h-[50px] items-center'>{item.views}</div>
                         <div className='p-2 flex flex-1 w-[50px] h-[50px] items-center'>{item.likes}</div>
                     </div>
