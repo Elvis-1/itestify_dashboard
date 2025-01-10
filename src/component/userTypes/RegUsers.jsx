@@ -63,7 +63,7 @@ const RegUsers = () => {
   return (
     <div className="relative">
       <div
-        className={`flex justify-between items-center w-full  rounded-t-xl mt-5 px-4 ${
+        className={`flex justify-between items-center w-full  rounded-t-xl mt-5 px-2 ${
           isDarkMode ? `dark-mode` : `bg-white `
         }`}
       >

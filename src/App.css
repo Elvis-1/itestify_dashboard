@@ -5,8 +5,7 @@
   font-optical-sizing: auto;
   font-weight: 600;
   font-style: normal;
-  font-variation-settings:
-    "wdth" 100;
+  font-variation-settings:"wdth" 100;
 }
 .ant-input::placeholder {
   color: #888; /* change placeholder color */
@@ -38,13 +37,11 @@
 .table-container {
   width: 100%;
   overflow-x: auto;
-  min-height: 30rem;
   border-bottom-right-radius: 20px;
   border-bottom-left-radius: 20px;
-  width: 100%;
-  height: 300px;
+  height: 400px;
   overflow-x: auto;
-  margin: 20px 0;
+  margin: 10px 0;
   background-color: #171717;
   border-radius: 20px;
 }
@@ -62,7 +59,6 @@
   padding: 12px;
   text-transform: capitalize;
   letter-spacing: 0.5px;
-
 }
 
 .custom-table tbody tr:hover {
@@ -121,6 +117,7 @@ th div i{
     overflow-x: scroll;
   }
 }
+
 .rdt_TableHeadRow {
     border-bottom: none !important; /* Remove border from the header row */
 }
