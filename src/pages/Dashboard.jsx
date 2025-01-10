@@ -303,7 +303,7 @@ function Dashboard() {
           {/* whole side bar ends here */}
 
         {/* main dashboard section starts here */}
-        <div className="flex-[5] min-h-screen">
+        <div className="flex-[6] min-h-screen">
           {/* main dashboard section header starts here */}
           <div
             className={`flex items-center justify-between w-[80%] h-[50px]
