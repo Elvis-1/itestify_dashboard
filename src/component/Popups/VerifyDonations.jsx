@@ -13,7 +13,7 @@ export const VerifyDonations = ({ setIsVerified, setIsSuccessModal }) => {
     { value: "USD", label: "USD ($)", symbol: "$" },
   ];
   const SaveVerification = () => {
-    // if (reason !== "") {
+    // if (reason !== ") {
     setIsVerified(false);
     setIsSuccessModal(true);
     // }
