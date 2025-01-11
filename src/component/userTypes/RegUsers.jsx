@@ -62,9 +62,13 @@ const RegUsers = () => {
   const { sort, sortHeader, sortArray } = useSort();
   return (
     <div className="relative">
+       {/* <<----------------------------Profile Modal -------------------------->> */}
+       {profile && (
+        <UserRegProfile setProfile={setProfile} registeredUsers={eachUser} />
+      )}
       <div
-        className={`flex justify-between items-center w-full  rounded-t-xl mt-5 px-2 ${
-          isDarkMode ? `dark-mode` : `bg-white `
+        className={`flex justify-between items-center w-full mt-5 px-2 rounded-t-2xl ${
+          isDarkMode ? `bg-lightBlack dark-mode` : `bg-white `
         }`}
       >
         <h3 className="py-5 text-lg">User Management</h3>
@@ -95,20 +99,16 @@ const RegUsers = () => {
           </div>
         </div>
       </div>
-      {/* <<----------------------------Profile Modal -------------------------->> */}
-      {profile && (
-        <UserRegProfile setProfile={setProfile} registeredUsers={eachUser} />
-      )}
 
       {/* --------------------------------Table Details ---------------------------------------- */}
       <div
-        className={`table-container  ${
+        className={`h-[20rem] rounded-b-2xl overflow-hidden  ${
           isDarkMode ? `bg-lightBlack` : `bg-white `
         }`}
       >
         <table
-          className={`custom-table font-sans text-[14px] ${
-            isDarkMode ? `dark-mode` : `light-mode`
+          className={`custom-table overflow-hidden font-sans text-[14px] ${
+            isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
           } `}
         >
           <thead className={`text-xs ${isDarkMode?`bg-[#0d0d0d]`:`bg-off-white`}`}>

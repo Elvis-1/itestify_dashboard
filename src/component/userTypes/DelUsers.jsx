@@ -133,8 +133,8 @@ const DelUsers = () => {
       )}
       {isSuccessModal && <SuccessModal sucessMessage="Deleted Successfully!" />}
       <div
-        className={`flex justify-between items-center  rounded-t-xl mt-5 px-4 ${
-          isDarkMode ? `dark-mode` : `bg-white `
+        className={`flex justify-between items-center bg-lightBlack  rounded-t-xl mt-5 px-4 ${
+          isDarkMode ? `bg-lightBlack dark-mode` : `bg-white `
         }`}
       >
         <h3 className="py-5 text-lg">User Management</h3>
@@ -189,17 +189,19 @@ const DelUsers = () => {
         </div>
       ) : (
         <div
-          className={`table-container ${
+          className={` rounded-b-2xl overflow-x-auto h-[20rem] ${
             isDarkMode ? `bg-lightBlack` : `bg-white`
           }`}
         >
           <table
-            className={`custom-table font-san text-[14px]  ${
-              isDarkMode ? `dark-mode` : `light-mode`
+            className={`custom-table w-full border-collapse text-left opacity-70 font-san text-[14px]  ${
+              isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
             } `}
           >
             <thead
-              className={`text-xs ${isDarkMode ? `bg-[#0d0d0d]` : `bg-off-white`}`}
+              className={` text-xs ${
+                isDarkMode ? `bg-[#0d0d0d]` : `bg-off-white`
+              }`}
             >
               <tr>
                 <th>

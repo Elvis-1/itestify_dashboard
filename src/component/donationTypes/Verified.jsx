@@ -72,7 +72,7 @@ const Verified = () => {
   }
 
   return (
-    <div className={` rounded-lg relative`}>
+    <div className={`relative`}>
       {isUserDetails && (
         <DonationsDetails
           setIsUserDetails={setIsUserDetails}
@@ -89,7 +89,7 @@ const Verified = () => {
         <SuccessModal sucessMessage="Status Changed to “Mark as Failed”" />
       )}
 
-      <div className={`table-container rounded-t-2xl h-[40rem] relative`}>
+      <div className={`rounded-t-2xl h-[24rem] relative`}>
         <div className={`flex justify-between items-center w-full pb-3 px-3`}>
           <h3 className="py-5">Donations</h3>
 

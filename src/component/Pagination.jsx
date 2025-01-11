@@ -10,7 +10,7 @@ const Pagination = ({
   data,
 }) => {
   return (
-    <div className="flex justify-between absolute bottom-[-35px] left-0 w-full mt-24 mb-12">
+    <div className="flex justify-between absolute bottom-0 pt-12 pb-4 left-0 w-full">
       <div className="flex justify-between items-center w-full px-4">
         {data.length === 0 ? (
           <p>Showing 0 of 0</p>

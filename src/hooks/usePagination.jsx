@@ -3,7 +3,7 @@ import React, { useState } from "react";
 const usePagination = (data = []) => {
   const [currentPage, setCurrentPage] = useState(1);
   let usersPerPage;
-  usersPerPage = data.length < 5 ? data.length : 7;
+  usersPerPage = data.length < 4 ? data.length : 3;
   const lastIndex = currentPage * usersPerPage;
   const firstIndex = lastIndex - usersPerPage;
   const users = data.slice(firstIndex, Math.min(lastIndex, data.length));
