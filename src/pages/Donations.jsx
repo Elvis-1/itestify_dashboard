@@ -46,7 +46,7 @@ const Donations = () => {
       <div
         className={`${
           isDarkMode ? `bg-lightBlack` : `bg-white`
-        } rounded-lg mt-6`}
+        } rounded-lg mt-6 pb-2`}
       >
         <div className="flex gap-3 p-3 py-4">
           {donateUserType.map((user, index) => (

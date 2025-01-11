@@ -10,11 +10,12 @@ import Pagination from "../Pagination";
 import DonationsDetails from "../Popups/DonationsDetails";
 import usePagination from "../../hooks/usePagination";
 import useProfile from "../../hooks/useProfile";
+
 const Failed = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [searchItem, setSearchItem] = useState("");
   const toggleOptions = (index) => {
-    setIsOpenOptions(isOpenOptions === index ? -1 : index);
+    setIsOpenOptions(isOpenOptions === index ? null : index);
   };
   const failedDonations = UsersDonations.filter(
     (item) => item.status === "Failed"
@@ -82,15 +83,15 @@ const Failed = () => {
   };
 
   return (
-    <div className={`rounded-lg relative`}>
+    <div className={`relative`}>
       {isUserDetails && (
         <DonationsDetails
           setIsUserDetails={setIsUserDetails}
           DonationUser={eachUser}
         />
       )}
-      <div className={`table-container rounded-t-2xl h-[40rem]`}>
-        <div className={`flex justify-between items-center w-full py-2 px-3`}>
+      <div className={` rounded-t-2xl h-[24rem]`}>
+        <div className={`flex justify-between items-center w-full pb-2 px-3`}>
           <h3 className="py-5">Donations</h3>
           <div
             className={`flex justify-left items-center gap-2 p-3 rounded-lg w-[300px] ${

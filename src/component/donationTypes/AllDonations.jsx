@@ -79,9 +79,9 @@ const AllDonations = () => {
   return (
     <div>
       {isFilter && <FilterDonations setIsFilter={setIsFilter} />}
-      <div className={`rounded-lg relative`}>
-        <div className={`table-container rounded-t-2xl h-[40rem]`}>
-          <div className={`flex justify-between items-center w-full py-2 px-3`}>
+      <div className={`relative`}>  
+        <div className={` rounded-t-2xl h-[24rem]`}>
+          <div className={`flex justify-between items-center w-full pb-2 px-3`}>
             <h3 className="py-5 ">Donations</h3>
             <div className="flex items-center gap-4">
               {/*---------------------------------------- Search Bar  ---------------------------------*/}
@@ -195,7 +195,6 @@ const AllDonations = () => {
             ))}
           </table>
           {/* <-------------------------------------Pagination-------------------------------------> */}
-
           <Pagination
             data={userDonation}
             currentPage={currentPage}
