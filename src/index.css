@@ -1,15 +1,11 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-/* @layer components {
-    .btn-primary {
-      @apply bg-primary py-2 px-7 text-sm rounded-md text-off-white border-[1px] border-primary cursor-pointer hover:bg-transparent hover:border-primary;
-    }
-    .btn-secondary{
-        @apply bg-none py-2 px-7 text-sm rounded-md text-off-white border-[1px] border-off-white cursor-pointer;    
-    }
-    .center-div{
-        @apply flex justify-center items-center;
-    }
-   
-  } */
+@layer components {
+  .btn-primary {
+    @apply bg-primary py-2 px-7 text-sm rounded-md text-off-white border-[1px] border-primary cursor-pointer hover:bg-transparent hover:border-primary;
+  }
+  .btn-secondary {
+    @apply bg-none py-2 px-7 text-sm rounded-md text-off-white border-[1px] border-off-white cursor-pointer;
+  }
+}

@@ -480,7 +480,7 @@ function Dashboard() {
             <div className='flex items-center justify-between w-[100%]'>
                 <p className='opacity-[0.7]'>Notification</p>
                 <div className='flex items-center justify-center 
-                bg-red-800  w-[30px] h-[30px] p-2 rounded-full text-center'>
+                bg-red  w-[30px] h-[30px] p-2 rounded-full text-center'>
                   <p className={`font-sans text-[12px] text-center text-white`}>10</p>
                 </div>
             </div>
