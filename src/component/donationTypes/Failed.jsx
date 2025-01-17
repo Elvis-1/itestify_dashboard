@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo } from "react";
+import React, { useContext, useState, useMemo,useEffect,useRef } from "react";
 import { UsersDonations } from "../../data/donations";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { LuChevronsUpDown } from "react-icons/lu";
@@ -81,6 +81,18 @@ const Failed = () => {
   const handleSearch = (e) => {
     setSearchItem(e.target.value);
   };
+    //Close droopdown
+    const dropdownRef = useRef(null);
+    useEffect(() => {
+      const handleClickOutside = (event) => {
+        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+          setIsOpenOptions(null);
+        }
+      };
+  
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }, []);
 
   return (
     <div className={`relative`}>
@@ -180,13 +192,14 @@ const Failed = () => {
                         isDarkMode
                           ? `text-white bg-[#292929]`
                           : `text-black bg-white`
-                      } w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
+                      } w-[120px] border-[1px] border-white absolute top-10 right-10 z-30 shadow-lg`}
                     >
                       <p
                         onClick={() => {
                           openProfileModal(data.id);
                         }}
-                        className="border-b-[1px] border-gray-300 p-2"
+                        className="
+                         border-gray-300 p-2"
                       >
                         View details
                       </p>

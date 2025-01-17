@@ -1,6 +1,8 @@
 import React, { useContext, useState } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { MdClose } from "react-icons/md";
+import "../../styles/animation.css";
+
 export const DonationsSettings = ({
   setIsSettingsModal,
   setISSuccessModal,

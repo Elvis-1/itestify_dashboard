@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo } from "react";
+import React, { useContext, useState, useMemo, useEffect, useRef } from "react";
 import { UsersDonations } from "../../data/donations";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { LuChevronsUpDown } from "react-icons/lu";
@@ -64,12 +64,24 @@ const Verified = () => {
   ];
 
   // const [reasonInput, setReasonInput] = useState("");
-  const openFailedModal=(id)=>{
+  const openFailedModal = (id) => {
     const userProfileMatch = filteredDonations.find((user) => user.id === id);
     setISFailedModal(true);
     setIsOpenOptions(null);
+  };
 
-  }
+  //Close droopdown
+  const dropdownRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpenOptions(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className={`relative`}>
@@ -89,7 +101,7 @@ const Verified = () => {
         <SuccessModal sucessMessage="Status Changed to “Mark as Failed”" />
       )}
 
-      <div className={`rounded-t-2xl h-[24rem] relative`}>
+      <div className={`rounded-t-2xl h-[25rem] relative`}>
         <div className={`flex justify-between items-center w-full pb-3 px-3`}>
           <h3 className="py-5">Donations</h3>
 
@@ -199,7 +211,7 @@ const Verified = () => {
                         </p>
                         <p
                           onClick={() => {
-                            openFailedModal(data.id)
+                            openFailedModal(data.id);
                           }}
                           className="p-2 text-[#E53935]"
                         >

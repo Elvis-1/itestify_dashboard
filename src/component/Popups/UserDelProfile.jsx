@@ -2,6 +2,7 @@ import React, { useContext } from "react";
 import avatarProfile from "../../assets/images/avatar.png";
 import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
+import "../../styles/animation.css";
 
 const UserDelProfile = ({ deletedUsers, setProfile }) => {
   const { isDarkMode } = useContext(DarkModeContext);

@@ -2,6 +2,8 @@ import React, { useState, useContext } from "react";
 import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { IoMdArrowDropdown } from "react-icons/io";
+import "../../styles/animation.css";
+
 
 export const VerifyDonations = ({ setIsVerified, setIsSuccessModal }) => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -30,7 +32,7 @@ export const VerifyDonations = ({ setIsVerified, setIsSuccessModal }) => {
       />
 
       {/* Modal */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-sm shadow-2xl">
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-sm shadow-2xl ">
         <div
           className={`rounded-lg  modal ${
             isDarkMode ? "bg-near-black text-white" : "bg-white text-black"

@@ -1,6 +1,8 @@
 import React, { useContext, useState } from "react";
 import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
+import "../../styles/animation.css";
+
 const FailedStatus = ({ setISFailedModal, setISSuccessModal }) => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [reason, setReason] = useState("");

@@ -2,6 +2,7 @@ import React, { useContext, useState, useEffect } from "react";
 import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { UsersDonations } from "../../data/donations";
+import "../../styles/animation.css";
 
 const FailedDonation = ({ setIsFailed, setIsSuccessModal, donationIndex }) => {
   const { isDarkMode } = useContext(DarkModeContext);

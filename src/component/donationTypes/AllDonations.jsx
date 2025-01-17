@@ -1,6 +1,13 @@
-import React, { useState, useContext, useMemo } from "react";
+import React, {
+  useState,
+  useContext,
+  useMemo,
+  useCallback,
+  useEffect,
+} from "react";
 import { LuChevronsUpDown } from "react-icons/lu";
 import { UsersDonations } from "../../data/donations";
+
 import { SearchOutlined } from "@ant-design/icons";
 import { RiFilter3Line } from "react-icons/ri";
 import { DarkModeContext } from "../../context/DarkModeContext";
@@ -14,6 +21,12 @@ const AllDonations = () => {
   const [userDonation, setUserDonation] = useState(UsersDonations);
   const [searchItem, setSearchItem] = useState("");
   const [isFilter, setIsFilter] = useState(false);
+  const [filters, setFilters] = useState({
+    selectedOption: null,
+    selectedCurrency: "",
+    amountRange: { min: "", max: "" },
+    dateRange: { from: "", to: "" },
+  });
   const showFilterModal = () => {
     setIsFilter(!isFilter);
   };
@@ -30,7 +43,6 @@ const AllDonations = () => {
     () => sortArray(paginatedData),
     [paginatedData, sort]
   );
-
   const tableHeaders = [
     {
       key: "serialno",
@@ -78,8 +90,15 @@ const AllDonations = () => {
 
   return (
     <div>
-      {isFilter && <FilterDonations setIsFilter={setIsFilter} />}
-      <div className={`relative`}>  
+      {isFilter && (
+        <FilterDonations
+          setIsFilter={setIsFilter}
+          filters={filters}
+          setFilters={setFilters}
+          setUserDonation={setUserDonation}
+        />
+      )}
+      <div className={`relative`}>
         <div className={` rounded-t-2xl h-[24rem]`}>
           <div className={`flex justify-between items-center w-full pb-2 px-3`}>
             <h3 className="py-5 ">Donations</h3>
@@ -155,44 +174,48 @@ const AllDonations = () => {
                 ))}
               </tr>
             </thead>
-            {sortedData.map((data) => (
-              <tbody className="relative text-xs" key={data.id}>
-                <tr
-                  className={` ${
-                    isDarkMode
-                      ? `hover:bg-[#313131]`
-                      : `hover:bg-off-white text-black`
-                  }`}
-                >
-                  <td>{data.id}</td>
-                  <td>
-                    <img
-                      className="w-10 h-8"
-                      src={data.image}
-                      alt="donation-receipt"
-                    />
-                  </td>
-                  <td>{data.verificationCode}</td>
-                  <td>{data.email}</td>
-                  <td>{data.date}</td>
-                  <td>{data.amount}</td>
-                  <td>{data.currency}</td>
-                  <td>
-                    <button
-                      className={`border-2 py-2 px-3 rounded-2xl w-20 ${
-                        data.status === "Pending"
-                          ? `border-yellow-500 text-yellow-500 `
-                          : data.status === "Verified"
-                          ? `border-green-500 text-green-500 `
-                          : `border-red text-red `
-                      }`}
-                    >
-                      {data.status}
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            ))}
+            {userDonation.length > 0 ? (
+              sortedData.map((data) => (
+                <tbody className="relative text-xs" key={data.id}>
+                  <tr
+                    className={` ${
+                      isDarkMode
+                        ? `hover:bg-[#313131]`
+                        : `hover:bg-off-white text-black`
+                    }`}
+                  >
+                    <td>{data.id}</td>
+                    <td>
+                      <img
+                        className="w-10 h-8"
+                        src={data.image}
+                        alt="donation-receipt"
+                      />
+                    </td>
+                    <td>{data.verificationCode}</td>
+                    <td>{data.email}</td>
+                    <td>{data.date}</td>
+                    <td>{data.amount}</td>
+                    <td>{data.currency}</td>
+                    <td>
+                      <button
+                        className={`border-2 py-2 px-3 rounded-2xl w-20 ${
+                          data.status === "Pending"
+                            ? `border-yellow-500 text-yellow-500 `
+                            : data.status === "Verified"
+                            ? `border-green-500 text-green-500 `
+                            : `border-red text-red `
+                        }`}
+                      >
+                        {data.status}
+                      </button>
+                    </td>
+                  </tr>
+                </tbody>
+              ))
+            ) : (
+              <tbody className="text-center p-6 h-full w-full">No Users Found</tbody>
+            )}
           </table>
           {/* <-------------------------------------Pagination-------------------------------------> */}
           <Pagination

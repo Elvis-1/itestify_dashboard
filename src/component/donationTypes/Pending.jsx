@@ -21,7 +21,7 @@ const Pending = () => {
   const dropdownRef = useRef(null);
 
   const toggleOptions = (index) => {
-    setIsOpenOptions(isOpenOptions === index ? null : index);
+    setIsOpenOptions(isOpenOptions === index ? -1 : index);
   };
   const pendingDonations = UsersDonations.filter(
     (item) => item.status === "Pending"
@@ -109,7 +109,7 @@ const Pending = () => {
 
 
   return (
-    <div className={`relative`}>
+    <div className={`relative `}>
       {isUserDetails && (
         <DonationsDetails
           setIsUserDetails={setIsUserDetails}
@@ -138,7 +138,7 @@ const Pending = () => {
         />
       )}
 
-      <div className={` rounded-t-2xl h-[24rem]`}>
+      <div className={` rounded-t-2xl h-[24rem] ${isOpenOptions?`h-[28rem]`: ``}`}>
         <div className={`flex justify-between items-center w-full pb-3 px-3`}>
           <h3 className="py-5">Donations</h3>
 
@@ -229,14 +229,14 @@ const Pending = () => {
                         isDarkMode
                           ? `text-white bg-[#292929]`
                           : `text-black bg-white`
-                      } w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
+                      } w-[120px] border-[1px] border-white absolute top-10 right-10 z-50 shadow-lg`}
                     >
                       <p
                         onClick={() => {
                           openVerifyModal(data.id);
                           setIsOpenOptions(null);
                         }}
-                        className="border-b-[1px] border-gray-300 p-2"
+                        className="border-b-[1px] border-gray-300 p-2 cursor-pointer"
                       >
                         Verify
                       </p>
@@ -245,7 +245,7 @@ const Pending = () => {
                           openProfileModal(data.id);
                           setIsOpenOptions(null);
                         }}
-                        className="border-b-[1px] border-gray-300 p-2 "
+                        className="border-b-[1px] border-gray-300 p-2 cursor-pointer "
                       >
                         View Details
                       </p>
@@ -254,7 +254,7 @@ const Pending = () => {
                           openFailedModal(data.id);
                           setIsOpenOptions(null);
                         }}
-                        className="p-2 text-[#E53935]"
+                        className="p-2 text-[#E53935] cursor-pointer"
                       >
                         Mark as failed
                       </p>
