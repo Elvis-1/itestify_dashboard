@@ -40,11 +40,7 @@ export const DonationsSettings = ({
   const saveSettings = () => {
     setIsSettingsModal(false);
     setISSuccessModal(true);
-    setTimeout(() => {
-      setISSuccessModal(false);
-    }, 2000);
   };
-
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       setIsSettingsModal(false);

@@ -1,8 +1,7 @@
 import React, { useContext, useState, useMemo, useEffect, useRef } from "react";
-import { UsersDonations } from "../../data/donations";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { LuChevronsUpDown } from "react-icons/lu";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { MdOutlineMoreHoriz } from "react-icons/md";
 import { SearchOutlined } from "@ant-design/icons";
 import useSort from "../../hooks/useSort";
 import Pagination from "../Pagination";
@@ -12,19 +11,25 @@ import useVerifiedandFailed from "../../hooks/useVerifiedandFailed";
 import useProfile from "../../hooks/useProfile";
 import FailedStatus from "../Popups/FailedStatus";
 import SuccessModal from "../Popups/SuccessModal";
+import { DonationsContext } from "../../context/donationContext";
 
 const Verified = () => {
   //Usestates
   const { isDarkMode } = useContext(DarkModeContext);
+  const { userDonation, setUserDonation } = useContext(DonationsContext);
   const [searchItem, setSearchItem] = useState("");
+  const [reason, setReason] = useState("");
+  const [currentDonation, setCurrentDonation] = useState(null);
 
   //filtered donations
   const filteredDonations = useMemo(() => {
-    return UsersDonations.filter((item) => item.status === "Verified").filter(
-      (item) =>
-        searchItem === "" ||
-        item.email?.toLowerCase().includes(searchItem.toLowerCase())
-    );
+    return userDonation
+      .filter((item) => item.status === "Verified")
+      .filter(
+        (item) =>
+          searchItem === "" ||
+          item.email?.toLowerCase().includes(searchItem.toLowerCase())
+      );
   }, [searchItem]);
   //toogle dropdown options for the action
   const toggleOptions = (index) => {
@@ -47,6 +52,7 @@ const Verified = () => {
     isUserDetails,
     setIsUserDetails,
     eachUser,
+    setEachUser,
     isOpenOptions,
     setIsOpenOptions,
   } = useProfile({ donationType: filteredDonations });
@@ -62,14 +68,24 @@ const Verified = () => {
     { key: "currency", Label: "Currency" },
     { key: "actions", Label: "Action" },
   ];
-
-  // const [reasonInput, setReasonInput] = useState("");
   const openFailedModal = (id) => {
     const userProfileMatch = filteredDonations.find((user) => user.id === id);
-    setISFailedModal(true);
-    setIsOpenOptions(null);
+    if (userProfileMatch) {
+      setEachUser(userProfileMatch);
+      setISFailedModal(true);
+      setIsOpenOptions(null);
+    } else {
+      console.error("User not found");
+    }
   };
-
+  const markAsFailed = (id) => {
+    const updatedDonations = userDonation.map((donation) =>
+      donation.id === id
+        ? { ...donation, status: "Failed", reason: reason }
+        : donation
+    );
+    setUserDonation(updatedDonations);
+  };
   //Close droopdown
   const dropdownRef = useRef(null);
   useEffect(() => {
@@ -83,6 +99,16 @@ const Verified = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
+   useEffect(() => {
+      if(isSuccessModal){
+      const timeout = setTimeout(() => {
+        setIsSuccessModal(false);
+      }, 2000);
+  
+      return () => clearTimeout(timeout);
+    }
+    }, [isSuccessModal]);
+  
   return (
     <div className={`relative`}>
       {isUserDetails && (
@@ -94,11 +120,16 @@ const Verified = () => {
       {isFailedModal && (
         <FailedStatus
           setISFailedModal={setISFailedModal}
-          setISSuccessModal={setIsSuccessModal}
+          setIsSuccessModal={setIsSuccessModal}
+          reason={reason}
+          setReason={setReason}
+          markAsFailed={() => {
+            markAsFailed(currentDonation, reason);
+          }}
         />
       )}
       {isSuccessModal && (
-        <SuccessModal sucessMessage="Status Changed to “Mark as Failed”" />
+        <SuccessModal sucessMessage="Status Changed to Failed" />
       )}
 
       <div className={`rounded-t-2xl h-[25rem] relative`}>
@@ -212,6 +243,7 @@ const Verified = () => {
                         <p
                           onClick={() => {
                             openFailedModal(data.id);
+                            setCurrentDonation(data.id);
                           }}
                           className="p-2 text-[#E53935]"
                         >
@@ -224,7 +256,7 @@ const Verified = () => {
                         toggleOptions(data.id);
                       }}
                     >
-                      <BsThreeDotsVertical />
+                      <MdOutlineMoreHoriz />
                     </i>
                   </td>
                 </tr>

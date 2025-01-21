@@ -2,9 +2,8 @@ import React, { useContext, useState, useMemo, useRef, useEffect } from "react";
 import { UsersDonations } from "../../data/donations";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { LuChevronsUpDown } from "react-icons/lu";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { MdOutlineMoreHoriz } from "react-icons/md";
 import { SearchOutlined } from "@ant-design/icons";
-import { RiFilter3Line } from "react-icons/ri";
 import useSort from "../../hooks/useSort";
 import Pagination from "../Pagination";
 import usePagination from "../../hooks/usePagination";
@@ -14,16 +13,20 @@ import useProfile from "../../hooks/useProfile";
 import FailedDonation from "../Popups/FailedDonation";
 import useVerifiedandFailed from "../../hooks/useVerifiedandFailed";
 import SuccessModal from "../Popups/SuccessModal";
+import { DonationsContext } from "../../context/donationContext";
 
 const Pending = () => {
   const { isDarkMode } = useContext(DarkModeContext);
+  const { userDonation, setUserDonation } = useContext(DonationsContext);
   const [searchItem, setSearchItem] = useState("");
+  const [reason, setReason] = useState("");
+  const [currentDonation, setCurrentDonation] = useState(null);
   const dropdownRef = useRef(null);
 
   const toggleOptions = (index) => {
-    setIsOpenOptions(isOpenOptions === index ? -1 : index);
+    setIsOpenOptions( index);
   };
-  const pendingDonations = UsersDonations.filter(
+  const pendingDonations = userDonation.filter(
     (item) => item.status === "Pending"
   );
   const filteredDonations = useMemo(() => {
@@ -32,7 +35,7 @@ const Pending = () => {
         searchItem === "" ||
         item.email?.toLowerCase().includes(searchItem.toLowerCase())
     );
-  }, [searchItem]);
+  }, [searchItem, pendingDonations]);
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
     usePagination(filteredDonations);
   const { sort, sortHeader, sortArray } = useSort();
@@ -103,11 +106,34 @@ const Pending = () => {
     setIsSuccessModal,
     donaStatus,
   } = useVerifiedandFailed();
-  setTimeout(() => {
-    setIsSuccessModal(false);
-  }, 2000);
+  
+  useEffect(() => {
+    if(isSuccessModal){
+    const timeout = setTimeout(() => {
+      setIsSuccessModal(false);
+    }, 2000);
 
+    return () => clearTimeout(timeout);
+  }
+  }, [isSuccessModal]);
 
+  const verifyDonation = (id) => {
+    const updatedDonations = userDonation.map((donation) =>
+      donation.id === id ? { ...donation, status: "Verified" } : donation
+    );
+    setUserDonation(updatedDonations);
+    console.log(updatedDonations);
+  };
+
+  const markAsFailed = (id) => {
+    const updatedDonations = userDonation.map((donation) =>
+      donation.id === id
+        ? { ...donation, status: "Failed", reason: reason }
+        : donation
+    );
+    setUserDonation(updatedDonations);
+    console.log(updatedDonations);
+  };
   return (
     <div className={`relative `}>
       {isUserDetails && (
@@ -120,12 +146,21 @@ const Pending = () => {
         <VerifyDonations
           setIsVerified={setIsVerified}
           setIsSuccessModal={setIsSuccessModal}
+          filteredDonations={filteredDonations}
+          verifyDonation={() => {
+            verifyDonation(currentDonation);
+          }}
         />
       )}
       {isFailed && (
         <FailedDonation
           setIsFailed={setIsFailed}
           setIsSuccessModal={setIsSuccessModal}
+          reason={reason}
+          setReason={setReason}
+          markAsFailed={() => {
+            markAsFailed(currentDonation, reason);
+          }}
         />
       )}
       {isSuccessModal && (
@@ -138,7 +173,9 @@ const Pending = () => {
         />
       )}
 
-      <div className={` rounded-t-2xl h-[24rem] ${isOpenOptions?`h-[28rem]`: ``}`}>
+      <div
+        className={` rounded-t-2xl h-[26rem]`}
+      >
         <div className={`flex justify-between items-center w-full pb-3 px-3`}>
           <h3 className="py-5">Donations</h3>
 
@@ -233,6 +270,7 @@ const Pending = () => {
                     >
                       <p
                         onClick={() => {
+                          setCurrentDonation(data.id);
                           openVerifyModal(data.id);
                           setIsOpenOptions(null);
                         }}
@@ -252,6 +290,7 @@ const Pending = () => {
                       <p
                         onClick={() => {
                           openFailedModal(data.id);
+                          setCurrentDonation(data.id);
                           setIsOpenOptions(null);
                         }}
                         className="p-2 text-[#E53935] cursor-pointer"
@@ -265,7 +304,7 @@ const Pending = () => {
                       toggleOptions(data.id);
                     }}
                   >
-                    <BsThreeDotsVertical />
+                    <MdOutlineMoreHoriz />
                   </i>
                 </td>
               </tr>

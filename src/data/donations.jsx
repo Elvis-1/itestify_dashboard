@@ -1,4 +1,4 @@
-import receipt from "../assets/images/receipt.png"
+import receipt from "../assets/images/receipt.png";
 export const UsersDonations = [
   {
     id: 1,
@@ -29,6 +29,7 @@ export const UsersDonations = [
     amount: 5030,
     currency: "USD",
     status: "Failed",
+    reason: "No recipt attached",
   },
   {
     id: 4,
@@ -46,7 +47,7 @@ export const UsersDonations = [
     verificationCode: "U102335",
     email: "eddy@example.com",
     date: "2024-10-02",
-    amount:10000,
+    amount: 10000,
     currency: "USD",
     status: "Verified",
   },
@@ -59,6 +60,7 @@ export const UsersDonations = [
     amount: 50000,
     currency: "USD",
     status: "Failed",
+    reason: "No recipt attached",
   },
   {
     id: 7,
@@ -89,6 +91,7 @@ export const UsersDonations = [
     amount: 27900,
     currency: "USD",
     status: "Failed",
+    reason: "No recipt attached",
   },
   {
     id: 10,

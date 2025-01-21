@@ -1,5 +1,5 @@
 .modal {
-  animation: slideDown 0.5s;
+  animation: zoomIn 0.5s;
   scroll-behavior: smooth;
 }
 

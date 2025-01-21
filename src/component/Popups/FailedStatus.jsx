@@ -3,20 +3,34 @@ import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import "../../styles/animation.css";
 
-const FailedStatus = ({ setISFailedModal, setISSuccessModal }) => {
+const FailedStatus = ({
+  setISFailedModal,
+  setIsSuccessModal,
+  reason,
+  setReason,
+  markAsFailed,
+}) => {
   const { isDarkMode } = useContext(DarkModeContext);
-  const [reason, setReason] = useState("");
-  const confirmFailed = (e, index) => {
-    if (reason !== "") {
-      e.preventDefault();
+  const [error, setError] = useState("");
+
+  const handleConfirmFailed = (e) => {
+    e.preventDefault();
+    // Validate reason
+    if (!reason.trim()) {
+      setError("Please provide a reason for marking the donation as failed");
+      return;
+    }
+    try {
+      setError("");
+      markAsFailed(reason);
       setISFailedModal(false);
-      setISSuccessModal(true);
-      setTimeout(() => {
-        setISSuccessModal(false);
-      }, 2000);
+      setIsSuccessModal(true);
+      setReason("");
+    } catch (error) {
+      setError("Failed to update donation status. Please try again.");
+      console.error("Error in handleConfirmFailed:", error);
     }
   };
-/// Change Verified to failed 
   return (
     <div>
       {" "}
@@ -56,29 +70,37 @@ const FailedStatus = ({ setISFailedModal, setISSuccessModal }) => {
             </p>
           </div>
           <form action="">
-            <p
-              className={`text-xs ${
-                isDarkMode ? `text-off-white` : `text-off-black`
-              } font-normal pb-4 pt-6`}
-            >
-              Reason why donation is marked as failed
-            </p>
-            <textarea
-              name="reason"
-              value={reason}
-              onChange={(e) => {
-                setReason(e.target.value);
-              }}
-              id="reason"
-              placeholder="Type here..."
-              className={`p-2 rounded-lg outline-none text-sm h-[200px] w-full ${
-                isDarkMode ? "bg-[#313131]" : "bg-off-white"
-              }`}
-            ></textarea>
+            <div>
+              <p
+                className={`text-xs ${
+                  isDarkMode ? `text-off-white` : `text-off-black`
+                } font-normal pb-4 pt-6`}
+              >
+                Reason why donation is marked as failed
+              </p>
+              <textarea
+                name="reason"
+                value={reason}
+                onChange={(e) => {
+                  setReason(e.target.value);
+                }}
+                id="reason"
+                placeholder="Type here..."
+                className={`p-2 rounded-lg outline-none text-sm h-[200px] w-full ${
+                  isDarkMode ? "bg-[#313131]" : "bg-off-white"
+                }`}
+              ></textarea>
+              {error && (
+                <span className="text-red-500 text-sm mt-1">{error}</span>
+              )}
+            </div>
+
             {/* Buttons */}
             <div className="flex items-center gap-3 mt-10 justify-end ">
               <button
-                onClick={() => setISFailedModal(false)}
+                onClick={() => {
+                  setISFailedModal(false);
+                }}
                 className={`btn-secondary text-primary border-primary ${
                   isDarkMode ? `` : ``
                 }`}
@@ -87,7 +109,7 @@ const FailedStatus = ({ setISFailedModal, setISSuccessModal }) => {
               </button>
               <button
                 type="submit"
-                onClick={()=>{confirmFailed(index)}}
+                onClick={handleConfirmFailed}
                 className="btn-primary bg-red px-4 border-[1px] border-transparent hover:border-white hover:text-red"
               >
                 Mark as failed

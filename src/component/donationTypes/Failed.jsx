@@ -1,23 +1,23 @@
-import React, { useContext, useState, useMemo,useEffect,useRef } from "react";
-import { UsersDonations } from "../../data/donations";
+import React, { useContext, useState, useMemo, useEffect, useRef } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { LuChevronsUpDown } from "react-icons/lu";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { MdOutlineMoreHoriz } from "react-icons/md";
 import { SearchOutlined } from "@ant-design/icons";
-import { RiFilter3Line } from "react-icons/ri";
 import useSort from "../../hooks/useSort";
 import Pagination from "../Pagination";
 import DonationsDetails from "../Popups/DonationsDetails";
 import usePagination from "../../hooks/usePagination";
 import useProfile from "../../hooks/useProfile";
+import { DonationsContext } from "../../context/donationContext";
 
 const Failed = () => {
   const { isDarkMode } = useContext(DarkModeContext);
+  const { userDonation, setUserDonation } = useContext(DonationsContext);
   const [searchItem, setSearchItem] = useState("");
   const toggleOptions = (index) => {
     setIsOpenOptions(isOpenOptions === index ? null : index);
   };
-  const failedDonations = UsersDonations.filter(
+  const failedDonations = userDonation.filter(
     (item) => item.status === "Failed"
   );
   const filteredDonations = useMemo(() => {
@@ -29,7 +29,7 @@ const Failed = () => {
   }, [searchItem]);
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
     usePagination(filteredDonations);
-//Profile custom hooks
+  //Profile custom hooks
   const {
     openProfileModal,
     isUserDetails,
@@ -81,18 +81,18 @@ const Failed = () => {
   const handleSearch = (e) => {
     setSearchItem(e.target.value);
   };
-    //Close droopdown
-    const dropdownRef = useRef(null);
-    useEffect(() => {
-      const handleClickOutside = (event) => {
-        if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
-          setIsOpenOptions(null);
-        }
-      };
-  
-      document.addEventListener("mousedown", handleClickOutside);
-      return () => document.removeEventListener("mousedown", handleClickOutside);
-    }, []);
+  //Close droopdown
+  const dropdownRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpenOptions(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className={`relative`}>
@@ -184,7 +184,9 @@ const Failed = () => {
                 <td>{data.date}</td>
                 <td>{data.amount}</td>
                 <td>{data.currency}</td>
-                <td>Reason for Failed</td>
+                <td className={`${!data.reason ? `text-center` : ``}`}>
+                  {data.reason ? data.reason : `Nil`}
+                </td>
                 <td>
                   {isOpenOptions === data.id && (
                     <div
@@ -210,7 +212,7 @@ const Failed = () => {
                       toggleOptions(data.id);
                     }}
                   >
-                    <BsThreeDotsVertical />
+                    <MdOutlineMoreHoriz />
                   </i>
                 </td>
               </tr>

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState,useEffect } from "react";
 import { RiSettings5Line } from "react-icons/ri";
 import { DarkModeContext } from "../context/DarkModeContext";
 import AllDonations from "../component/donationTypes/AllDonations";
@@ -20,6 +20,18 @@ const Donations = () => {
     { user: "Verified" },
     { user: "Failed" },
   ];
+
+   useEffect(() => {
+      if(isSuccessModal){
+      const timeout = 
+      setTimeout(() => {
+        setISSuccessModal(false);
+      }, 2000);
+  
+      return () => clearTimeout(timeout);
+    }
+    }, [isSuccessModal]);
+  
 
   return (
     <div className="m-5">

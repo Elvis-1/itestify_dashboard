@@ -2,12 +2,9 @@ import React, {
   useState,
   useContext,
   useMemo,
-  useCallback,
-  useEffect,
 } from "react";
 import { LuChevronsUpDown } from "react-icons/lu";
 import { UsersDonations } from "../../data/donations";
-
 import { SearchOutlined } from "@ant-design/icons";
 import { RiFilter3Line } from "react-icons/ri";
 import { DarkModeContext } from "../../context/DarkModeContext";
@@ -15,10 +12,11 @@ import Pagination from "../Pagination";
 import usePagination from "../../hooks/usePagination";
 import useSort from "../../hooks/useSort";
 import FilterDonations from "../Popups/FilterDonations";
+import { DonationsContext } from "../../context/DonationContext";
 
 const AllDonations = () => {
   const { isDarkMode } = useContext(DarkModeContext);
-  const [userDonation, setUserDonation] = useState(UsersDonations);
+  const { userDonation, setUserDonation } = useContext(DonationsContext);
   const [searchItem, setSearchItem] = useState("");
   const [isFilter, setIsFilter] = useState(false);
   const [filters, setFilters] = useState({

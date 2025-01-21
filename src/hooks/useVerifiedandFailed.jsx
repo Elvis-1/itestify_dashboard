@@ -2,24 +2,24 @@ import React, { useState } from "react";
 import useProfile from "./useProfile";
 import { UsersDonations } from "../data/donations";
 const useVerifiedandFailed = () => {
-
-  const [ donaStatus, setDonaStatus] = useState("Verify")
+  const [donaStatus, setDonaStatus] = useState("Verify");
   const [isVerified, setIsVerified] = useState(false);
-  const { setIsOpenOptions } = useProfile({donationType: null});
+  const { setIsOpenOptions } = useProfile({ donationType: null });
   const openVerifyModal = (id) => {
     setIsOpenOptions(false);
     setIsVerified(!isVerified);
-    setDonaStatus("Verified")
+    setDonaStatus("Verified");
   };
   const [isFailed, setIsFailed] = useState(false);
   const openFailedModal = (id) => {
     setIsOpenOptions(false);
     setIsFailed(!isFailed);
-    setDonaStatus("Failed")
+    setDonaStatus("Failed");
   };
 
-   const [isSuccessModal, setIsSuccessModal] = useState(false);
-   const[ isFailedModal, setISFailedModal] = useState(false);
+  const [isSuccessModal, setIsSuccessModal] = useState(false);
+  const [isFailedModal, setISFailedModal] = useState(false);
+
   return {
     isVerified,
     setIsVerified,
@@ -32,7 +32,7 @@ const useVerifiedandFailed = () => {
     setDonaStatus,
     donaStatus,
     isFailedModal,
-    setISFailedModal
+    setISFailedModal,
   };
 };
 
