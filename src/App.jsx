@@ -11,7 +11,7 @@ import { Button } from "antd";
 import AllTestimonies from "./component/testimonies/AllTestimonies";
 import UploadTestimonies from "./component/testimonies/UploadTestimonies";
 import VideoPlayer from "./component/testimonies/VideoPlayer";
-import DonationContext from "./context/donationContext";
+import DonationContext from "./context/DonationContext";
 import Notifications from "./pages/Notifications";
 
 function App() {
