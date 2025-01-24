@@ -11,7 +11,8 @@ import useVerifiedandFailed from "../../hooks/useVerifiedandFailed";
 import useProfile from "../../hooks/useProfile";
 import FailedStatus from "../Popups/FailedStatus";
 import SuccessModal from "../Popups/SuccessModal";
-import { DonationsContext } from "../../context/donationContext";
+import { DonationsContext } from "../../context/DonationContext";
+import EmptyState from "../emptyState";
 
 const Verified = () => {
   //Usestates
@@ -99,16 +100,16 @@ const Verified = () => {
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
 
-   useEffect(() => {
-      if(isSuccessModal){
+  useEffect(() => {
+    if (isSuccessModal) {
       const timeout = setTimeout(() => {
         setIsSuccessModal(false);
       }, 2000);
-  
+
       return () => clearTimeout(timeout);
     }
-    }, [isSuccessModal]);
-  
+  }, [isSuccessModal]);
+
   return (
     <div className={`relative`}>
       {isUserDetails && (
@@ -192,12 +193,13 @@ const Verified = () => {
             </tr>
           </thead>
           {filteredDonations.length === 0 ? (
-            <div>
-              {" "}
-              <p className="text-center text-xl flex justify-center items-center">
-                No verified donations found
-              </p>
-            </div>
+            <tbody>
+              <tr className="border-b-0">
+                <td colSpan={8} className="hover:bg-lightBlack border-b-0">
+                  <EmptyState />
+                </td>
+              </tr>
+            </tbody>
           ) : (
             <tbody className="relative text-xs">
               {sortArray(users).map((data) => (

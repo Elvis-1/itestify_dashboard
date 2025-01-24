@@ -415,7 +415,7 @@ function Dashboard() {
             </div>
           </Link>
 
-          <Link to="/dashboard/users">
+          <Link to="users">
           <div className='font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]'>
              <UsergroupAddOutlined style={{ fontSize: '20px' }} />
              <p className='opacity-[0.7]'>Users</p>
@@ -468,13 +468,14 @@ function Dashboard() {
           </div>: ""
           }
 
-          <Link to="/dashboard/donations">
+          <Link to="donations">
             <div className='font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC] focus:bg-[#9966CC] cursor-pointer'>
               <FaRegMoneyBill1 style={{ fontSize: '20px' }}/>
               <p className='opacity-[0.7]'>Donations</p>
             </div>
           </Link>
 
+          <Link to="notifications">
           <div className='font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]'>
             <IoIosNotificationsOutline style={{ fontSize: '24px' }}/>
             <div className='flex items-center justify-between w-[100%]'>
@@ -485,6 +486,7 @@ function Dashboard() {
                 </div>
             </div>
           </div>
+          </Link>
         
           <div className='flex items-center gap-2 w-[90%] m-[auto] font-sans mt-2'>
             <CiChat1 style={{ fontSize: '20px' }} />

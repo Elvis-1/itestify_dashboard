@@ -1,8 +1,4 @@
-import React, {
-  useState,
-  useContext,
-  useMemo,
-} from "react";
+import React, { useState, useContext, useMemo } from "react";
 import { LuChevronsUpDown } from "react-icons/lu";
 import { UsersDonations } from "../../data/donations";
 import { SearchOutlined } from "@ant-design/icons";
@@ -13,10 +9,12 @@ import usePagination from "../../hooks/usePagination";
 import useSort from "../../hooks/useSort";
 import FilterDonations from "../Popups/FilterDonations";
 import { DonationsContext } from "../../context/DonationContext";
+import EmptyState from "../emptyState";
 
 const AllDonations = () => {
   const { isDarkMode } = useContext(DarkModeContext);
-  const { userDonation, setUserDonation } = useContext(DonationsContext);
+  const { userDonation } = useContext(DonationsContext);
+  const [userDonations, setUserDonations] = useState(userDonation)
   const [searchItem, setSearchItem] = useState("");
   const [isFilter, setIsFilter] = useState(false);
   const [filters, setFilters] = useState({
@@ -35,7 +33,7 @@ const AllDonations = () => {
     lastIndex,
     users: paginatedData,
     npage,
-  } = usePagination(userDonation);
+  } = usePagination(userDonations);
   const { sort, sortHeader, sortArray } = useSort();
   const sortedData = useMemo(
     () => sortArray(paginatedData),
@@ -79,11 +77,11 @@ const AllDonations = () => {
   const handleSearch = (e) => {
     const searchValue = e.target.value;
     setSearchItem(searchValue);
-    const filteredItems = UsersDonations.filter((user) =>
+    const filteredItems = userDonations.filter((user) =>
       user.email?.toLowerCase().includes(searchValue.toLowerCase())
     );
 
-    setUserDonation(filteredItems);
+    setUserDonations(filteredItems);
   };
 
   return (
@@ -93,7 +91,7 @@ const AllDonations = () => {
           setIsFilter={setIsFilter}
           filters={filters}
           setFilters={setFilters}
-          setUserDonation={setUserDonation}
+          setUserDonation={setUserDonations}
         />
       )}
       <div className={`relative`}>
@@ -141,7 +139,7 @@ const AllDonations = () => {
             } `}
           >
             <thead
-              className={`${isDarkMode ? `bg-[#0d0d0d]` : `bg-off-white`}`}
+              className={`${isDarkMode ? `bg-grayBlack` : `bg-off-white`}`}
             >
               <tr>
                 {tableHeaders.map((header, index) => (
@@ -172,7 +170,7 @@ const AllDonations = () => {
                 ))}
               </tr>
             </thead>
-            {userDonation.length > 0 ? (
+            {userDonations.length > 0 ? (
               sortedData.map((data) => (
                 <tbody className="relative text-xs" key={data.id}>
                   <tr
@@ -212,12 +210,18 @@ const AllDonations = () => {
                 </tbody>
               ))
             ) : (
-              <tbody className="text-center p-6 h-full w-full">No Users Found</tbody>
+              <tbody>
+              <tr className="border-b-0">
+                <td colSpan={8} className="hover:bg-lightBlack border-b-0">
+                  <EmptyState />
+                </td>
+              </tr>
+            </tbody>
             )}
           </table>
           {/* <-------------------------------------Pagination-------------------------------------> */}
           <Pagination
-            data={userDonation}
+            data={userDonations}
             currentPage={currentPage}
             setCurrentPage={setCurrentPage}
             firstIndex={firstIndex}

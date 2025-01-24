@@ -13,7 +13,8 @@ import useProfile from "../../hooks/useProfile";
 import FailedDonation from "../Popups/FailedDonation";
 import useVerifiedandFailed from "../../hooks/useVerifiedandFailed";
 import SuccessModal from "../Popups/SuccessModal";
-import { DonationsContext } from "../../context/donationContext";
+import { DonationsContext } from "../../context/DonationContext";
+import EmptyState from "../emptyState";
 
 const Pending = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -24,7 +25,7 @@ const Pending = () => {
   const dropdownRef = useRef(null);
 
   const toggleOptions = (index) => {
-    setIsOpenOptions( index);
+    setIsOpenOptions(index);
   };
   const pendingDonations = userDonation.filter(
     (item) => item.status === "Pending"
@@ -38,6 +39,7 @@ const Pending = () => {
   }, [searchItem, pendingDonations]);
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
     usePagination(filteredDonations);
+    console.log(pendingDonations)
   const { sort, sortHeader, sortArray } = useSort();
   const tableHeaders = [
     {
@@ -106,15 +108,15 @@ const Pending = () => {
     setIsSuccessModal,
     donaStatus,
   } = useVerifiedandFailed();
-  
-  useEffect(() => {
-    if(isSuccessModal){
-    const timeout = setTimeout(() => {
-      setIsSuccessModal(false);
-    }, 2000);
 
-    return () => clearTimeout(timeout);
-  }
+  useEffect(() => {
+    if (isSuccessModal) {
+      const timeout = setTimeout(() => {
+        setIsSuccessModal(false);
+      }, 2000);
+
+      return () => clearTimeout(timeout);
+    }
   }, [isSuccessModal]);
 
   const verifyDonation = (id) => {
@@ -173,9 +175,7 @@ const Pending = () => {
         />
       )}
 
-      <div
-        className={` rounded-t-2xl h-[26rem]`}
-      >
+      <div className={` rounded-t-2xl h-[26rem]`}>
         <div className={`flex justify-between items-center w-full pb-3 px-3`}>
           <h3 className="py-5">Donations</h3>
 
@@ -236,80 +236,90 @@ const Pending = () => {
               ))}
             </tr>
           </thead>
-          {sortArray(users).map((data) => (
-            <tbody className="relative text-xs" key={data.id}>
-              <tr
-                className={`relative ${
-                  isDarkMode
-                    ? `hover:bg-[#313131]`
-                    : `hover:bg-off-white text-black`
-                }`}
-              >
-                <td>{data.id}</td>
-                <td>
-                  <img
-                    className="w-10 h-8"
-                    src={data.image}
-                    alt="donation-receipt"
-                  />
-                </td>
-                <td>{data.verificationCode}</td>
-                <td>{data.email}</td>
-                <td>{data.date}</td>
-                <td>{data.amount}</td>
-                <td>{data.currency}</td>
-                <td>
-                  {isOpenOptions === data.id && (
-                    <div
-                      ref={dropdownRef}
-                      className={`rounded-lg ${
-                        isDarkMode
-                          ? `text-white bg-[#292929]`
-                          : `text-black bg-white`
-                      } w-[120px] border-[1px] border-white absolute top-10 right-10 z-50 shadow-lg`}
+          {filteredDonations.length > 0 ? (
+            sortArray(users).map((data) => (
+              <tbody className="relative text-xs" key={data.id}>
+                <tr
+                  className={`relative ${
+                    isDarkMode
+                      ? `hover:bg-[#313131]`
+                      : `hover:bg-off-white text-black`
+                  }`}
+                >
+                  <td>{data.id}</td>
+                  <td>
+                    <img
+                      className="w-10 h-8"
+                      src={data.image}
+                      alt="donation-receipt"
+                    />
+                  </td>
+                  <td>{data.verificationCode}</td>
+                  <td>{data.email}</td>
+                  <td>{data.date}</td>
+                  <td>{data.amount}</td>
+                  <td>{data.currency}</td>
+                  <td>
+                    {isOpenOptions === data.id && (
+                      <div
+                        ref={dropdownRef}
+                        className={`rounded-lg ${
+                          isDarkMode
+                            ? `text-white bg-[#292929]`
+                            : `text-black bg-white`
+                        } w-[120px] border-[1px] border-white absolute top-10 right-10 z-50 shadow-lg`}
+                      >
+                        <p
+                          onClick={() => {
+                            setCurrentDonation(data.id);
+                            openVerifyModal(data.id);
+                            setIsOpenOptions(null);
+                          }}
+                          className="border-b-[1px] border-gray-300 p-2 cursor-pointer"
+                        >
+                          Verify
+                        </p>
+                        <p
+                          onClick={() => {
+                            openProfileModal(data.id);
+                            setIsOpenOptions(null);
+                          }}
+                          className="border-b-[1px] border-gray-300 p-2 cursor-pointer "
+                        >
+                          View Details
+                        </p>
+                        <p
+                          onClick={() => {
+                            openFailedModal(data.id);
+                            setCurrentDonation(data.id);
+                            setIsOpenOptions(null);
+                          }}
+                          className="p-2 text-[#E53935] cursor-pointer"
+                        >
+                          Mark as failed
+                        </p>
+                      </div>
+                    )}
+                    <i
+                      onClick={() => {
+                        toggleOptions(data.id);
+                      }}
                     >
-                      <p
-                        onClick={() => {
-                          setCurrentDonation(data.id);
-                          openVerifyModal(data.id);
-                          setIsOpenOptions(null);
-                        }}
-                        className="border-b-[1px] border-gray-300 p-2 cursor-pointer"
-                      >
-                        Verify
-                      </p>
-                      <p
-                        onClick={() => {
-                          openProfileModal(data.id);
-                          setIsOpenOptions(null);
-                        }}
-                        className="border-b-[1px] border-gray-300 p-2 cursor-pointer "
-                      >
-                        View Details
-                      </p>
-                      <p
-                        onClick={() => {
-                          openFailedModal(data.id);
-                          setCurrentDonation(data.id);
-                          setIsOpenOptions(null);
-                        }}
-                        className="p-2 text-[#E53935] cursor-pointer"
-                      >
-                        Mark as failed
-                      </p>
-                    </div>
-                  )}
-                  <i
-                    onClick={() => {
-                      toggleOptions(data.id);
-                    }}
-                  >
-                    <MdOutlineMoreHoriz />
-                  </i>
+                      <MdOutlineMoreHoriz />
+                    </i>
+                  </td>
+                </tr>
+              </tbody>
+            ))
+          ) : (
+            <tbody>
+              <tr className="border-b-0">
+                <td colSpan={9} className="hover:bg-lightBlack border-b-0">
+                  <EmptyState />
                 </td>
               </tr>
             </tbody>
-          ))}
+          )}
         </table>
       </div>
       <Pagination

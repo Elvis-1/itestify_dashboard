@@ -12,6 +12,7 @@ import AllTestimonies from "./component/testimonies/AllTestimonies";
 import UploadTestimonies from "./component/testimonies/UploadTestimonies";
 import VideoPlayer from "./component/testimonies/VideoPlayer";
 import DonationContext from "./context/donationContext";
+import Notifications from "./pages/Notifications";
 
 function App() {
   return (
@@ -31,6 +32,7 @@ function App() {
               />
               <Route path="users" element={<Users />} />
               <Route path="donations" element={<Donations />} />
+              <Route path="notifications" element={<Notifications/>}/>
             </Route>
           </Routes>
         </BrowserRouter>
