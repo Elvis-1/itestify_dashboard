@@ -5,8 +5,6 @@ import { FaCaretDown, FaCaretUp} from "react-icons/fa6";
 
 function  UploadInspirational() {
   const [uploadStatus, setUploadStatus] = useState('Upload')
-  const [role, setRole] = useState('Select Role')
-  const [roleDropDown, setRoleDropDown] = useState(false)
   const [uploadType, setUploadType] = useState('')
   const [timePeriod, setTimePeriod] = useState('PM')
   const [showTimePeriod, setShowTimePeriod] = useState(false)
@@ -39,9 +37,11 @@ function  UploadInspirational() {
         setUploadedData(updated)
         console.log(uploadedData)
     }else if(uploadStatus === 'Upload') {
-        setUploadedData({...formData, uploadStatus, role})
+        setUploadedData({...formData, uploadStatus})
         console.log(uploadedData)
     }
+
+    console.log(uploadedData)
   }
 
   return (
@@ -169,40 +169,7 @@ function  UploadInspirational() {
                 </div>
                 </div>
             </div>
-
-            {uploadStatus === 'Upload' &&
-            <div className='p-2 mt-2 mb-4'>
-                <p className='text-[12px]'>Role</p>
-                <div onClick={() => setRoleDropDown(!roleDropDown)}
-                className='flex items-center cursor-pointer bg-[#292929] p-1 rounded'>
-                    <input 
-                    className='w-[100%] p-1 rounded text-left bg-[#292929] text-[14px] border-none outline-none' 
-                    type="button" value={role} />
-                    {roleDropDown  ? <FaCaretUp/> : <FaCaretDown/>}
-                </div>
-            
-            </div>}
-
-            {roleDropDown &&
-            <div className='pt-2 border mt-2 w-[97%] m-[auto] rounded-xl mb-4'>
-                <input
-                type='button'
-                value='Super Admin'
-                onClick={() => {
-                setRole('Super Admin')
-                setRoleDropDown(false)
-                }}
-                className='border-b w-[100%] bg-inherit pl-2 cursor-pointer'/>
-
-                <input type='button' 
-                    value='Admin'
-                    onClick={() => {
-                    setRole('Admin')
-                    setRoleDropDown(false)
-                }}
-                className='w-[100%] pl-2 cursor-pointer'/>
-            </div>}
-
+ 
             {uploadStatus === 'Schedule' &&
                 <>
                     <div>
