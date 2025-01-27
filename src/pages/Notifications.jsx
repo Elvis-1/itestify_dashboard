@@ -1,5 +1,5 @@
 import React, { useState, useContext, useMemo, useEffect } from "react";
-import EmptyState from "../component/emptyState";
+import EmptyState from "../component/EmptyState"
 import { TiArrowUnsorted } from "react-icons/ti";
 import { SearchOutlined } from "@ant-design/icons";
 import { RiFilter3Line } from "react-icons/ri";
