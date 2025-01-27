@@ -298,7 +298,6 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
     return (
         <div className={`${!isDarkMode ? 'border h-[350px] rounded-xl' : 'border-none'}`}>
              
-    
              {/* all video filter modal */}
             <Modal
             open={filterModal}
@@ -798,7 +797,6 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
     
             </Modal>
     
-         
             {/* all video delete  modal */}
             <Modal
                 open={deleteVideoTestModal}
@@ -868,7 +866,6 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 </div>
     
             </Modal>
-    
     
             {/* all video success modal */}
             <Modal

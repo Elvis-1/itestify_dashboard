@@ -96,15 +96,17 @@ function AllTestimonies() {
     const[showVideoTestimonies, setShowVideoTestimonies] = useState(false)
     const [manageSettingsModal, setManageSettingsModal] = useState(false)
 
-    function ManageSettingsUploadVideo() {
-        setManageSettings(!manageSettings)
-        setUploadVideo(!uploadVideo)
-    }
+    // function ManageSettingsUploadVideo() {
+    //     setManageSettings(!manageSettings)
+    //     setUploadVideo(!uploadVideo)
+    // }
 
+    //function to handle manage settings modal
     function settingModal() {
         setManageSettingsModal(!manageSettingsModal)
     }
 
+    //function to handle the closing of manage settings modal
     function handleCloseModal() {
         setManageSettingsModal(false)
     }

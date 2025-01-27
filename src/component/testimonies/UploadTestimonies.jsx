@@ -1,14 +1,12 @@
 import React, { useState } from 'react'
 import {Button, Upload} from 'antd'
 import { FaPlay } from "react-icons/fa";
-import { FaCaretDown, FaCaretUp, FaS } from "react-icons/fa6";
+import { FaCaretDown, FaCaretUp} from "react-icons/fa6";
 
 function UploadTestimonies() {
   const [uploadStatus, setUploadStatus] = useState('Upload')
   const [uploadCategory, setUploadCategory] = useState('Select Category')
   const [uploadDropDown, setUploadDropDown] = useState(false)
-  const [role, setRole] = useState('Select Role')
-  const [roleDropDown, setRoleDropDown] = useState(false)
   const [uploadType, setUploadType] = useState('')
 
   function handleChange(e) {
@@ -178,32 +176,6 @@ function UploadTestimonies() {
             </div>
           </div>
 
-
-          <div className='p-2 mt-2 mb-4'>
-            <p className='text-[12px]'>Role</p>
-            <div onClick={() => setRoleDropDown(!roleDropDown)}
-            className='flex items-center cursor-pointer bg-[#292929] p-1 rounded'>
-                <input 
-                className='w-[100%] p-1 rounded text-left bg-[#292929] text-[14px] border-none outline-none' 
-                type="button" value={role} />
-                {roleDropDown  ? <FaCaretUp/> : <FaCaretDown/>}
-            </div>
-           
-          </div>
-
-          {roleDropDown &&
-          <div className='pt-2 border mt-2 w-[97%] m-[auto] rounded-xl mb-4'>
-            <p onClick={() => {
-              setRole('Super Admin')
-              setRoleDropDown(false)
-            }} 
-            className='border-b w-[100%] pl-2 cursor-pointer'>Super Admin</p>
-            <p onClick={() => {
-              setRole('Admin')
-              setRoleDropDown(false)
-            }} 
-            className='w-[100%] pl-2 cursor-pointer'>Admin</p>
-          </div>}
         </div>
       </div>
     </div>
