@@ -12,6 +12,8 @@ import { Button } from 'antd';
 import AllTestimonies from './component/testimonies/AllTestimonies';
 import UploadTestimonies from './component/testimonies/UploadTestimonies';
 import VideoPlayer from './component/testimonies/VideoPlayer';
+import Allpics from "./component/inspirationalPics/Allpics";
+import UploadInspirational from "./component/inspirationalPics/UploadInspirational";
 
 
 function App() {
@@ -26,8 +28,10 @@ function App() {
               <Route path="" element={<Overview />} />
               <Route path='all-testimonies' element={<AllTestimonies/>}/>
               <Route path='upload-testimonies' element={<UploadTestimonies/>}/>
-              <Route path="/dashboard/users" element={<Users />} />
-              <Route path="/dashboard/donations" element={<Donations />} />
+              <Route path="users" element={<Users />} />
+              <Route path="inspirational-pictures" element={<Allpics/>}/>
+              <Route path="upload-inspirational-pictures" element={<UploadInspirational/>}/>
+              <Route path="donations" element={<Donations />} />
             </Route>
           </Routes>
         </BrowserRouter>

@@ -415,7 +415,7 @@ function Dashboard() {
             </div>
           </Link>
 
-          <Link to="/dashboard/users">
+          <Link to="users">
           <div className='font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]'>
              <UsergroupAddOutlined style={{ fontSize: '20px' }} />
              <p className='opacity-[0.7]'>Users</p>
@@ -463,12 +463,18 @@ function Dashboard() {
              </div>
           </div>
           {showInspirationalMenu ?
+         
           <div className=' cursor-pointer text-[13px] flex flex-col items-center'>
-            <input type='button' value={'All Pictures'}  className='ml-[-85px] border-none outline-none p-2 bg-tranparent'/>
+            <Link to="inspirational-pictures">
+              <input type='button' value={'All Pictures'}  className='ml-[-85px] border-none outline-none p-2 bg-tranparent'/>
+            </Link>
+            <Link to="upload-inspirational-pictures">
+              <input type='button' value={'Upload Pictures'}  className='ml-[-60px] border-none outline-none p-2 bg-tranparent'/>
+            </Link>
           </div>: ""
           }
 
-          <Link to="/dashboard/donations">
+          <Link to="donations">
             <div className='font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC] focus:bg-[#9966CC] cursor-pointer'>
               <FaRegMoneyBill1 style={{ fontSize: '20px' }}/>
               <p className='opacity-[0.7]'>Donations</p>
