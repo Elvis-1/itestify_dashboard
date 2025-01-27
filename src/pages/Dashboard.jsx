@@ -463,8 +463,14 @@ function Dashboard() {
              </div>
           </div>
           {showInspirationalMenu ?
+         
           <div className=' cursor-pointer text-[13px] flex flex-col items-center'>
-            <input type='button' value={'All Pictures'}  className='ml-[-85px] border-none outline-none p-2 bg-tranparent'/>
+            <Link to="inspirational-pictures">
+              <input type='button' value={'All Pictures'}  className='ml-[-85px] border-none outline-none p-2 bg-tranparent'/>
+            </Link>
+            <Link to="upload-inspirational-pictures">
+              <input type='button' value={'Upload Pictures'}  className='ml-[-60px] border-none outline-none p-2 bg-tranparent'/>
+            </Link>
           </div>: ""
           }
 
