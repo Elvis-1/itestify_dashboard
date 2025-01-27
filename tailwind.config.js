@@ -19,7 +19,8 @@ export default {
         "near-black" : "#0d0d0d",
         black: "#000000",
         "off-black" : "#313131",
-        lightBlack :"#1E1E1E"
+        lightBlack :"#1E1E1E",
+        grayBlack : "#171717"
         
       }
     },

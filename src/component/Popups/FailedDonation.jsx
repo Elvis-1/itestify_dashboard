@@ -1,66 +1,34 @@
-import React, { useContext, useState, useEffect } from "react";
+import React, { useContext, useState } from "react";
 import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
-import { UsersDonations } from "../../data/donations";
+import "../../styles/animation.css";
 
-const FailedDonation = ({ setIsFailed, setIsSuccessModal, donationIndex }) => {
+const FailedDonation = ({
+  setIsFailed,
+  setIsSuccessModal,
+  markAsFailed,
+  reason,
+  setReason,
+}) => {
   const { isDarkMode } = useContext(DarkModeContext);
-  const [reason, setReason] = useState("");
   const [error, setError] = useState("");
-  const [userDonations, setUserDonations] = useState(UsersDonations)
 
-  useEffect(() => {
-    // Only set the timeout when success modal is shown
-    if (setIsSuccessModal) {
-      const timer = setTimeout(() => {
-        setIsSuccessModal(false);
-      }, 2000);
-
-      return () => clearTimeout(timer);
-    }
-  }, [setIsSuccessModal]);
-
-  const handleConfirmFailed = () => {
+  const handleConfirmFailed = (e) => {
+    e.preventDefault();
     // Validate reason
     if (!reason.trim()) {
       setError("Please provide a reason for marking the donation as failed");
       return;
     }
-
     try {
       setError("");
-      confirmFailed(donationIndex);
-    } catch (error) {
-      setError("Failed to update donation status. Please try again.");
-      console.error("Error in handleConfirmFailed:", error);
-    }
-  };
-
-  const confirmFailed = (index) => {
-    if (!reason.trim()) return;
-
-    try {
-      // Update the donation status
-      const updatedDonations = UsersDonations.map((donation, idx) => {
-        if (idx === index && donation.status === "Verified") {
-          return {
-            ...donation,
-            status: "Failed",
-            failedReason: reason.trim(),
-            updatedAt: new Date().toISOString(),
-          };
-        }
-        return donation;
-      });
-
-      // Update state and show success message
-      setUserDonations(updatedDonations);
+      markAsFailed(reason);
       setIsFailed(false);
       setIsSuccessModal(true);
       setReason("");
     } catch (error) {
-      console.error("Error marking as failed:", error);
-      setError("An error occurred while updating the donation status");
+      setError("Failed to update donation status. Please try again.");
+      console.error("Error in handleConfirmFailed:", error);
     }
   };
 

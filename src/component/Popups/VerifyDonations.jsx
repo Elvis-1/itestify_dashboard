@@ -1,26 +1,36 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
 import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { IoMdArrowDropdown } from "react-icons/io";
+import "../../styles/animation.css";
 
-export const VerifyDonations = ({ setIsVerified, setIsSuccessModal }) => {
+export const VerifyDonations = ({
+  setIsVerified,
+  setIsSuccessModal,
+  verifyDonation
+}) => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
   const [selected, setSelected] = useState("");
+  const [amount, setAmount] = useState("");
 
   const options = [
     { value: "NGN", label: "NGN (₦)", symbol: "₦" },
     { value: "USD", label: "USD ($)", symbol: "$" },
   ];
-  const SaveVerification = () => {
-    // if (reason !== ") {
-    setIsVerified(false);
-    setIsSuccessModal(true);
-    // }
+
+  const SaveVerification = (e) => {
+    e.preventDefault();
+    if ((amount !== "" || amount > 0) && selected !== "") {
+      verifyDonation();
+      setIsVerified(false);
+      setIsSuccessModal(true);
+      console.log(amount + selected);
+    } else {
+      alert("Please enter an amount and select a currency value");
+    }
   };
-  setTimeout(() => {
-    setIsSuccessModal(false);
-  }, 2000);
+
   return (
     <div className="fixed inset-0 z-50 ">
       {/* Non-clickable overlay */}
@@ -30,7 +40,7 @@ export const VerifyDonations = ({ setIsVerified, setIsSuccessModal }) => {
       />
 
       {/* Modal */}
-      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-sm shadow-2xl">
+      <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-sm shadow-2xl ">
         <div
           className={`rounded-lg  modal ${
             isDarkMode ? "bg-near-black text-white" : "bg-white text-black"
@@ -57,6 +67,10 @@ export const VerifyDonations = ({ setIsVerified, setIsSuccessModal }) => {
               </label>
               <input
                 type="number"
+                value={amount}
+                onChange={(e) => {
+                  setAmount(e.target.value);
+                }}
                 className={`${
                   isDarkMode ? `bg-off-black` : `bg-off-white`
                 } p-1 rounded-md outline-none text-sm placeholder:text-xs`}
@@ -105,7 +119,11 @@ export const VerifyDonations = ({ setIsVerified, setIsSuccessModal }) => {
           </div>
 
           {/* Buttons */}
-          <div className={`flex items-center gap-3 p-4 justify-end ${isOpenDropdown? `mt-32`: `mt-6`}`}>
+          <div
+            className={`flex items-center gap-3 p-4 justify-end ${
+              isOpenDropdown ? `mt-32` : `mt-6`
+            }`}
+          >
             <button
               onClick={() => setIsVerified(false)}
               className={`btn-secondary ${

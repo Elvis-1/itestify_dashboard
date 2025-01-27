@@ -1,6 +1,7 @@
 import React, { useContext } from "react";
 import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
+import "../../styles/animation.css";
 
 const DonationsDetails = ({ setIsUserDetails, DonationUser }) => {
   const { isDarkMode } = useContext(DarkModeContext);

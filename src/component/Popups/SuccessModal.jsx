@@ -1,6 +1,7 @@
 import React,{useContext, useState} from 'react'
 import { DarkModeContext } from "../../context/DarkModeContext";
 import CheckImage from "../../assets/images/CheckImage.png"
+import "../../styles/animation.css";
 const SuccessModal = ({sucessMessage}) => {
   const { isDarkMode } = useContext(DarkModeContext);
   

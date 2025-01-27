@@ -1,23 +1,24 @@
-import React, { useContext, useState, useMemo } from "react";
-import { UsersDonations } from "../../data/donations";
+import React, { useContext, useState, useMemo, useEffect, useRef } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { LuChevronsUpDown } from "react-icons/lu";
-import { BsThreeDotsVertical } from "react-icons/bs";
+import { MdOutlineMoreHoriz } from "react-icons/md";
 import { SearchOutlined } from "@ant-design/icons";
-import { RiFilter3Line } from "react-icons/ri";
 import useSort from "../../hooks/useSort";
 import Pagination from "../Pagination";
 import DonationsDetails from "../Popups/DonationsDetails";
 import usePagination from "../../hooks/usePagination";
 import useProfile from "../../hooks/useProfile";
+import { DonationsContext } from "../../context/DonationContext";
+import EmptyState from "../emptyState";
 
 const Failed = () => {
   const { isDarkMode } = useContext(DarkModeContext);
+  const { userDonation, setUserDonation } = useContext(DonationsContext);
   const [searchItem, setSearchItem] = useState("");
   const toggleOptions = (index) => {
     setIsOpenOptions(isOpenOptions === index ? null : index);
   };
-  const failedDonations = UsersDonations.filter(
+  const failedDonations = userDonation.filter(
     (item) => item.status === "Failed"
   );
   const filteredDonations = useMemo(() => {
@@ -29,7 +30,7 @@ const Failed = () => {
   }, [searchItem]);
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
     usePagination(filteredDonations);
-//Profile custom hooks
+  //Profile custom hooks
   const {
     openProfileModal,
     isUserDetails,
@@ -81,6 +82,18 @@ const Failed = () => {
   const handleSearch = (e) => {
     setSearchItem(e.target.value);
   };
+  //Close droopdown
+  const dropdownRef = useRef(null);
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpenOptions(null);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   return (
     <div className={`relative`}>
@@ -150,59 +163,72 @@ const Failed = () => {
               ))}
             </tr>
           </thead>
-          {sortArray(users).map((data) => (
-            <tbody className="relative text-xs" key={data.id}>
-              <tr
-                className={` ${
-                  isDarkMode
-                    ? `hover:bg-[#313131]`
-                    : `hover:bg-off-white text-black`
-                }`}
-              >
-                <td>{data.id}</td>
-                <td>
-                  <img
-                    className="w-10 h-8"
-                    src={data.image}
-                    alt="donation-receipt"
-                  />
-                </td>
-                <td>{data.verificationCode}</td>
-                <td>{data.email}</td>
-                <td>{data.date}</td>
-                <td>{data.amount}</td>
-                <td>{data.currency}</td>
-                <td>Reason for Failed</td>
-                <td>
-                  {isOpenOptions === data.id && (
-                    <div
-                      className={`rounded-lg ${
-                        isDarkMode
-                          ? `text-white bg-[#292929]`
-                          : `text-black bg-white`
-                      } w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
-                    >
-                      <p
-                        onClick={() => {
-                          openProfileModal(data.id);
-                        }}
-                        className="border-b-[1px] border-gray-300 p-2"
+          {filteredDonations.length > 0 ? (
+            sortArray(users).map((data) => (
+              <tbody className="relative text-xs" key={data.id}>
+                <tr
+                  className={` ${
+                    isDarkMode
+                      ? `hover:bg-[#313131]`
+                      : `hover:bg-off-white text-black`
+                  }`}
+                >
+                  <td>{data.id}</td>
+                  <td>
+                    <img
+                      className="w-10 h-8"
+                      src={data.image}
+                      alt="donation-receipt"
+                    />
+                  </td>
+                  <td>{data.verificationCode}</td>
+                  <td>{data.email}</td>
+                  <td>{data.date}</td>
+                  <td>{data.amount}</td>
+                  <td>{data.currency}</td>
+                  <td className={`${!data.reason ? `text-center` : ``}`}>
+                    {data.reason ? data.reason : `Nil`}
+                  </td>
+                  <td>
+                    {isOpenOptions === data.id && (
+                      <div
+                        className={`rounded-lg ${
+                          isDarkMode
+                            ? `text-white bg-[#292929]`
+                            : `text-black bg-white`
+                        } w-[120px] border-[1px] border-white absolute top-10 right-10 z-30 shadow-lg`}
                       >
-                        View details
-                      </p>
-                    </div>
-                  )}
-                  <i
-                    onClick={() => {
-                      toggleOptions(data.id);
-                    }}
-                  >
-                    <BsThreeDotsVertical />
-                  </i>
+                        <p
+                          onClick={() => {
+                            openProfileModal(data.id);
+                          }}
+                          className="
+                         border-gray-300 p-2"
+                        >
+                          View details
+                        </p>
+                      </div>
+                    )}
+                    <i
+                      onClick={() => {
+                        toggleOptions(data.id);
+                      }}
+                    >
+                      <MdOutlineMoreHoriz />
+                    </i>
+                  </td>
+                </tr>
+              </tbody>
+            ))
+          ) : (
+            <tbody>
+              <tr className="border-b-0">
+                <td colSpan={9} className="hover:bg-lightBlack border-b-0">
+                  <EmptyState />
                 </td>
               </tr>
             </tbody>
-          ))}
+          )}
         </table>
       </div>
       <Pagination

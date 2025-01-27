@@ -1,5 +1,4 @@
 import React from "react";
-import usePagination from "../hooks/usePagination";
 
 const Pagination = ({
   setCurrentPage,
@@ -10,32 +9,31 @@ const Pagination = ({
   data,
 }) => {
   return (
-    <div className="flex justify-between absolute bottom-0 pt-12 pb-4 left-0 w-full">
-      <div className="flex justify-between items-center w-full px-4">
-        {data.length === 0 ? (
-          <p>Showing 0 of 0</p>
-        ) : (
+    <div className="flex justify-between absolute bottom-0 -pb-20 mb-6 left-0 w-full ">
+      {data.length > 0 && (
+        <div className="flex justify-between items-center w-full px-4">
           <p>
             Showing {firstIndex + 1} - {lastIndex} of {data.length}
           </p>
-        )}
-        <div className="flex gap-2 items-center">
-          <button
-            className="btn-primary border-gray-300 bg-transparent text-gray-300"
-            onClick={() => setCurrentPage((prev) => prev - 1)}
-            disabled={currentPage === 1}
-          >
-            Previous
-          </button>
-          <button
-            className="btn-secondary border-primary rounded-md text-primary"
-            onClick={() => setCurrentPage((prev) => prev + 1)}
-            disabled={currentPage === npage}
-          >
-            Next
-          </button>
+
+          <div className="flex gap-2 items-center">
+            <button
+              className="btn-primary border-gray-300 bg-transparent text-gray-300"
+              onClick={() => setCurrentPage((prev) => prev - 1)}
+              disabled={currentPage === 1}
+            >
+              Previous
+            </button>
+            <button
+              className="btn-secondary border-primary rounded-md text-primary"
+              onClick={() => setCurrentPage((prev) => prev + 1)}
+              disabled={currentPage === npage}
+            >
+              Next
+            </button>
+          </div>
         </div>
-      </div>
+      )}
     </div>
   );
 };

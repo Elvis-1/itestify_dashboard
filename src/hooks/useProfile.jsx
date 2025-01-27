@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 
 const useProfile = ({ donationType }) => {
-  const [isOpenOptions, setIsOpenOptions] = useState(null);
+  const [isOpenOptions, setIsOpenOptions] = useState(-1);
   const [isUserDetails, setIsUserDetails] = useState(false);
   const[profile, setProfile] = useState(false)
   const [eachUser, setEachUser] = useState(null);

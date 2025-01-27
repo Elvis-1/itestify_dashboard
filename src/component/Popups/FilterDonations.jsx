@@ -1,17 +1,20 @@
 import React, { useContext, useState } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { IoMdArrowDropdown } from "react-icons/io";
+import { UsersDonations } from "../../data/donations";
+import "../../styles/animation.css";
 
-const FilterDonations = ({ setIsFilter }) => {
+const FilterDonations = ({
+  setIsFilter,
+  filters,
+  setFilters,
+  setUserDonation,
+}) => {
   const { isDarkMode } = useContext(DarkModeContext);
 
   // State management
-  const [selectedOption, setSelectedOption] = useState(null);
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
-  const [selectedCurrency, setSelectedCurrency] = useState("");
-  const [amountRange, setAmountRange] = useState({ min: "", max: "" });
-  const [dateRange, setDateRange] = useState({ from: "", to: "" });
-
+  const { selectedOption, selectedCurrency, amountRange, dateRange } = filters;
   // Options data
   const currencyOptions = [
     { value: "NGN", label: "NGN (₦)", symbol: "₦" },
@@ -19,65 +22,143 @@ const FilterDonations = ({ setIsFilter }) => {
   ];
 
   const radioButtons = [
-    { id: 1, label: "Pending", value: "pending" },
-    { id: 2, label: "Verified", value: "verified" },
-    { id: 3, label: "Failed", value: "failed" },
+    { id: 1, label: "Pending", value: "Pending" },
+    { id: 2, label: "Verified", value: "Verified" },
+    { id: 3, label: "Failed", value: "Failed" },
   ];
 
   // Event handlers
-  const handleRadioChange = (e) => {
-    setSelectedOption(e.target.value);
-  };
-
   const handleBackdropClick = (e) => {
     if (e.target === e.currentTarget) {
       setIsFilter(false);
     }
   };
+  const handleRadioChange = (e) => {
+    setFilters((prev) => ({
+      ...prev,
+      selectedOption: e.target.value,
+    }));
+    console.log(e.target.value);
+  };
+
+  const handleCurrencySelect = (e, value) => {
+    e.preventDefault();
+    setFilters((prev) => ({
+      ...prev,
+      selectedCurrency: value,
+    }));
+    setIsOpenDropdown(false);
+    console.log(value);
+  };
 
   const handleAmountChange = (e, field) => {
-    setAmountRange(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [field]: e.target.value
+      amountRange: {
+        ...prev.amountRange,
+        [field]: e.target.value,
+      },
     }));
+    console.log(e.target.value);
   };
 
   const handleDateChange = (e, field) => {
-    setDateRange(prev => ({
+    setFilters((prev) => ({
       ...prev,
-      [field]: e.target.value
+      dateRange: {
+        ...prev.dateRange,
+        [field]: e.target.value,
+      },
+    }));
+    console.log(e.target.value);
+  };
+
+  const handleFiltering = () => {
+    const getFilterData = UsersDonations.filter((item) => {
+      const itemDate = new Date(item.date);
+      const fromDate = dateRange.from ? new Date(dateRange.from) : null;
+      const toDate = dateRange.to ? new Date(dateRange.to) : null;
+        const isWithinDateRange =
+          (!fromDate || itemDate >= fromDate) &&
+          (!toDate || itemDate <= toDate);
+
+        const isWithinAmount =
+          (!amountRange.min ||
+            parseFloat(item.amount) >= parseFloat(amountRange.min)) &&
+          (!amountRange.max ||
+            parseFloat(item.amount) <= parseFloat(amountRange.max));
+
+        const currencyMatches =
+          !selectedCurrency || item.currency === selectedCurrency;
+
+        const matchesStatus = !selectedOption || item.status === selectedOption;
+
+        return (
+          isWithinDateRange &&
+          isWithinAmount &&
+          matchesStatus &&
+          currencyMatches
+        );
+    });
+
+    setUserDonation(getFilterData); // Update filtered data
+    setIsFilter(false); // Close filter modal
+  };
+
+  const clearAmountRange = () => {
+    setFilters((prev) => ({
+      ...prev,
+      amountRange: { min: "", max: "" },
+    }));
+  };
+
+  const clearCurrency = () => {
+    setFilters((prev) => ({
+      ...prev,
+      selectedCurrency: "",
+    }));
+  };
+
+  const clearStatus = () => {
+    setFilters((prev) => ({
+      ...prev,
+      selectedOption: null,
+    }));
+  };
+
+  const clearDateRange = () => {
+    setFilters((prev) => ({
+      ...prev,
+      dateRange: { from: "", to: "" },
     }));
   };
 
   const clearAllInput = (e) => {
     e.preventDefault();
-    setSelectedCurrency("");
-    setSelectedOption(null);
-    setAmountRange({ min: "", max: "" });
-    setDateRange({ from: "", to: "" });
+    setFilters({
+      selectedOption: null,
+      selectedCurrency: "",
+      amountRange: { min: "", max: "" },
+      dateRange: { from: "", to: "" },
+    });
   };
 
-  const handleCurrencySelect = (e, value) => {
-    e.preventDefault();
-    setSelectedCurrency(value);
-    setIsOpenDropdown(false);
-  };
-
-  const getInputClassName = () => `${
-    isDarkMode ? 'bg-off-black' : 'bg-off-white'
-  } p-1 rounded-md outline-none text-sm placeholder:text-xs`;
+  const getInputClassName = () =>
+    `${
+      isDarkMode ? "bg-off-black" : "bg-off-white"
+    } p-1 rounded-md outline-none text-sm placeholder:text-xs`;
 
   return (
     <div className="fixed inset-0 z-50 mt-24 mr-16 h-auto flex justify-end items-center">
       <div
         className={`fixed inset-0 bg-opacity-50 ${
-          isDarkMode ? 'bg-near-black' : 'bg-white'
+          isDarkMode ? "bg-near-black" : "bg-white"
         }`}
         onClick={handleBackdropClick}
       />
       <div
         className={`relative z-10 ${
-          isDarkMode ? 'bg-black' : 'bg-white'
+          isDarkMode ? "bg-black" : "bg-white"
         } shadow-2xl rounded-lg w-[380px] z-[999999] modal`}
       >
         <h3 className="text-[16px] p-3 border-b-[1px] border-b-off-white">
@@ -88,9 +169,9 @@ const FilterDonations = ({ setIsFilter }) => {
           <div className="p-3 border-b-[1px] border-b-off-white">
             <div className="flex justify-between items-center text-sm">
               <h4>Amount</h4>
-              <h4 
-                className="text-primary cursor-pointer" 
-                onClick={() => setAmountRange({ min: "", max: "" })}
+              <h4
+                className="text-primary cursor-pointer"
+                onClick={() => clearAmountRange()}
               >
                 Clear
               </h4>
@@ -105,7 +186,7 @@ const FilterDonations = ({ setIsFilter }) => {
                   type="number"
                   placeholder="e.g 500"
                   value={amountRange.min}
-                  onChange={(e) => handleAmountChange(e, 'min')}
+                  onChange={(e) => handleAmountChange(e, "min")}
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -117,7 +198,7 @@ const FilterDonations = ({ setIsFilter }) => {
                   type="number"
                   placeholder="e.g 50000000"
                   value={amountRange.max}
-                  onChange={(e) => handleAmountChange(e, 'max')}
+                  onChange={(e) => handleAmountChange(e, "max")}
                 />
               </div>
             </div>
@@ -127,9 +208,9 @@ const FilterDonations = ({ setIsFilter }) => {
           <div className="p-3 border-b-[1px] border-b-off-white">
             <div className="flex justify-between pb-2 items-center text-sm">
               <h4>Currency</h4>
-              <h4 
+              <h4
                 className="text-primary cursor-pointer"
-                onClick={() => setSelectedCurrency("")}
+                onClick={() => clearCurrency()}
               >
                 Clear
               </h4>
@@ -140,14 +221,16 @@ const FilterDonations = ({ setIsFilter }) => {
                 setIsOpenDropdown(!isOpenDropdown);
               }}
               className={`w-full px-2 py-1 ${
-                isDarkMode ? 'bg-off-black' : 'bg-off-white'
+                isDarkMode ? "bg-off-black" : "bg-off-white"
               } flex items-center justify-between
                 p-1 rounded-md outline-none text-sm placeholder:text-xs
                 hover:bg-zinc-800 transition-colors duration-200`}
             >
               <span className="text-[15px]">
                 {selectedCurrency
-                  ? currencyOptions.find((opt) => opt.value === selectedCurrency)?.label
+                  ? currencyOptions.find(
+                      (opt) => opt.value === selectedCurrency
+                    )?.label
                   : "Select"}
               </span>
               <IoMdArrowDropdown
@@ -158,7 +241,7 @@ const FilterDonations = ({ setIsFilter }) => {
             {isOpenDropdown && (
               <div
                 className={`absolute w-[350px] mt-1 p-1 rounded-lg border-[1px] border-off-white outline-none text-sm placeholder:text-xs overflow-hidden ${
-                  isDarkMode ? 'bg-black' : 'bg-off-white'
+                  isDarkMode ? "bg-black" : "bg-off-white"
                 }`}
               >
                 {currencyOptions.map((option) => (
@@ -181,9 +264,9 @@ const FilterDonations = ({ setIsFilter }) => {
             <div className="flex flex-col gap-2">
               <div className="flex justify-between items-center">
                 <h4>Status</h4>
-                <h4 
+                <h4
                   className="text-primary cursor-pointer"
-                  onClick={() => setSelectedOption(null)}
+                  onClick={() => clearStatus()}
                 >
                   Clear
                 </h4>
@@ -210,9 +293,9 @@ const FilterDonations = ({ setIsFilter }) => {
           <div className="p-3 border-b-[1px] border-b-off-white">
             <div className="flex justify-between items-center text-sm">
               <h4>Date Range</h4>
-              <h4 
+              <h4
                 className="text-primary cursor-pointer"
-                onClick={() => setDateRange({ from: "", to: "" })}
+                onClick={() => clearDateRange()}
               >
                 Clear
               </h4>
@@ -227,7 +310,7 @@ const FilterDonations = ({ setIsFilter }) => {
                   type="date"
                   id="from"
                   value={dateRange.from}
-                  onChange={(e) => handleDateChange(e, 'from')}
+                  onChange={(e) => handleDateChange(e, "from")}
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -239,7 +322,7 @@ const FilterDonations = ({ setIsFilter }) => {
                   type="date"
                   id="to"
                   value={dateRange.to}
-                  onChange={(e) => handleDateChange(e, 'to')}
+                  onChange={(e) => handleDateChange(e, "to")}
                 />
               </div>
             </div>
@@ -249,7 +332,7 @@ const FilterDonations = ({ setIsFilter }) => {
           <div className="flex justify-end items-end ml-auto my-12 gap-3 p-3">
             <button
               className={`btn-secondary ${
-                isDarkMode ? '' : 'text-primary border-near-black'
+                isDarkMode ? "" : "text-primary border-near-black"
               }`}
               onClick={clearAllInput}
             >
@@ -257,11 +340,11 @@ const FilterDonations = ({ setIsFilter }) => {
             </button>
             <button
               className={`btn-primary ${
-                isDarkMode ? '' : 'hover:text-off-black'
+                isDarkMode ? "" : "hover:text-off-black"
               }`}
               onClick={(e) => {
                 e.preventDefault();
-                // Add your filter submission logic here
+                handleFiltering();
               }}
             >
               Apply

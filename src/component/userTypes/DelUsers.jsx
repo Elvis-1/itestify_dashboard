@@ -287,7 +287,7 @@ const DelUsers = () => {
                             onClick={() => {
                               openProfileModal(data.id);
                             }}
-                            className="border-b-[1px] border-gray-300 p-2"
+                            className="border-b-[1px] border-gray-300 p-2 cursor-pointer"
                           >
                             View profile
                           </p>
@@ -295,7 +295,7 @@ const DelUsers = () => {
                             onClick={() => {
                               handleDeleteById(data.id);
                             }}
-                            className="p-2 text-[#E53935]"
+                            className="p-2 text-[#E53935] cursor-pointer"
                           >
                             Delete
                           </p>
