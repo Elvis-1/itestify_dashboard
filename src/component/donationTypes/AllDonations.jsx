@@ -9,7 +9,8 @@ import usePagination from "../../hooks/usePagination";
 import useSort from "../../hooks/useSort";
 import FilterDonations from "../Popups/FilterDonations";
 import { DonationsContext } from "../../context/DonationContext";
-import EmptyState from "../emptyState";
+import NoDataComponent from "../NoDataComponent";
+
 
 const AllDonations = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -213,7 +214,7 @@ const AllDonations = () => {
               <tbody>
               <tr className="border-b-0">
                 <td colSpan={8} className="hover:bg-lightBlack border-b-0">
-                  <EmptyState />
+                  <NoDataComponent/>
                 </td>
               </tr>
             </tbody>

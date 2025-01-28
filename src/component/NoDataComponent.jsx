@@ -1,6 +1,6 @@
 import React from "react";
 import nodata from "../assets/images/No-data.png";
-const EmptyState = () => {
+const NoDataComponent = () => {
   return (
     <div className="grid place-items-center">
       <div className="w-full flex flex-col justify-between gap-16">
@@ -20,4 +20,4 @@ const EmptyState = () => {
   );
 };
 
-export default EmptyState;
+export default NoDataComponent;

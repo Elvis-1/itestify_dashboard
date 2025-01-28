@@ -9,7 +9,7 @@ import DonationsDetails from "../Popups/DonationsDetails";
 import usePagination from "../../hooks/usePagination";
 import useProfile from "../../hooks/useProfile";
 import { DonationsContext } from "../../context/DonationContext";
-import EmptyState from "../emptyState";
+import NoDataComponent from "../NoDataComponent";
 
 const Failed = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -224,7 +224,7 @@ const Failed = () => {
             <tbody>
               <tr className="border-b-0">
                 <td colSpan={9} className="hover:bg-lightBlack border-b-0">
-                  <EmptyState />
+                <NoDataComponent />
                 </td>
               </tr>
             </tbody>

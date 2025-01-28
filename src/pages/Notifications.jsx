@@ -1,5 +1,5 @@
 import React, { useState, useContext, useMemo, useEffect } from "react";
-import EmptyState from "../component/EmptyState"
+import NoDataComponent from "../component/NoDataComponent";
 import { TiArrowUnsorted } from "react-icons/ti";
 import { SearchOutlined } from "@ant-design/icons";
 import { RiFilter3Line } from "react-icons/ri";
@@ -238,7 +238,7 @@ const Notifications = () => {
               <tbody>
                 <tr className="border-b-0">
                   <td colSpan={1} className="hover:bg-lightBlack border-b-0">
-                    <EmptyState />
+                  <NoDataComponent/>
                   </td>
                 </tr>
               </tbody>

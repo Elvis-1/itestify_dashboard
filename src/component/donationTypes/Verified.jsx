@@ -12,7 +12,7 @@ import useProfile from "../../hooks/useProfile";
 import FailedStatus from "../Popups/FailedStatus";
 import SuccessModal from "../Popups/SuccessModal";
 import { DonationsContext } from "../../context/DonationContext";
-import EmptyState from "../emptyState";
+import NoDataComponent from "../NoDataComponent";
 
 const Verified = () => {
   //Usestates
@@ -196,7 +196,7 @@ const Verified = () => {
             <tbody>
               <tr className="border-b-0">
                 <td colSpan={8} className="hover:bg-lightBlack border-b-0">
-                  <EmptyState />
+                  <NoDataComponent />
                 </td>
               </tr>
             </tbody>
