@@ -9,7 +9,7 @@ import usePagination from "../../hooks/usePagination";
 import useSort from "../../hooks/useSort";
 import FilterDonations from "../Popups/FilterDonations";
 import { DonationsContext } from "../../context/DonationContext";
-import EmptyState from "../emptyState";
+import EmptyState from "../EmptyState"
 
 const AllDonations = () => {
   const { isDarkMode } = useContext(DarkModeContext);

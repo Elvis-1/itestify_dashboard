@@ -9,7 +9,7 @@ import DonationsDetails from "../Popups/DonationsDetails";
 import usePagination from "../../hooks/usePagination";
 import useProfile from "../../hooks/useProfile";
 import { DonationsContext } from "../../context/DonationContext";
-import EmptyState from "../emptyState";
+import EmptyState from "../EmptyState";
 
 const Failed = () => {
   const { isDarkMode } = useContext(DarkModeContext);

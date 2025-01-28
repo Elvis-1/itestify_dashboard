@@ -14,7 +14,7 @@ import FailedDonation from "../Popups/FailedDonation";
 import useVerifiedandFailed from "../../hooks/useVerifiedandFailed";
 import SuccessModal from "../Popups/SuccessModal";
 import { DonationsContext } from "../../context/DonationContext";
-import EmptyState from "../emptyState";
+import EmptyState from "../EmptyState";
 
 const Pending = () => {
   const { isDarkMode } = useContext(DarkModeContext);

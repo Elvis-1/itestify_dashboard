@@ -12,7 +12,7 @@ import useProfile from "../../hooks/useProfile";
 import FailedStatus from "../Popups/FailedStatus";
 import SuccessModal from "../Popups/SuccessModal";
 import { DonationsContext } from "../../context/DonationContext";
-import EmptyState from "../emptyState";
+import EmptyState from "../EmptyState";
 
 const Verified = () => {
   //Usestates
