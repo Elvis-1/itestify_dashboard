@@ -1,42 +1,44 @@
-import React, { useState, useContext, useMemo, useEffect } from "react";
-import EmptyState from "../component/EmptyState"
+import React, { useState, useContext, useEffect } from "react";
+import EmptyState from "../component/EmptyState";
 import { TiArrowUnsorted } from "react-icons/ti";
 import { SearchOutlined } from "@ant-design/icons";
 import { RiFilter3Line } from "react-icons/ri";
 import { RiSettings5Line } from "react-icons/ri";
-import { RiDeleteBin6Line } from "react-icons/ri";
 import { LuMailOpen } from "react-icons/lu";
 import { GoDotFill } from "react-icons/go";
 import { GoDot } from "react-icons/go";
 import { DarkModeContext } from "../context/DarkModeContext";
-import NotificationsData from "../data/notifications";
+import FilterNotifications from "../component/Popups/FilterNotifications";
+import Pagination from "../component/Pagination";
+import usePagination from "../hooks/usePagination";
+import { NotificationContextProvider } from "../context/NotificationContext";
+import { Link } from "react-router-dom";
 
 const Notifications = () => {
   const { isDarkMode } = useContext(DarkModeContext);
-  const [isSettingsModal, setIsSettingsModal] = useState(false);
   const [searchItem, setSearchItem] = useState("");
-  const [notifications, setNotifications] = useState(NotificationsData);
-
-  const [filteredNotifications, setFilteredNotifications] =
-    useState(notifications);
-
-  const handleSearch = (e) => {
-    const searchValue = e.target.value;
-    setSearchItem(searchValue);
-    setFilteredNotifications(
-      notifications.filter(
-        (notification) =>
-          notification.notificationStatus
-            ?.toLowerCase()
-            .includes(searchValue.toLowerCase()) ||
-          notification.content
-            ?.toLowerCase()
-            .includes(searchValue.toLowerCase())
-      )
-    );
-  };
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [selectAll, setSelectAll] = useState(false);
+  const [isFilter, setIsFilter] = useState(false);
+  const [filteredNotifications, setFilteredNotifications] = useState([]);
+
+  const { notifications, setNotifications, markAsRead, markAllAsRead } =
+    useContext(NotificationContextProvider);
+
+  useEffect(() => {
+    setFilteredNotifications(notifications);
+  }, [notifications]);
+
+  const handleSearch = (e) => {
+    const searchValue = e.target.value.toLowerCase();
+    setSearchItem(searchValue);
+    const filtered = notifications.filter(
+      (notification) =>
+        notification.type?.toLowerCase().includes(searchValue) ||
+        notification.content?.toLowerCase().includes(searchValue)
+    );
+    setFilteredNotifications(filtered);
+  };
 
   // Handle Individual User Selection
   const handleUserSelect = (userId) => {
@@ -53,49 +55,75 @@ const Notifications = () => {
     setSelectAll(!selectAll);
     setSelectedUsers(!selectAll ? allUserIds : []);
   };
-  //Mark as Read or Unread Function
-  const markAsRead = (id) => {
-    const updatedNotifications = filteredNotifications.map((notification) =>
-      notification.id === id
-        ? {
-            ...notification,
-            status: "unread" ? "read" : "unread",
-          }
-        : notification
+  useEffect(() => {
+    setSelectAll(
+      selectedUsers.length === notifications.length && notifications.length > 0
     );
-    setFilteredNotifications(updatedNotifications);
+  }, [selectedUsers, notifications]);
+
+  //Mark selected Notifcation as read
+  const markSelectedAsRead = () => {
+    const updatedNotifications = notifications.map((notif) =>
+      selectedUsers.includes(notif.id) ? { ...notif, status: "read" } : notif
+    );
+    setNotifications(updatedNotifications);
+    setSelectedUsers([]);
+    setSelectAll(false);
   };
+  const [filters, setFilters] = useState({
+    selectedStatusOption: null,
+    selectedTypeOption: null,
+    dateRange: { from: "", to: "" },
+  });
+  const { currentPage, setCurrentPage, firstIndex, lastIndex, npage } =
+    usePagination(notifications);
+
   return (
-    <div className="m-5">
-      <div className={`relative`}>
-        <button
-          onClick={() => {
-            setIsSettingsModal(!isSettingsModal);
-          }}
-          className="flex justify-end gap-1 p-2  rounded-md border-2 
-                border-primary cursor-pointer ml-auto"
-        >
-          <RiSettings5Line fill="#9966cc" />
-          <span className="text-primary text-sm">Manage Settings</span>
-        </button>
+    <div className={`p-5 ${isDarkMode ? `bg-black` : `bg-off-white`}`}>
+      {isFilter && (
+        <FilterNotifications
+          setIsFilter={setIsFilter}
+          filters={filters}
+          setFilters={setFilters}
+          notifications={notifications}
+          setNotifications={setNotifications}
+        />
+      )}
+
+      <div className={`relative `}>
         <div
-          className={` rounded-2xl h-[30rem] ${
-            isDarkMode ? `bg-grayBlack` : `bg-off-white`
-          } mt-3`}
+          className={`rounded-2xl h-[30rem] ${
+            isDarkMode ? `bg-grayBlack` : `bg-white`
+          } mt-10`}
         >
-          <div className={`flex justify-between items-center w-full pb-2 px-3`}>
-            <h3 className="py-5 ">Notifications</h3>
+          <div className={`flex justify-between items-center w-full px-4 py-5`}>
+            <h3 className="">Notifications</h3>
             <div className="flex items-center gap-4">
-              <div className="flex justify-center gap-2">
-                {selectedUsers.length > 0 && (
-                  <button className="bg-primary flex items-center justify-evenly gap-[2px] px-[5px] py-2 rounded-md w-28">
-                    <i>
-                      <LuMailOpen width={2} height={2} />
-                    </i>
-                    <p className="text-xs">Mark as read</p>
-                  </button>
-                )}
-              </div>
+              {selectedUsers.length > 0 && (
+                <div className="flex justify-center gap-2">
+                  {selectedUsers.length < filteredNotifications.length ? (
+                    <button
+                      onClick={markSelectedAsRead}
+                      className={`bg-primary flex items-center justify-evenly gap-[2px] px-[5px] py-2 rounded-md w-28 text-white`}
+                    >
+                      <i>
+                        <LuMailOpen width={2} height={2} />
+                      </i>
+                      <p className={`text-xs`}>Mark as read</p>
+                    </button>
+                  ) : (
+                    <button
+                      onClick={markAllAsRead}
+                      className={`bg-primary flex items-center justify-evenly gap-[2px] px-[5px] py-2 rounded-md w-32 text-white`}
+                    >
+                      <i>
+                        <LuMailOpen width={2} height={2} />
+                      </i>
+                      <p className={`text-xs`}>Mark all as read</p>
+                    </button>
+                  )}
+                </div>
+              )}
               {/*---------------------------------------- Search Bar  ---------------------------------*/}
               <div
                 className={`flex justify-left items-center gap-2 p-3 rounded-lg w-[300px] ${
@@ -120,7 +148,9 @@ const Notifications = () => {
                 />
               </div>
               <div
-                // onClick={showFilterModal}
+                onClick={() => {
+                  setIsFilter(!isFilter);
+                }}
                 className="flex justify-center items-center gap-1 p-2 rounded-md border-2 border-primary cursor-pointer "
               >
                 <i>
@@ -131,12 +161,14 @@ const Notifications = () => {
             </div>
           </div>
           <table
-            className={`custom-table font-sans text-[14px] ${
-              isDarkMode ? `dark-mode` : `light-mode`
+            className={`custom-table overflow-hidden font-sans text-[14px] ${
+              isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
             } `}
           >
             <thead
-              className={`${isDarkMode ? `bg-[#0d0d0d]` : `bg-off-white`}`}
+              className={` text-xs ${
+                isDarkMode ? `bg-near-black` : `bg-off-white text-black`
+              }`}
             >
               <tr>
                 <th
@@ -145,9 +177,6 @@ const Notifications = () => {
                       ? ` border-b-[#333333]  bg-off-black  `
                       : ` border-b-off-white`
                   }`}
-                  // onClick={() => {
-                  //   sortHeader(header);
-                  // }}
                 >
                   <input
                     className="cursor-pointer"
@@ -157,8 +186,16 @@ const Notifications = () => {
                     onChange={handleSelectAll}
                     checked={selectAll}
                   />
-                  <div className="flex items-center justify-center gap-1">
-                    <p>All Notifications</p>
+                  <div
+                    className={`flex items-center justify-center gap-1 ${
+                      isDarkMode ? `bg-off-black` : `bg-off-white`
+                    }`}
+                  >
+                    <p
+                      className={`${isDarkMode ? `text-white` : `text-black`}`}
+                    >
+                      All Notifications
+                    </p>
                     <i>
                       <TiArrowUnsorted fill="#ffffff" />
                     </i>
@@ -167,73 +204,97 @@ const Notifications = () => {
               </tr>
             </thead>
             {filteredNotifications.length > 0 ? (
-              filteredNotifications.map((notification) => (
-                <tbody className="relative text-xs" key={notification.id}>
-                  <tr
-                    className={` ${
-                      isDarkMode
-                        ? `hover:bg-[#313131]`
-                        : `hover:bg-off-white text-black`
-                    }`}
-                  >
-                    <td className="flex justify-between w-full">
-                      <div className="flex align-top items-start ">
-                        <div className="flex gap-3 items-center justify-normal">
-                          <input
-                            className="cursor-pointer"
-                            type="checkbox"
-                            name="notification"
-                            id="notification"
-                            onChange={() => handleUserSelect(notification.id)}
-                            checked={selectedUsers.includes(notification.id)}
-                          />
-                          <div className="flex flex-col ">
-                            <div
-                              className={`flex justify-normal ${
-                                notification.notificationStatus === "Donation"
-                                  ? `gap-[95px]`
-                                  : `gap-[90px]`
-                              }  items-start`}
+              filteredNotifications
+                .slice(firstIndex, lastIndex)
+                .map((notification) => (
+                  <tbody className="relative text-xs" key={notification.id}>
+                    <tr
+                      className={` ${
+                        isDarkMode
+                          ? `hover:bg-[#313131]`
+                          : `hover:bg-off-white text-black`
+                      }`}
+                    >
+                      <td className="flex justify-between w-full">
+                        <div className="flex align-top items-start ">
+                          <div className="flex gap-3 items-center justify-normal">
+                            <input
+                              className="cursor-pointer"
+                              type="checkbox"
+                              name="notification"
+                              id="notification"
+                              onChange={() => handleUserSelect(notification.id)}
+                              checked={selectedUsers.includes(notification.id)}
+                            />
+                            <Link
+                              to={`${
+                                notification.type === "Donation"
+                                  ? `/dashboard/donations`
+                                  : "/dashboard/all-testimonies"
+                              }`}
                             >
-                              <p
-                                className={`font-bold ${
-                                  notification.status === "unread"
-                                    ? `text-primary`
-                                    : `text-white`
-                                }`}
-                              >
-                                New {notification.notificationStatus} submitted
-                              </p>
-                              <div className="flex items-center gap-1">
-                                <p>{notification.date}</p>
-                                <i>
-                                  <GoDotFill fill="#ffffff" />
-                                </i>
-                                <p>{notification.time}</p>
+                              <div className="flex flex-col gap-1">
+                                <div
+                                  className={`flex justify-normal ${
+                                    notification.type === "Donation"
+                                      ? `gap-[95px]`
+                                      : `gap-[90px]`
+                                  }  items-start`}
+                                >
+                                  <p
+                                    className={`
+                                    font-bold 
+                                    ${
+                                      notification.status === "unread"
+                                        ? isDarkMode
+                                          ? `text-primary`
+                                          : `text-primary-light-mode`
+                                        : isDarkMode
+                                        ? `text-white`
+                                        : `text-black`
+                                    }
+                                  `}
+                                  >
+                                    New {notification.type} submitted
+                                  </p>
+                                  <div className="flex items-center gap-1">
+                                    <p>{notification.date}</p>
+                                    <i>
+                                      <GoDotFill fill="#ffffff" />
+                                    </i>
+                                    <p>{notification.time}</p>
+                                  </div>
+                                </div>
+                                <p
+                                  className={`${
+                                    isDarkMode
+                                      ? `text-off-white`
+                                      : `text-off-black`
+                                  }`}
+                                >
+                                  {notification.content}
+                                </p>
                               </div>
-                            </div>
-                            <p className="text-off-white">
-                              {notification.content}
-                            </p>
+                            </Link>
                           </div>
                         </div>
-                      </div>
-                      <i
-                        onClick={() => {
-                          markAsRead(notification.id);
-                          console.log(notification.status);
-                        }}
-                      >
-                        {notification.status === "unread" ? (
-                          <GoDotFill fill="#9966CC" fontSize={25} />
-                        ) : (
-                          <GoDot fill="#9966CC" fontSize={25} />
-                        )}
-                      </i>
-                    </td>
-                  </tr>
-                </tbody>
-              ))
+
+                        <i
+                          onClick={() => {
+                            markAsRead(notification.id);
+                            console.log(notification.status);
+                          }}
+                        >
+                          {notification.status === "unread" ? (
+                            <GoDotFill fill="#9966CC" fontSize={25} />
+                          ) : (
+                            <GoDot fill="#9966CC" fontSize={25} />
+                          )}
+                        </i>
+                      </td>
+                    </tr>
+                  </tbody>
+                ))
             ) : (
               <tbody>
                 <tr className="border-b-0">
@@ -244,30 +305,16 @@ const Notifications = () => {
               </tbody>
             )}
           </table>
-          {filteredNotifications.length > 0 && (
-            <div className="flex justify-between absolute bottom-0 -pb-20 mb-6 left-0 w-full">
-              <div className="flex justify-between items-center w-full px-4">
-                <p>Showing 1 - 6 of 6</p>
-
-                <div className="flex gap-2 items-center">
-                  <button
-                    className="btn-primary border-gray-300 bg-transparent text-gray-300"
-                    // onClick={() => setCurrentPage((prev) => prev - 1)}
-                  >
-                    Previous
-                  </button>
-                  <button
-                    className="btn-secondary border-primary rounded-md text-primary"
-                    // onClick={() => setCurrentPage((prev) => prev + 1)}
-                    // disabled={currentPage === npage}
-                  >
-                    Next
-                  </button>
-                </div>
-              </div>
-            </div>
-          )}
         </div>
+        {/* <-------------------------------------Pagination-------------------------------------> */}
+        <Pagination
+          data={notifications}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          firstIndex={firstIndex}
+          lastIndex={lastIndex}
+          npage={npage}
+        />
       </div>
     </div>
   );

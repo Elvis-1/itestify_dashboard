@@ -8,22 +8,20 @@ import { DarkModeContextProvider } from "./context/DarkModeContext";
 import Users from "./pages/Users";
 import Donations from "./pages/Donations";
 
-
 import DonationContext from "./context/DonationContext";
 import Notifications from "./pages/Notifications";
-
 import { Button } from 'antd';
 import AllTestimonies from './component/testimonies/AllTestimonies';
 import UploadTestimonies from './component/testimonies/UploadTestimonies';
 import VideoPlayer from './component/testimonies/VideoPlayer';
 import Allpics from "./component/inspirationalPics/Allpics";
 import UploadInspirational from "./component/inspirationalPics/UploadInspirational";
-
-
+import NotificationContext from "./context/NotificationContext";
 
 function App() {
   return (
     <div>
+      <NotificationContext>
       <DonationContext>
       <DarkModeContextProvider>
         <BrowserRouter>
@@ -54,6 +52,7 @@ function App() {
         </BrowserRouter>
       </DarkModeContextProvider>
       </DonationContext>
+      </NotificationContext>
     </div>
   );
 }

@@ -13,6 +13,7 @@ export default {
       },
       colors:{
         primary : "#9966CC",
+        "primary-light-mode" :"#8844AA",
         red: "#E53935",
         "off-white" : "#F5F5F5",
         "near-white": "#bfbfbf",
@@ -20,7 +21,8 @@ export default {
         black: "#000000",
         "off-black" : "#313131",
         lightBlack :"#1E1E1E",
-        grayBlack : "#171717"
+        grayBlack : "#171717",
+        borderColor: "#575757"
         
       }
     },

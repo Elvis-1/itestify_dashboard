@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useMemo } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { regUsers } from "../../data/userdetails";
 import { MdOutlineMoreHoriz } from "react-icons/md";
@@ -8,6 +8,7 @@ import UserRegProfile from "../Popups/UserRegProfile";
 import useSort from "../../hooks/useSort";
 import usePagination from "../../hooks/usePagination";
 import Pagination from "../Pagination";
+import EmptyState from "../EmptyState";
 const RegUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [registeredUsers, setRegisteredUsers] = useState(regUsers);
@@ -57,17 +58,28 @@ const RegUsers = () => {
       console.error("User not found");
     }
   };
-  const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
-    usePagination(registeredUsers);
+
   const { sort, sortHeader, sortArray } = useSort();
+  const regUsersIndex = useMemo(() => {
+    const searchTerm = searchItem.toLowerCase().trim();
+    return registeredUsers.filter(
+      (item) =>
+        searchTerm === "" ||
+        item.name.toLowerCase().includes(searchTerm) ||
+        item.email.toLowerCase().includes(searchTerm) ||
+        item.userId.toLowerCase().includes(searchTerm)
+    );
+  }, [searchItem, registeredUsers]);
+  const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
+    usePagination(regUsersIndex);
   return (
     <div className="relative">
-       {/* <<----------------------------Profile Modal -------------------------->> */}
-       {profile && (
+      {/* <<----------------------------Profile Modal -------------------------->> */}
+      {profile && (
         <UserRegProfile setProfile={setProfile} registeredUsers={eachUser} />
       )}
       <div
-        className={`flex justify-between items-center w-full mt-5 px-2 rounded-t-2xl ${
+        className={`flex justify-between items-center w-full mt-5 px-4 rounded-t-2xl ${
           isDarkMode ? `bg-lightBlack dark-mode` : `bg-white `
         }`}
       >
@@ -102,7 +114,7 @@ const RegUsers = () => {
 
       {/* --------------------------------Table Details ---------------------------------------- */}
       <div
-        className={`h-[20rem] rounded-b-2xl overflow-hidden  ${
+        className={`h-[21rem] rounded-b-2xl overflow-hidden  ${
           isDarkMode ? `bg-lightBlack` : `bg-white `
         }`}
       >
@@ -111,12 +123,24 @@ const RegUsers = () => {
             isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
           } `}
         >
-          <thead className={`text-xs ${isDarkMode?`bg-[#0d0d0d]`:`bg-off-white`}`}>
-            <tr>
+          <thead
+            className={` text-xs ${
+              isDarkMode ? `bg-near-black` : `bg-off-white text-black`
+            }`}
+          >
+            <tr
+              className={` ${
+                isDarkMode
+                  ? `bg-off-black text-white hover:bg-[#313131]`
+                  : `bg-white text-black hover:bg-off-white`
+              }`}
+            >
               {tableHeaders.map((header, index) => (
                 <th
-                  className={`cursor-pointer  border-b-2 ${
-                    isDarkMode ? ` border-b-[#333333] ` : ` border-b-off-white`
+                  className={`cursor-pointer ${
+                    isDarkMode
+                      ? `bg-off-black text-white`
+                      : `bg-off-white text-black`
                   }`}
                   onClick={() => {
                     sortHeader(header);
@@ -137,20 +161,15 @@ const RegUsers = () => {
                   </div>
                 </th>
               ))}
-              <th>Action</th>
+              <th  className={`cursor-pointer ${
+                    isDarkMode
+                      ? `bg-off-black text-white`
+                      : `bg-off-white text-black`
+                  }`}>Action</th>
             </tr>
           </thead>
-          {sortArray(users)
-            .filter((item) => {
-              const searchTerm = searchItem.toLowerCase();
-              return (
-                searchTerm === "" ||
-                item.name.toLowerCase().includes(searchTerm) ||
-                item.email.toLowerCase().includes(searchTerm) ||
-                item.userId.toLowerCase().includes(searchTerm)
-              );
-            })
-            .map((data, index) => (
+          {regUsersIndex.length > 0 ? (
+            sortArray(users).map((data, index) => (
               <tbody className="relative" key={data.id}>
                 <tr
                   className={` ${
@@ -188,20 +207,27 @@ const RegUsers = () => {
                   </td>
                 </tr>
               </tbody>
-            ))}
+            ))
+          ) : (
+            <tbody>
+              <tr className="border-b-0">
+                <td colSpan={8} className="hover:bg-lightBlack border-b-0">
+                  <EmptyState />
+                </td>
+              </tr>
+            </tbody>
+          )}
         </table>
-         {/* ----------------------------------------PAgination-------------------------------------------- */}
-      <Pagination
-        data={registeredUsers}
-        currentPage={currentPage}
-        setCurrentPage={setCurrentPage}
-        firstIndex={firstIndex}
-        lastIndex={lastIndex}
-        npage={npage}
-      />
+        {/* ----------------------------------------PAgination-------------------------------------------- */}
+        <Pagination
+          data={regUsersIndex}
+          currentPage={currentPage}
+          setCurrentPage={setCurrentPage}
+          firstIndex={firstIndex}
+          lastIndex={lastIndex}
+          npage={npage}
+        />
       </div>
-
-     
     </div>
   );
 };

@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useMemo, useState } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext.jsx";
 import { DeletedUsers } from "../../data/userdetails";
 import { MdOutlineMoreHoriz } from "react-icons/md";
@@ -11,6 +11,7 @@ import useSort from "../../hooks/useSort.jsx";
 import usePagination from "../../hooks/usePagination.jsx";
 import Pagination from "../Pagination.jsx";
 import SuccessModal from "../Popups/SuccessModal.jsx";
+import EmptyState from "../EmptyState.jsx";
 const DelUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [deletedUsers, setDeletedUsers] = useState(
@@ -115,10 +116,21 @@ const DelUsers = () => {
       setIsSuccessModal(false);
     }, 2000);
   };
-  const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
-    usePagination(deletedUsers);
+
   const { sort, sortHeader, sortArray } = useSort();
 
+  const delUsersIndex = useMemo(() => {
+    const searchTerm = searchItem.toLowerCase().trim();
+    return DeletedUsers.filter(
+      (item) =>
+        searchTerm === "" ||
+        item.name.toLowerCase().includes(searchTerm) ||
+        item.email.toLowerCase().includes(searchTerm) ||
+        item.userId.toLowerCase().includes(searchTerm)
+    );
+  }, [searchItem, DeletedUsers]);
+  const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
+    usePagination(delUsersIndex);
   return (
     <div className="relative">
       {/* <---------------delete modal----------------> */}
@@ -183,147 +195,156 @@ const DelUsers = () => {
         <UserDelProfile setProfile={setProfile} deletedUsers={eachUser} />
       )}
       {/* <----------------------------------Table Data---------------------------------------------> */}
-      {deletedUsers.length === 0 ? (
-        <div className="text-center font-bold text-xl pt-10">
-          No deleted accounts!{" "}
-        </div>
-      ) : (
-        <div
-          className={` rounded-b-2xl overflow-x-auto h-[20rem] ${
-            isDarkMode ? `bg-lightBlack` : `bg-white`
-          }`}
+
+      <div
+        className={` rounded-b-2xl h-[21rem] ${
+          isDarkMode ? `bg-lightBlack` : `bg-white`
+        }`}
+      >
+        <table
+          className={`custom-table overflow-hidden opacity-70 font-san text-[14px]  ${
+            isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
+          } `}
         >
-          <table
-            className={`custom-table w-full border-collapse text-left opacity-70 font-san text-[14px]  ${
-              isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
-            } `}
+          <thead
+            className={` text-xs ${
+              isDarkMode ? `bg-near-black` : `bg-off-white text-black`
+            }`}
           >
-            <thead
-              className={` text-xs ${
-                isDarkMode ? `bg-[#0d0d0d]` : `bg-off-white`
-              }`}
-            >
-              <tr>
-                <th>
-                  <input
-                    className=""
-                    type="checkbox"
-                    name="deletedUser"
-                    id="delUser-checkbox"
-                    onChange={handleSelectAll}
-                    checked={selectAll}
-                  />
-                </th>
-                {tableHeaders.map((header, index) => (
-                  <th
-                    className="cursor-pointer"
-                    onClick={() => {
-                      sortHeader(header);
-                    }}
-                    key={index}
-                  >
-                    <div className="flex items-center gap-1">
-                      {header.Label}
-                      <i>
-                        <LuChevronsUpDown
-                          direction={
-                            sort.keyToSort === header.key
-                              ? sort.direction
-                              : "ascending"
-                          }
-                        />
-                      </i>
-                    </div>
-                  </th>
-                ))}
-                <th>Action</th>
-              </tr>
-            </thead>
-            {sortArray(users)
-              .filter((item) => {
-                const searchTerm = searchItem.toLowerCase().trim();
-                return (
-                  searchTerm === "" ||
-                  item.name.toLowerCase().includes(searchTerm) ||
-                  item.email.toLowerCase().includes(searchTerm) ||
-                  item.userId.toLowerCase().includes(searchTerm)
-                );
-              })
-              .map((data) => (
-                <tbody className="relative" key={data.id}>
-                  <tr
-                    className={` ${
-                      isDarkMode ? `hover:bg-[#313131]` : `hover:bg-off-white`
-                    }`}
-                  >
-                    <td>
-                      <input
-                        type="checkbox"
-                        name="deletedUser"
-                        id="delUser-checkbox"
-                        onChange={() => {
-                          handleUserSelect(data.id);
-                        }}
-                        checked={selectedUsers.includes(data.id)}
+            <tr >
+              <th  className={`cursor-pointer ${
+                    isDarkMode
+                      ? `bg-off-black text-white`
+                      : `bg-off-white text-black`
+                  }`}>
+                <input
+                  className=""
+                  type="checkbox"
+                  name="deletedUser"
+                  id="delUser-checkbox"
+                  onChange={handleSelectAll}
+                  checked={selectAll}
+                />
+              </th>
+              {tableHeaders.map((header, index) => (
+                <th
+                  className={`cursor-pointer ${
+                    isDarkMode
+                      ? `bg-off-black text-white`
+                      : `bg-off-white text-black`
+                  }`}
+                  onClick={() => {
+                    sortHeader(header);
+                  }}
+                  key={index}
+                >
+                  <div className="flex items-center gap-1">
+                    {header.Label}
+                    <i>
+                      <LuChevronsUpDown
+                        direction={
+                          sort.keyToSort === header.key
+                            ? sort.direction
+                            : "ascending"
+                        }
                       />
-                    </td>
-                    <td>{data.id}</td>
-                    <td>{data.userId}</td>
-                    <td>{data.name}</td>
-                    <td>{data.email}</td>
-                    <td>{data.deletionDate}</td>
-                    <td>{data.reason}</td>
-                    <td>
-                      {/* <----------------------------------Option dropdown-----------------------------------------> */}
-                      {isOpenOptions === data.id && (
-                        <div
-                          className={`rounded-lg ${
-                            isDarkMode
-                              ? `text-white bg-[#292929]`
-                              : `text-black bg-white`
-                          } w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
-                        >
-                          <p
-                            onClick={() => {
-                              openProfileModal(data.id);
-                            }}
-                            className="border-b-[1px] border-gray-300 p-2 cursor-pointer"
-                          >
-                            View profile
-                          </p>
-                          <p
-                            onClick={() => {
-                              handleDeleteById(data.id);
-                            }}
-                            className="p-2 text-[#E53935] cursor-pointer"
-                          >
-                            Delete
-                          </p>
-                        </div>
-                      )}
-                      <i
-                        onClick={() => {
-                          toggleOptions(data.id);
-                        }}
-                      >
-                        <MdOutlineMoreHoriz />
-                      </i>
-                    </td>
-                  </tr>
-                </tbody>
+                    </i>
+                  </div>
+                </th>
               ))}
-          </table>
-          {/* <---------------------------------------------Pagination --------------------------------------------> */}
-          <Pagination
-            data={deletedUsers}
-            currentPage={currentPage}
-            setCurrentPage={setCurrentPage}
-            firstIndex={firstIndex}
-            lastIndex={lastIndex}
-            npage={npage}
-          />
-        </div>
-      )}
+              <th  className={`cursor-pointer ${
+                    isDarkMode
+                      ? `bg-off-black text-white`
+                      : `bg-off-white text-black`
+                  }`}>Action</th>
+            </tr>
+          </thead>
+          {delUsersIndex.length > 0 ? (
+            sortArray(users).map((data) => (
+              <tbody className="relative" key={data.id}>
+                <tr
+                  className={` ${
+                    isDarkMode
+                      ? `bg-lightBlack text-white hover:bg-[#313131]`
+                      : `bg-white text-black hover:bg-off-white`
+                  }`}
+                >
+                  <td>
+                    <input
+                      type="checkbox"
+                      name="deletedUser"
+                      id="delUser-checkbox"
+                      onChange={() => {
+                        handleUserSelect(data.id);
+                      }}
+                      checked={selectedUsers.includes(data.id)}
+                    />
+                  </td>
+                  <td>{data.id}</td>
+                  <td>{data.userId}</td>
+                  <td>{data.name}</td>
+                  <td>{data.email}</td>
+                  <td>{data.deletionDate}</td>
+                  <td>{data.reason}</td>
+                  <td>
+                    {/* <----------------------------------Option dropdown-----------------------------------------> */}
+                    {isOpenOptions === data.id && (
+                      <div
+                        className={`rounded-lg ${
+                          isDarkMode
+                            ? `text-white bg-[#292929]`
+                            : `text-black bg-white`
+                        } w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
+                      >
+                        <p
+                          onClick={() => {
+                            openProfileModal(data.id);
+                          }}
+                          className="border-b-[1px] border-gray-300 p-2 cursor-pointer"
+                        >
+                          View profile
+                        </p>
+                        <p
+                          onClick={() => {
+                            handleDeleteById(data.id);
+                          }}
+                          className="p-2 text-[#E53935] cursor-pointer"
+                        >
+                          Delete
+                        </p>
+                      </div>
+                    )}
+                    <i
+                      onClick={() => {
+                        toggleOptions(data.id);
+                      }}
+                    >
+                      <MdOutlineMoreHoriz />
+                    </i>
+                  </td>
+                </tr>
+              </tbody>
+            ))
+          ) : (
+            <tbody>
+              <tr className="border-b-0">
+                <td colSpan={8} className="hover:bg-lightBlack border-b-0">
+                  <EmptyState />
+                </td>
+              </tr>
+            </tbody>
+          )}
+        </table>
+      </div>
+      {/* <---------------------------------------------Pagination --------------------------------------------> */}
+      <Pagination
+        data={delUsersIndex}
+        currentPage={currentPage}
+        setCurrentPage={setCurrentPage}
+        firstIndex={firstIndex}
+        lastIndex={lastIndex}
+        npage={npage}
+      />
     </div>
   );
 };
