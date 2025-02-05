@@ -175,7 +175,7 @@ const Pending = () => {
         />
       )}
 
-      <div className={` rounded-t-2xl h-[26rem]`}>
+      <div className={` rounded-t-2xl h-[27rem]`}>
         <div className={`flex justify-between items-center w-full pb-3 px-3`}>
           <h3 className="py-5">Donations</h3>
 
@@ -202,7 +202,7 @@ const Pending = () => {
           </div>
         </div>
         <table
-          className={`custom-table overflow-hidden font-sans text-[14px] ${
+          className={`custom-table font-sans text-[14px] ${
             isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
           } `}
         >
@@ -277,7 +277,7 @@ const Pending = () => {
                           isDarkMode
                             ? `text-white bg-[#292929]`
                             : `text-black bg-white`
-                        } w-[120px] border-[1px] border-white absolute top-10 right-10 z-50 shadow-lg`}
+                        } w-[120px] border-[1px] border-white absolute top-10 right-10 z-[9999] shadow-lg`}
                       >
                         <p
                           onClick={() => {
@@ -324,7 +324,7 @@ const Pending = () => {
           ) : (
             <tbody>
               <tr className="border-b-0">
-                <td colSpan={9} className="hover:bg-lightBlack border-b-0">
+                <td colSpan={9} className="hover:bg-transparent border-b-0 border-b-transparent">
                   <EmptyState />
                 </td>
               </tr>

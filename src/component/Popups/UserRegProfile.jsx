@@ -43,8 +43,8 @@ const UserRegProfile = ({ registeredUsers, setProfile }) => {
           </div>
 
           <div
-            className={`bg-black p-4 rounded-b-2xl ${
-              isDarkMode ? `dark-mode` : `light-mode`
+            className={` p-4 rounded-b-2xl ${
+              isDarkMode ? `dark-mode bg-black` : `light-mode bg-white`
             }`}
           >
             <div className="flex justify-between items-center w-full py-2">

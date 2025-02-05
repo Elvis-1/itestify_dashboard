@@ -21,7 +21,7 @@ const Users = () => {
           <p
             key={type.value}
             onClick={() => setUserType(type.value)}
-            className={`${
+            className={`text-xs ${
               userType === type.value
                 ? ` bg-primary text-white`
                 : `${isDarkMode ? `text-gray-300` : `text-black`}`

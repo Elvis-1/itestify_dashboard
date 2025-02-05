@@ -113,7 +113,13 @@ const Notifications = () => {
                     </button>
                   ) : (
                     <button
-                      onClick={markAllAsRead}
+                      onClick={
+                        () => {
+                        setSelectedUsers([]);
+                        setSelectAll(false)
+                        markAllAsRead()
+                      }
+                    }
                       className={`bg-primary flex items-center justify-evenly gap-[2px] px-[5px] py-2 rounded-md w-32 text-white`}
                     >
                       <i>
@@ -298,7 +304,7 @@ const Notifications = () => {
             ) : (
               <tbody>
                 <tr className="border-b-0">
-                  <td colSpan={1} className="hover:bg-lightBlack border-b-0">
+                  <td colSpan={1} className="hover:bg-transparent border-b-0 border-b-transparent">
                     <EmptyState />
                   </td>
                 </tr>
@@ -308,7 +314,7 @@ const Notifications = () => {
         </div>
         {/* <-------------------------------------Pagination-------------------------------------> */}
         <Pagination
-          data={notifications}
+          data={filteredNotifications}
           currentPage={currentPage}
           setCurrentPage={setCurrentPage}
           firstIndex={firstIndex}

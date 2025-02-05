@@ -47,6 +47,26 @@ const FilterNotifications = ({
     }));
     console.log(e.target.value);
   };
+
+  const handleFiltering = () => {
+    const getFilterData = notifications.filter((item) => {
+      const itemDate = new Date(item.date);
+      const fromDate = dateRange.from ? new Date(dateRange.from) : null;
+      const toDate = dateRange.to ? new Date(dateRange.to) : null;
+      const isWithinDateRange =
+        (!fromDate || itemDate >= fromDate) && (!toDate || itemDate <= toDate);
+
+      const matchesStatus =
+        !selectedStatusOption || item.status === selectedStatusOption;
+      const matchesType =
+        !selectedTypeOption || item.type === selectedTypeOption;
+
+      return isWithinDateRange && matchesStatus && matchesType;
+    });
+
+    setNotifications(getFilterData); // Update filtered data
+    setIsFilter(false); // Close filter modal
+  };
   const clearStatus = () => {
     setFilters((prev) => ({
       ...prev,
@@ -74,25 +94,6 @@ const FilterNotifications = ({
       selectedTypeOption: null,
       dateRange: { from: "", to: "" },
     });
-  };
-  const handleFiltering = () => {
-    const getFilterData = notifications.filter((item) => {
-      const itemDate = new Date(item.date);
-      const fromDate = dateRange.from ? new Date(dateRange.from) : null;
-      const toDate = dateRange.to ? new Date(dateRange.to) : null;
-      const isWithinDateRange =
-        (!fromDate || itemDate >= fromDate) && (!toDate || itemDate <= toDate);
-
-      const matchesStatus =
-        !selectedStatusOption || item.status === selectedStatusOption;
-      const matchesType =
-        !selectedTypeOption || item.type === selectedTypeOption;
-
-      return isWithinDateRange && matchesStatus && matchesType;
-    });
-
-    setNotifications(getFilterData); // Update filtered data
-    setIsFilter(false); // Close filter modal
   };
 
   return (

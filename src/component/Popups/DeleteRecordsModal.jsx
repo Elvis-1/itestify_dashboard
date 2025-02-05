@@ -1,7 +1,7 @@
 import React, { useContext } from "react";
 import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
-import "../../styles/animation.css"
+import "../../styles/animation.css";
 const DeleteRecordsModal = ({
   selectAll,
   selectedUsers,
@@ -16,7 +16,7 @@ const DeleteRecordsModal = ({
           isDarkMode ? "bg-black" : "bg-off-white"
         }`}
       />
-      <div className="relative z-10 modal bg-black">
+      <div className="relative z-10 modal ">
         <i
           onClick={onCancel}
           className="absolute w-24 top-4 -right-16 cursor-pointer"
@@ -25,7 +25,7 @@ const DeleteRecordsModal = ({
         </i>
         <div
           className={`rounded-md px-5 py-7 shadow-lg text-center w-[450px] ${
-            isDarkMode ? "dark-mode" : "light-mode"
+            isDarkMode ? "bg-black" : "bg-off-white"
           } max-w-md`}
         >
           <h1 className="font-bold text-lg">

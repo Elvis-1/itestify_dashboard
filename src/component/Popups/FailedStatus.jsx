@@ -86,8 +86,8 @@ const FailedStatus = ({
                 }}
                 id="reason"
                 placeholder="Type here..."
-                className={`p-2 rounded-lg outline-none text-sm h-[200px] w-full ${
-                  isDarkMode ? "bg-[#313131]" : "bg-off-white"
+                className={`resize-none p-2 rounded-lg outline-none text-sm h-[200px] w-full ${
+                  isDarkMode ? "bg-[#313131]" : "bg-white "
                 }`}
               ></textarea>
               {error && (

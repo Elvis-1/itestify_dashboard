@@ -160,7 +160,7 @@ const Verified = () => {
           </div>
         </div>
         <table
-         className={`custom-table overflow-hidden font-sans text-[14px] ${
+         className={`custom-table font-sans text-[14px] ${
           isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
         } `}
         >

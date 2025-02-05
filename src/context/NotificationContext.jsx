@@ -2,6 +2,7 @@ import React, { createContext, useState } from "react";
 import NotificationsData from "../data/notifications";
 
 export const NotificationContextProvider = createContext();
+
 const NotificationContext = ({ children }) => {
   const [notifications, setNotifications] = useState(NotificationsData);
 

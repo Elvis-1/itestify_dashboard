@@ -119,7 +119,7 @@ const RegUsers = () => {
         }`}
       >
         <table
-          className={`custom-table overflow-hidden font-sans text-[14px] ${
+          className={`custom-table  font-sans text-[14px] ${
             isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
           } `}
         >
@@ -211,7 +211,7 @@ const RegUsers = () => {
           ) : (
             <tbody>
               <tr className="border-b-0">
-                <td colSpan={8} className="hover:bg-lightBlack border-b-0">
+                <td colSpan={8} className="hover:bg-transparent border-b-0 border-b-transparent">
                   <EmptyState />
                 </td>
               </tr>

@@ -7,7 +7,7 @@ import {
   UsergroupAddOutlined,
 } from "@ant-design/icons";
 
-import { Switch, Typography } from "antd";
+import { notification, Switch, Typography } from "antd";
 import { MoonOutlined } from "@ant-design/icons";
 import logo from "../assets/icons/Logo.png";
 import { IoIosNotificationsOutline } from "react-icons/io";
@@ -22,6 +22,7 @@ import { FaRegMoneyBill1 } from "react-icons/fa6";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../context/DarkModeContext";
 import NotificationModal from "../component/Popups/NotificationModal";
+import { NotificationContextProvider } from "../context/NotificationContext";
 
 // function Dashboard() {
 //   const [showTestimonyMenu, setShowTestimonyMenu] = useState(false)
@@ -372,6 +373,10 @@ function Dashboard() {
 
   const { isDarkMode, toggleTheme } = useContext(DarkModeContext);
 
+  const { notifications, setNotifications } = useContext(
+    NotificationContextProvider
+  );
+
   const navigate = useNavigate();
 
   function handleTestimonies() {
@@ -530,7 +535,7 @@ function Dashboard() {
               <div className="font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]">
                 <IoIosNotificationsOutline style={{ fontSize: "24px" }} />
                 <div className="flex items-center justify-between w-[100%]">
-                  <p className="opacity-[0.7]">Notification</p>
+                  <p className="opacity-[0.7]">Notifications history</p>
                   <div
                     className="flex items-center justify-center 
                 bg-red  w-[30px] h-[30px] p-2 rounded-full text-center"
@@ -538,7 +543,9 @@ function Dashboard() {
                     <p
                       className={`font-sans text-[12px] text-center text-white`}
                     >
-                      10
+                      {notifications?.filter(
+                        (notif) => notif.status === "unread"
+                      ).length || ""}
                     </p>
                   </div>
                 </div>

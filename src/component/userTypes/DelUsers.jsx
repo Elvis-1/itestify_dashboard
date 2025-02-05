@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState } from "react";
+import React, { useContext, useMemo, useState, useEffect } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext.jsx";
 import { DeletedUsers } from "../../data/userdetails";
 import { MdOutlineMoreHoriz } from "react-icons/md";
@@ -54,12 +54,21 @@ const DelUsers = () => {
   const toggleOptions = (index) => {
     setIsOpenOptions(isOpenOptions === index ? -1 : index);
   };
-
+  const delUsersIndex = useMemo(() => {
+    const searchTerm = searchItem.toLowerCase().trim();
+    return deletedUsers.filter(
+      (item) =>
+        searchTerm === "" ||
+        item.name.toLowerCase().includes(searchTerm) ||
+        item.email.toLowerCase().includes(searchTerm) ||
+        item.userId.toLowerCase().includes(searchTerm)
+    );
+  }, [searchItem, DeletedUsers]);
   //<--------------------User Profile dtails-------------------->
   const [profile, setProfile] = useState(false);
   const [eachUser, setEachUser] = useState(null);
   const openProfileModal = (id) => {
-    const userProfileMatch = deletedUsers.find((user) => user.id === id);
+    const userProfileMatch = delUsersIndex.find((user) => user.id === id);
     setIsOpenOptions(false);
     if (userProfileMatch) {
       setEachUser(userProfileMatch);
@@ -85,7 +94,7 @@ const DelUsers = () => {
 
   // Handle Select All Records
   const handleSelectAll = () => {
-    const allUserIds = DeletedUsers.map((user) => user.id);
+    const allUserIds = delUsersIndex.map((user) => user.id);
     setSelectAll(!selectAll);
     setSelectedUsers(!selectAll ? allUserIds : []);
   };
@@ -100,37 +109,32 @@ const DelUsers = () => {
       setSelectAll(false);
       setDeleteRecordModal(false);
       setIsSuccessModal(true);
-      setTimeout(() => {
-        setIsSuccessModal(false);
-      }, 2000);
     }
   };
+
   const handleDeleteById = (userId) => {
-    setDeletedUsers((prev) => {
-      const newUserList = prev.filter((user) => user.id !== userId);
-      return newUserList;
-    });
-    setIsOpenOptions(false);
+    setDeletedUsers((prev) => prev.filter((user) => user.id !== userId));
+    setIsOpenOptions(-1);
     setIsSuccessModal(true);
-    setTimeout(() => {
-      setIsSuccessModal(false);
-    }, 2000);
+
   };
+  useEffect(() => {
+    if (isSuccessModal) {
+      const timeout = setTimeout(() => {
+        setIsSuccessModal(false);
+      }, 2000);
+      return () => clearTimeout(timeout);
+    }
+  }, [isSuccessModal]);
 
   const { sort, sortHeader, sortArray } = useSort();
-
-  const delUsersIndex = useMemo(() => {
-    const searchTerm = searchItem.toLowerCase().trim();
-    return DeletedUsers.filter(
-      (item) =>
-        searchTerm === "" ||
-        item.name.toLowerCase().includes(searchTerm) ||
-        item.email.toLowerCase().includes(searchTerm) ||
-        item.userId.toLowerCase().includes(searchTerm)
-    );
-  }, [searchItem, DeletedUsers]);
+  const sortedUsers = useMemo(
+    () => sortArray(delUsersIndex),
+    [delUsersIndex, sort]
+  );
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
-    usePagination(delUsersIndex);
+    usePagination(sortedUsers);
+
   return (
     <div className="relative">
       {/* <---------------delete modal----------------> */}
@@ -151,7 +155,7 @@ const DelUsers = () => {
       >
         <h3 className="py-5 text-lg">User Management</h3>
         {/* <-------------------------------------------------Delete Button--------------------------------------------> */}
-        <div className="flex items-center gap-4">
+        <div className="flex items-center gap-4 ">
           {(selectAll || selectedUsers.length > 0) && (
             <div
               onClick={() => {
@@ -197,26 +201,28 @@ const DelUsers = () => {
       {/* <----------------------------------Table Data---------------------------------------------> */}
 
       <div
-        className={` rounded-b-2xl h-[21rem] ${
+        className={` rounded-b-2xl h-[21rem]  ${
           isDarkMode ? `bg-lightBlack` : `bg-white`
         }`}
       >
         <table
-          className={`custom-table overflow-hidden opacity-70 font-san text-[14px]  ${
-            isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
+          className={`custom-table  opacity-70 font-san text-[14px]   ${
+            isDarkMode ? `bg-lightBlack dark-mode ` : `light-mode`
           } `}
         >
           <thead
-            className={` text-xs ${
+            className={` text-xs  ${
               isDarkMode ? `bg-near-black` : `bg-off-white text-black`
             }`}
           >
-            <tr >
-              <th  className={`cursor-pointer ${
-                    isDarkMode
-                      ? `bg-off-black text-white`
-                      : `bg-off-white text-black`
-                  }`}>
+            <tr>
+              <th
+                className={`cursor-pointer ${
+                  isDarkMode
+                    ? `bg-off-black text-white`
+                    : `bg-off-white text-black`
+                }`}
+              >
                 <input
                   className=""
                   type="checkbox"
@@ -238,7 +244,7 @@ const DelUsers = () => {
                   }}
                   key={index}
                 >
-                  <div className="flex items-center gap-1">
+                  <div className="flex items-center gap-1 ">
                     {header.Label}
                     <i>
                       <LuChevronsUpDown
@@ -252,15 +258,19 @@ const DelUsers = () => {
                   </div>
                 </th>
               ))}
-              <th  className={`cursor-pointer ${
-                    isDarkMode
-                      ? `bg-off-black text-white`
-                      : `bg-off-white text-black`
-                  }`}>Action</th>
+              <th
+                className={`cursor-pointer ${
+                  isDarkMode
+                    ? `bg-off-black text-white`
+                    : `bg-off-white text-black`
+                }`}
+              >
+                Action
+              </th>
             </tr>
           </thead>
           {delUsersIndex.length > 0 ? (
-            sortArray(users).map((data) => (
+            sortedUsers.slice(firstIndex, lastIndex).map((data) => (
               <tbody className="relative" key={data.id}>
                 <tr
                   className={` ${
@@ -286,7 +296,14 @@ const DelUsers = () => {
                   <td>{data.email}</td>
                   <td>{data.deletionDate}</td>
                   <td>{data.reason}</td>
-                  <td>
+                  <td className="">
+                    <i
+                      onClick={() => {
+                        toggleOptions(data.id);
+                      }}
+                    >
+                      <MdOutlineMoreHoriz />
+                    </i>
                     {/* <----------------------------------Option dropdown-----------------------------------------> */}
                     {isOpenOptions === data.id && (
                       <div
@@ -294,7 +311,7 @@ const DelUsers = () => {
                           isDarkMode
                             ? `text-white bg-[#292929]`
                             : `text-black bg-white`
-                        } w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
+                        } w-[120px]  border-[1px] border-white h-fit absolute top-10 right-10 z-[99999] shadow-lg`}
                       >
                         <p
                           onClick={() => {
@@ -314,13 +331,6 @@ const DelUsers = () => {
                         </p>
                       </div>
                     )}
-                    <i
-                      onClick={() => {
-                        toggleOptions(data.id);
-                      }}
-                    >
-                      <MdOutlineMoreHoriz />
-                    </i>
                   </td>
                 </tr>
               </tbody>
@@ -328,7 +338,10 @@ const DelUsers = () => {
           ) : (
             <tbody>
               <tr className="border-b-0">
-                <td colSpan={8} className="hover:bg-lightBlack border-b-0">
+                <td
+                  colSpan={8}
+                  className="hover:bg-transparent border-b-0 border-b-transparent"
+                >
                   <EmptyState />
                 </td>
               </tr>
