@@ -87,6 +87,8 @@ const Notifications = () => {
           setFilters={setFilters}
           notifications={notifications}
           setNotifications={setNotifications}
+          filteredNotifications={filteredNotifications}
+          setFilteredNotifications={setFilteredNotifications}
         />
       )}
 

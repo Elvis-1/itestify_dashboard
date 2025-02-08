@@ -6,7 +6,7 @@ const FilterNotifications = ({
   filters,
   setFilters,
   notifications,
-  setNotifications,
+  setFilteredNotifications,
 }) => {
   const { isDarkMode } = useContext(DarkModeContext);
   const { dateRange, selectedStatusOption, selectedTypeOption } = filters;
@@ -64,7 +64,7 @@ const FilterNotifications = ({
       return isWithinDateRange && matchesStatus && matchesType;
     });
 
-    setNotifications(getFilterData); // Update filtered data
+    setFilteredNotifications(getFilterData); // Update filtered data
     setIsFilter(false); // Close filter modal
   };
   const clearStatus = () => {
@@ -118,10 +118,7 @@ const FilterNotifications = ({
             <div className="flex flex-col gap-2">
               <div className="flex justify-between items-center text-sm">
                 <h4>Type</h4>
-                <p
-                  className="text-primary cursor-pointer "
-                  onClick={() => clearType()}
-                >
+                <p className="text-primary cursor-pointer " onClick={clearType}>
                   Clear
                 </p>
               </div>
@@ -130,7 +127,6 @@ const FilterNotifications = ({
                   <label key={type.id} className="flex items-center text-sm">
                     <input
                       type="radio"
-                      name="type"
                       value={type.value}
                       checked={selectedTypeOption === type.value}
                       onChange={handleTypeRadioChange}
@@ -149,7 +145,7 @@ const FilterNotifications = ({
                 <h4>Status</h4>
                 <p
                   className="text-primary cursor-pointer"
-                  onClick={() => clearStatus()}
+                  onClick={clearStatus}
                 >
                   Clear
                 </p>
@@ -159,7 +155,6 @@ const FilterNotifications = ({
                   <label key={status.id} className="flex items-center text-sm">
                     <input
                       type="radio"
-                      name="status"
                       value={status.value}
                       checked={selectedStatusOption === status.value}
                       onChange={handleStatusRadioChange}
@@ -178,7 +173,7 @@ const FilterNotifications = ({
               <h4>Date Range</h4>
               <p
                 className="text-primary cursor-pointer"
-                onClick={() => clearDateRange()}
+                onClick={clearDateRange}
               >
                 Clear
               </p>

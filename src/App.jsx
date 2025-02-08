@@ -7,10 +7,10 @@ import Overview from "./component/testimonies/Overview";
 import { DarkModeContextProvider } from "./context/DarkModeContext";
 import Users from "./pages/Users";
 import Donations from "./pages/Donations";
-
+import UsersAnalytics from "./pages/UsersAnalytics"
+import DonationsAnalytics from "./pages/DonationsAnalytics";
 import DonationContext from "./context/DonationContext";
 import Notifications from "./pages/Notifications";
-import { Button } from 'antd';
 import AllTestimonies from './component/testimonies/AllTestimonies';
 import UploadTestimonies from './component/testimonies/UploadTestimonies';
 import VideoPlayer from './component/testimonies/VideoPlayer';
@@ -45,7 +45,9 @@ function App() {
               <Route path="users" element={<Users />} />
               <Route path="inspirational-pictures" element={<Allpics/>}/>
               <Route path="upload-inspirational-pictures" element={<UploadInspirational/>}/>
-              <Route path="donations" element={<Donations />} />
+              <Route path="users-analytics" element={<UsersAnalytics />} />
+              <Route path="donations-analytics" element={<DonationsAnalytics />} />
+              <Route path="testimonies-analytics" element={<Donations />} />
                 
             </Route>
           </Routes>

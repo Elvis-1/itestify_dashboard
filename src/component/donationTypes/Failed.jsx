@@ -147,7 +147,7 @@ const Failed = () => {
             >
               {tableHeaders.map((header, index) => (
                 <th
-                className={`cursor-pointer text-xs ${
+                className={`cursor-pointer text-[10px] ${
                   isDarkMode
                     ? `bg-off-black text-white`
                     : `bg-off-white text-black`

@@ -397,34 +397,18 @@ function Dashboard() {
         />
       )}
       <div
-        className={`flex min-h-screen border  ${
+        className={`flex min-h-screen   ${
           isDarkMode ? "bg-black text-white" : "bg-white text-black"
         }`}
       >
         {/* whole side bar starts here */}
         <div
-          className={`flex-1 w-[100%] ${
+          className={`w-[20%] ${
             isDarkMode
               ? "bg-[#313131] text-white"
               : "bg-white text-black border-r border-r-slate-100"
           }`}
         >
-          {/* side bar header starts here */}
-          <div
-            className={`flex items-center 
-        p-3 gap-2 h-[50px] w-[244.5px] m-[auto] 
-        font-sans font-bold fixed top-0 z-[1000]
-        ${
-          isDarkMode
-            ? "bg-[#313131] text-white"
-            : "bg-white text-black border-r border-r-slate-100"
-        }`}
-          >
-            <img src={logo} className="w-[35px]" alt="" />
-            <p className="font-sans  text-[15px] w-[100%]">iTestified</p>
-          </div>
-          {/* sidebar header ends here */}
-
           {/* sidebar main section starts here */}
           <div
             className={`${
@@ -574,24 +558,30 @@ function Dashboard() {
               </div>
             </div>
             {showAnalyticsMenu ? (
-              <div className=" cursor-pointer text-[13px] flex flex-col items-center">
-                <input
-                  type="button"
-                  value={"Users"}
-                  className="ml-[-155px] border-none outline-none p-2 bg-tranparent"
-                />
-                <input
-                  type="button"
-                  value={"Testimonies"}
-                  placeholder=""
-                  className="ml-[-120px] border-none outline-none p-2 bg-transparent"
-                />
-                <input
-                  type="button"
-                  value={"Donations"}
-                  placeholder=""
-                  className="ml-[-125px] border-none outline-none p-2 bg-transparent"
-                />
+              <div className=" cursor-pointer text-[13px] flex flex-col  justify-normal pl-2">
+                <Link to="users-analytics">
+                  <input
+                    type="button"
+                    value={"Users"}
+                    className=" border-none outline-none p-2 bg-tranparent cursor-pointer"
+                  />
+                </Link>
+                <Link>
+                  <input
+                    type="button"
+                    value={"Testimonies"}
+                    placeholder=""
+                    className=" border-none outline-none p-2 bg-transparent cursor-pointer "
+                  />
+                </Link>
+                <Link to="donations-analytics">
+                  <input
+                    type="button"
+                    value={"Donations"}
+                    placeholder=""
+                    className=" border-none outline-none p-2 bg-transparent cursor-pointer "
+                  />
+                </Link>
               </div>
             ) : (
               ""
@@ -634,8 +624,22 @@ function Dashboard() {
         <div className="flex-[6] min-h-screen">
           {/* main dashboard section header starts here */}
           <div
+            className={`flex items-center
+        p-3 gap-2 h-[50px] w-[244.5px] m-[auto] 
+        font-sans font-bold fixed top-0 left-0 z-50
+        ${
+          isDarkMode
+            ? "bg-[#313131] text-white"
+            : "bg-white text-black border-r border-r-slate-100"
+        }`}
+          >
+            <img src={logo} className="w-[35px]" alt="" />
+            <p className="font-sans  text-[15px] w-[100%]">iTestified</p>
+          </div>
+
+          <div
             className={`flex items-center justify-between overflow-hidden w-[85.5%] h-[50px]
-             fixed z-[1000] top-0 p-3 mb-[100px]
+             fixed z-50 top-0 p-3 mb-[100px]
              ${
                isDarkMode
                  ? "bg-[#313131] text-white"
@@ -680,7 +684,9 @@ function Dashboard() {
           <br />
           <br />
           {/* main dashboard section header ends here sec*/}
-          <Outlet />
+          <div className="fixed w-[80%]">
+            <Outlet />
+          </div>
         </div>
         {/* main dashboard section ends here */}
       </div>
