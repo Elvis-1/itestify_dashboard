@@ -70,12 +70,12 @@ const DonationsAnalytics = () => {
   }, [approvedDonations]);
 
   return (
-    <div className="p-5">
+    <div className={`p-5  ${isDarkMode ? "bg-black" : "bg-off-white"}`}>
       <div className="flex w-full justify-between items-center pb-5">
         <p>Analytics</p>
         <input
           className={`bg-off-black rounded-md pl-2 p-1 w-[200px] placeholder:text-off-black ${
-            isDarkMode ? "bg-off-black" : "bg-off-white"
+            isDarkMode ? "bg-off-black" : "bg-white"
           } p-1 rounded-md outline-none text-sm placeholder:text-xs`}
           placeholder="Yesterday (Nov 15 ,2024)"
           type="date"
@@ -84,9 +84,7 @@ const DonationsAnalytics = () => {
       <div className="flex items-center justify-between w-full gap-10 pb-4">
         <div
           className={`w-1/2 rounded-xl p-2 ${
-            isDarkMode
-              ? "bg-grayBlack text-white"
-              : "bg-white text-black border"
+            isDarkMode ? "bg-grayBlack text-white" : "bg-white text-black "
           }`}
         >
           <p className="text-[13px] pl-3">Total Donations</p>
@@ -97,9 +95,7 @@ const DonationsAnalytics = () => {
         </div>
         <div
           className={`w-1/2 rounded-xl p-2 ${
-            isDarkMode
-              ? "bg-grayBlack text-white"
-              : "bg-white text-black border"
+            isDarkMode ? "bg-grayBlack text-white" : "bg-white text-black "
           }`}
         >
           <p className="text-[13px] pl-3">Total Donors</p>
@@ -107,7 +103,11 @@ const DonationsAnalytics = () => {
           <p className="text-[13px] pl-3 pt-3">{approvedDonations.length}</p>
         </div>
       </div>
-      <div className="bg-grayBlack p-5 rounded-lg h-[380px] pb-12 w-full mb-72 object-cover">
+      <div
+        className={` p-5 rounded-lg h-[380px] pb-12 w-full mb-72 object-cover  ${
+          isDarkMode ? "bg-grayBlack" : "bg-white"
+        }`}
+      >
         <p>Donations</p>
         <Line
           data={{
@@ -119,7 +119,6 @@ const DonationsAnalytics = () => {
                 backgroundColor: "#9966CC",
                 borderColor: "#9966CC",
                 borderWidth: 1,
-                
               },
             ],
           }}
@@ -130,7 +129,7 @@ const DonationsAnalytics = () => {
               x: {
                 grid: {
                   color: "transparent",
-                  marginLeft: "200px"
+                  marginLeft: "200px",
                 },
                 ticks: {
                   color: isDarkMode ? "#fff" : "#000",
@@ -138,7 +137,7 @@ const DonationsAnalytics = () => {
               },
               y: {
                 grid: {
-                  color: isDarkMode ? "#575757" : "#000",
+                  color: isDarkMode ? "#575757" : "#9A9A9A",
                 },
                 ticks: {
                   color: isDarkMode ? "#fff" : "#000",

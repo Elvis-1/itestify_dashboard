@@ -11,7 +11,7 @@ const Users = () => {
     { label: "Deleted Accounts", value: "deleted" },
   ];
   return (
-    <div className={`p-5 ${isDarkMode ? `bg-black` : `bg-off-white`}`}>
+    <div className={`p-5 ${isDarkMode ? `bg-black` : `bg-off-white`} h-screen`}>
       <div
         className={` ${
           isDarkMode ? ` bg-off-black` : `bg-white`

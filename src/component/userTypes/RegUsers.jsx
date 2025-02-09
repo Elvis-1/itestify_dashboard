@@ -80,7 +80,7 @@ const RegUsers = () => {
       )}
       <div
         className={`flex justify-between items-center w-full mt-5 px-4 rounded-t-2xl ${
-          isDarkMode ? `bg-lightBlack dark-mode` : `bg-white `
+          isDarkMode ? `bg-lightBlack dark-mode` : `bg-off-white `
         }`}
       >
         <h3 className="py-5 text-lg">User Management</h3>

@@ -23,6 +23,7 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../context/DarkModeContext";
 import NotificationModal from "../component/Popups/NotificationModal";
 import { NotificationContextProvider } from "../context/NotificationContext";
+import { useLocation } from "react-router-dom";
 
 // function Dashboard() {
 //   const [showTestimonyMenu, setShowTestimonyMenu] = useState(false)
@@ -388,6 +389,7 @@ function Dashboard() {
     }
   }
   const [isNotifModal, setIsNotifModal] = useState(false);
+  const location = useLocation();
   return (
     <div>
       {isNotifModal && (
@@ -397,7 +399,7 @@ function Dashboard() {
         />
       )}
       <div
-        className={`flex min-h-screen   ${
+        className={`flex min-h-screen ${
           isDarkMode ? "bg-black text-white" : "bg-white text-black"
         }`}
       >
@@ -420,14 +422,26 @@ function Dashboard() {
             </div>
 
             <Link to="">
-              <div className="font-sans flex items-center gap-1 p-3 text-[13px] hover:bg-[#9966CC] active:bg-[#9966CC]">
+              <div
+                className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
+                  location.pathname === "/dashboard"
+                    ? "bg-primary"
+                    : "bg-transparent"
+                }`}
+              >
                 <AppstoreOutlined style={{ fontSize: "18px" }} />
                 <p className="opacity-[0.7]">Overview</p>
               </div>
             </Link>
 
             <Link to="users">
-              <div className="font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]">
+              <div
+                className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
+                  location.pathname === "/dashboard/users"
+                    ? "bg-primary"
+                    : "bg-transparent"
+                }`}
+              >
                 <UsergroupAddOutlined style={{ fontSize: "20px" }} />
                 <p className="opacity-[0.7]">Users</p>
               </div>
@@ -448,14 +462,14 @@ function Dashboard() {
               </div>
             </div>
             {showTestimonyMenu ? (
-              <div className=" cursor-pointer text-[13px] flex flex-col items-center">
+              <div className=" cursor-pointer text-[13px] flex flex-col  justify-normal pl-2 ">
                 {/* dynamically navigating to each testimonies component */}
                 <Link to="all-testimonies">
                   <input
                     type="button"
                     value={"All Testimonies"}
                     placeholder="All Testimonies"
-                    className="ml-[-65px] border-none outline-none p-2 bg-tranparent cursor-pointer"
+                    className=" border-none outline-none p-2 bg-transparent cursor-pointer "
                     onClick={handleTestimonies}
                   />
                 </Link>
@@ -464,7 +478,7 @@ function Dashboard() {
                     type="button"
                     value={"Upload Testimonies"}
                     placeholder="upload Testimonies"
-                    className="ml-[-40px] border-none outline-none p-2 bg-transparent cursor-pointer"
+                    className=" border-none outline-none p-2 bg-transparent cursor-pointer"
                     onClick={handleTestimonies}
                   />
                 </Link>
@@ -488,19 +502,19 @@ function Dashboard() {
               </div>
             </div>
             {showInspirationalMenu ? (
-              <div className=" cursor-pointer text-[13px] flex flex-col items-center">
+              <div className=" cursor-pointer text-[13px] flex flex-col  justify-normal pl-2">
                 <Link to="inspirational-pictures">
                   <input
                     type="button"
                     value={"All Pictures"}
-                    className="ml-[-85px] border-none outline-none p-2 bg-tranparent"
+                    className="border-none outline-none p-2 bg-transparent cursor-pointer "
                   />
                 </Link>
                 <Link to="upload-inspirational-pictures">
                   <input
                     type="button"
                     value={"Upload Pictures"}
-                    className="ml-[-60px] border-none outline-none p-2 bg-tranparent"
+                    className="border-none outline-none p-2 bg-transparent cursor-pointer"
                   />
                 </Link>
               </div>
@@ -509,14 +523,26 @@ function Dashboard() {
             )}
 
             <Link to="donations">
-              <div className="font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC] focus:bg-[#9966CC] cursor-pointer">
+              <div
+                className={`font-sans flex items-center gap-1 p-3 text-[13px] cursor-pointer ${
+                  location.pathname === "/dashboard/donations"
+                    ? "bg-primary"
+                    : "bg-transparent"
+                }`}
+              >
                 <FaRegMoneyBill1 style={{ fontSize: "20px" }} />
                 <p className="opacity-[0.7]">Donations</p>
               </div>
             </Link>
 
             <Link to="notifications">
-              <div className="font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]">
+              <div
+                className={`font-sans flex items-center gap-1 p-3 text-[13px] cursor-pointer ${
+                  location.pathname === "/dashboard/notifications"
+                    ? "bg-primary"
+                    : "bg-transparent"
+                }`}
+              >
                 <IoIosNotificationsOutline style={{ fontSize: "24px" }} />
                 <div className="flex items-center justify-between w-[100%]">
                   <p className="opacity-[0.7]">Notifications history</p>
@@ -536,18 +562,20 @@ function Dashboard() {
               </div>
             </Link>
 
-            <div className="flex items-center gap-2 w-[90%] m-[auto] font-sans mt-2">
+            <div className="flex items-center gap-2 w-[90%] m-[auto] font-sans my-3 cursor-pointer ">
               <CiChat1 style={{ fontSize: "20px" }} />
-              <p className="font-sans text-[13px] mb-2 opacity-[0.8]">
-                Reviews
-              </p>
+              <p className="font-sans text-[13px] opacity-[0.8]">Reviews</p>
             </div>
 
-            <div className="font-sans flex items-center gap-1 p-3 text-[13px]">
+            <div
+              className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
+                showAnalyticsMenu ? `bg-primary` : `bg-transparent`
+              }`}
+            >
               <MdOutlineAnalytics style={{ fontSize: "20px" }} />
               <div
                 onClick={() => setShowAnalyticsMenu(!showAnalyticsMenu)}
-                className="flex items-center justify-between w-[100%] cursor-pointer"
+                className="flex items-center justify-between w-[100%] cursor-pointer "
               >
                 <p className="opacity-[0.7] font-sans">Analytics</p>
                 {showAnalyticsMenu ? (
@@ -638,7 +666,7 @@ function Dashboard() {
           </div>
 
           <div
-            className={`flex items-center justify-between overflow-hidden w-[85.5%] h-[50px]
+            className={`flex items-center justify-between overflow-hidden w-[80%] h-[50px]
              fixed z-50 top-0 p-3 mb-[100px]
              ${
                isDarkMode
