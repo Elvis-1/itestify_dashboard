@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo } from "react";
+import React, { useContext, useState, useMemo, useEffect } from "react";
 import { Line } from "react-chartjs-2";
 import {
   Chart as ChartJS,
@@ -12,30 +12,47 @@ import {
 } from "chart.js";
 import { DarkModeContext } from "../context/DarkModeContext";
 import { DonationsContext } from "../context/DonationContext";
+import { DateRangePicker } from "rsuite";
+import "rsuite/dist/rsuite-no-reset.min.css";
+import { IoMdArrowDropdown } from "react-icons/io";
+import noData from "../assets/images/No-data.png";
+import noDataLightMode from "../assets/images/Nodata-lightmode.png";
+import { addDays } from "date-fns";
+ChartJS.register(
+  CategoryScale,
+  LinearScale,
+  PointElement,
+  LineElement,
+  Title,
+  Tooltip,
+  Legend
+);
 
 const DonationsAnalytics = () => {
-  ChartJS.register(
-    CategoryScale,
-    LinearScale,
-    PointElement,
-    LineElement,
-    Title,
-    Tooltip,
-    Legend
-  );
-
   const { isDarkMode } = useContext(DarkModeContext);
   const { userDonation } = useContext(DonationsContext);
-  const [dateRange, setRangeDate] = useState({
-    from: "",
-    to: "",
-  });
+  const [dateRange, setRangeDate] = useState({ from: null, to: null });
+  const [filteredDonations, setFilteredDonations] = useState(userDonation);
+
+  useEffect(() => {
+    if (dateRange.from && dateRange.to) {
+      const filtered = userDonation.filter((dona) => {
+        const donationDate = new Date(dona.date);
+        return donationDate >= dateRange.from && donationDate <= dateRange.to;
+      });
+      setFilteredDonations(filtered);
+    } else {
+      setFilteredDonations(userDonation);
+    }
+  }, [dateRange, userDonation]);
 
   // Get verified donations
   const approvedDonations = useMemo(
     () =>
-      userDonation.filter((dona) => dona.status === "Verified" && dona.amount),
-    [userDonation]
+      filteredDonations.filter(
+        (dona) => dona.status === "Verified" && dona.amount
+      ),
+    [filteredDonations]
   );
 
   // Calculate total donations
@@ -54,33 +71,52 @@ const DonationsAnalytics = () => {
       });
 
       if (!acc[date]) {
-        acc[date] = {
-          date,
-          amount: 0,
-        };
+        acc[date] = { date, amount: 0 };
       }
       acc[date].amount += donation.amount;
       return acc;
     }, {});
 
-    // Convert to array and sort by date
+    // Convert to array and sort correctly
     return Object.values(groups).sort(
       (a, b) => new Date(a.date) - new Date(b.date)
     );
   }, [approvedDonations]);
 
   return (
-    <div className={`p-5  ${isDarkMode ? "bg-black" : "bg-off-white"}`}>
+    <div className={`p-5 ${isDarkMode ? "bg-black" : "bg-off-white"}`}>
       <div className="flex w-full justify-between items-center pb-5">
         <p>Analytics</p>
-        <input
-          className={`bg-off-black rounded-md pl-2 p-1 w-[200px] placeholder:text-off-black ${
-            isDarkMode ? "bg-off-black" : "bg-white"
-          } p-1 rounded-md outline-none text-sm placeholder:text-xs`}
-          placeholder="Yesterday (Nov 15 ,2024)"
-          type="date"
+        <DateRangePicker
+          showOneCalendar
+          format="dd.MM.yyyy"
+          character="-"
+          caretAs={IoMdArrowDropdown}
+          defaultValue={[dateRange.from, dateRange.to]}
+          value={[dateRange.from, dateRange.to]}
+          onChange={(range) => setRangeDate({ from: range[0], to: range[1] })}
+          limitEndYear={new Date().getFullYear()}
+          onClean={(range) => setRangeDate({ from: null, to:null })}
+          ranges={[
+            {
+              label: "Last 1 year",
+              value: [addDays(new Date(), -700), new Date()],
+              placement: "bottom",
+            },
+            {
+              label: "Last 1 month",
+              value: [addDays(new Date(), -31), new Date()],
+              placement: "bottom",
+            },
+          ]}
+          className={
+            isDarkMode
+              ? "rs-theme-dark bg-off-black"
+              : "rs-theme-light bg-white"
+          }
         />
       </div>
+
       <div className="flex items-center justify-between w-full gap-10 pb-4">
         <div
           className={`w-1/2 rounded-xl p-2 ${
@@ -103,51 +139,70 @@ const DonationsAnalytics = () => {
           <p className="text-[13px] pl-3 pt-3">{approvedDonations.length}</p>
         </div>
       </div>
+
       <div
-        className={` p-5 rounded-lg h-[380px] pb-12 w-full mb-72 object-cover  ${
+        className={`p-5 rounded-lg h-[380px] pb-12 w-full mb-72 object-cover ${
           isDarkMode ? "bg-grayBlack" : "bg-white"
         }`}
       >
         <p>Donations</p>
-        <Line
-          data={{
-            labels: groupedDonations.map((dona) => dona.date),
-            datasets: [
-              {
-                label: "",
-                data: groupedDonations.map((dona) => dona.amount),
-                backgroundColor: "#9966CC",
-                borderColor: "#9966CC",
-                borderWidth: 1,
+
+        {approvedDonations.length > 0 ? (
+          <Line
+            data={{
+              labels: groupedDonations.map((dona) => dona.date),
+              datasets: [
+                {
+                  label: "Donation Amount",
+                  data:
+                    groupedDonations.length < 1
+                      ? "null"
+                      : groupedDonations.map((dona) => dona.amount),
+                  backgroundColor: "#9966CC",
+                  borderColor: "#9966CC",
+                  borderWidth: 1,
+                  tension: 0.4,
+                },
+              ],
+            }}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              scales: {
+                x: {
+                  grid: { color: "transparent" },
+                  ticks: { color: isDarkMode ? "#fff" : "#000" },
+                },
+                y: {
+                  grid: { color: isDarkMode ? "#575757" : "#9A9A9A" },
+                  ticks: {
+                    color: isDarkMode ? "#fff" : "#000",
+                    stepSize: 20000,
+                    callback: (value) => `₦${value.toLocaleString()}`,
+                  },
+                },
               },
-            ],
-          }}
-          options={{
-            responsive: true,
-            maintainAspectRatio: false,
-            scales: {
-              x: {
-                grid: {
-                  color: "transparent",
-                  marginLeft: "200px",
-                },
-                ticks: {
-                  color: isDarkMode ? "#fff" : "#000",
-                },
-              },
-              y: {
-                grid: {
-                  color: isDarkMode ? "#575757" : "#9A9A9A",
-                },
-                ticks: {
-                  color: isDarkMode ? "#fff" : "#000",
-                  stepSize: 20000,
-                  callback: (value) => `₦${value.toLocaleString()}`,
-                },
-              },
-            },
-          }}
-        />
+            }}
+          />
+        ) : (
+          <div
+            className={`flex flex-col items-center justify-center h-64 opacity-70 ${
+              isDarkMode ? "text-off-white" : "text-off-black "
+            }`}
+          >
+            <img
+              src={isDarkMode ? noData : noDataLightMode}
+              width={100}
+              height={100}
+              alt=""
+            />
+
+            <p className="text-sm text-center max-w-sm pt-12">
+              There are no donations recorded for the selected date range. Try
+              selecting a different time period.
+            </p>
+          </div>
+        )}
       </div>
     </div>
   );

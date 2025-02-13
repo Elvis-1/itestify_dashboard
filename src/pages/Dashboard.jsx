@@ -405,7 +405,7 @@ function Dashboard() {
       >
         {/* whole side bar starts here */}
         <div
-          className={`w-[20%] ${
+          className={`w-[20%] overflow-hidden ${
             isDarkMode
               ? "bg-[#313131] text-white"
               : "bg-white text-black border-r border-r-slate-100"
@@ -425,12 +425,12 @@ function Dashboard() {
               <div
                 className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
                   location.pathname === "/dashboard"
-                    ? "bg-primary"
+                    ? "bg-primary text-white"
                     : "bg-transparent"
                 }`}
               >
                 <AppstoreOutlined style={{ fontSize: "18px" }} />
-                <p className="opacity-[0.7]">Overview</p>
+                <p>Overview</p>
               </div>
             </Link>
 
@@ -438,22 +438,29 @@ function Dashboard() {
               <div
                 className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
                   location.pathname === "/dashboard/users"
-                    ? "bg-primary"
+                    ? "bg-primary text-white"
                     : "bg-transparent"
                 }`}
               >
                 <UsergroupAddOutlined style={{ fontSize: "20px" }} />
-                <p className="opacity-[0.7]">Users</p>
+                <p>Users</p>
               </div>
             </Link>
 
-            <div className="font-sans flex items-center gap-1 p-3 text-[13px] hover:bg-[#9966CC] active:bg-[#9966CC]">
+            <div
+              className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
+                location.pathname === "/dashboard/all-testimonies" ||
+                location.pathname === "/dashboard/upload-testimonies"
+                  ? "bg-primary text-white"
+                  : "bg-transparent"
+              }`}
+            >
               <CiChat1 style={{ fontSize: "20px" }} />
               <div
                 onClick={() => setShowTestimonyMenu(!showTestimonyMenu)}
                 className="flex items-center justify-between w-[100%] cursor-pointer"
               >
-                <p className="opacity-[0.7]">Testimonies</p>
+                <p>Testimonies</p>
                 {showTestimonyMenu ? (
                   <CaretUpFilled style={{ fontSize: "15px" }} />
                 ) : (
@@ -487,13 +494,20 @@ function Dashboard() {
               ""
             )}
 
-            <div className="font-sans flex items-center gap-1 p-3 text-[13px]">
+            <div
+              className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
+                location.pathname === "/dashboard/inspirational-pictures" ||
+                location.pathname === "/dashboard/upload-inspirational-pictures"
+                  ? "bg-primary text-white"
+                  : "bg-transparent"
+              }`}
+            >
               <PictureOutlined style={{ fontSize: "17px" }} />
               <div
                 onClick={() => setShowInspirationalMenu(!showInspirationalMenu)}
                 className="flex items-center justify-between w-[100%] cursor-pointer"
               >
-                <p className="opacity-[0.7]">Inspirational Pictures</p>
+                <p>Inspirational Pictures</p>
                 {showInspirationalMenu ? (
                   <CaretUpFilled style={{ fontSize: "15px" }} />
                 ) : (
@@ -526,12 +540,12 @@ function Dashboard() {
               <div
                 className={`font-sans flex items-center gap-1 p-3 text-[13px] cursor-pointer ${
                   location.pathname === "/dashboard/donations"
-                    ? "bg-primary"
+                    ? "bg-primary text-white"
                     : "bg-transparent"
                 }`}
               >
                 <FaRegMoneyBill1 style={{ fontSize: "20px" }} />
-                <p className="opacity-[0.7]">Donations</p>
+                <p className="">Donations</p>
               </div>
             </Link>
 
@@ -539,13 +553,13 @@ function Dashboard() {
               <div
                 className={`font-sans flex items-center gap-1 p-3 text-[13px] cursor-pointer ${
                   location.pathname === "/dashboard/notifications"
-                    ? "bg-primary"
+                    ? "bg-primary text-white"
                     : "bg-transparent"
                 }`}
               >
                 <IoIosNotificationsOutline style={{ fontSize: "24px" }} />
                 <div className="flex items-center justify-between w-[100%]">
-                  <p className="opacity-[0.7]">Notifications history</p>
+                  <p className="">Notifications history</p>
                   <div
                     className="flex items-center justify-center 
                 bg-red  w-[30px] h-[30px] p-2 rounded-full text-center"
@@ -564,12 +578,15 @@ function Dashboard() {
 
             <div className="flex items-center gap-2 w-[90%] m-[auto] font-sans my-3 cursor-pointer ">
               <CiChat1 style={{ fontSize: "20px" }} />
-              <p className="font-sans text-[13px] opacity-[0.8]">Reviews</p>
+              <p className="font-sans text-[13px] ">Reviews</p>
             </div>
 
             <div
               className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
-                showAnalyticsMenu ? `bg-primary` : `bg-transparent`
+                location.pathname === "/dashboard/users-analytics" ||
+                location.pathname === "/dashboard/donations-analytics"
+                  ? `bg-primary text-white`
+                  : `bg-transparent`
               }`}
             >
               <MdOutlineAnalytics style={{ fontSize: "20px" }} />
@@ -577,7 +594,7 @@ function Dashboard() {
                 onClick={() => setShowAnalyticsMenu(!showAnalyticsMenu)}
                 className="flex items-center justify-between w-[100%] cursor-pointer "
               >
-                <p className="opacity-[0.7] font-sans">Analytics</p>
+                <p className=" font-sans">Analytics</p>
                 {showAnalyticsMenu ? (
                   <CaretUpFilled style={{ fontSize: "15px" }} />
                 ) : (
@@ -653,7 +670,7 @@ function Dashboard() {
           {/* main dashboard section header starts here */}
           <div
             className={`flex items-center
-        p-3 gap-2 h-[50px] w-[244.5px] m-[auto] 
+        p-3 gap-2 h-[50px] w-full m-[auto] 
         font-sans font-bold fixed top-0 left-0 z-50
         ${
           isDarkMode
@@ -666,7 +683,7 @@ function Dashboard() {
           </div>
 
           <div
-            className={`flex items-center justify-between overflow-hidden w-[80%] h-[50px]
+            className={`flex items-center justify-between  w-[80%] h-[50px]
              fixed z-50 top-0 p-3 mb-[100px]
              ${
                isDarkMode

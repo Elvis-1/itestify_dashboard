@@ -1,6 +1,7 @@
 import React, { useContext, useState } from "react";
 import { DarkModeContext } from "../context/DarkModeContext";
 import { regUsers } from "../data/userdetails";
+
 const UsersAnalytics = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [registeredUser] = useState(regUsers);
