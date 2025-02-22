@@ -18,6 +18,7 @@ import Allpics from "./component/inspirationalPics/Allpics";
 import UploadInspirational from "./component/inspirationalPics/UploadInspirational";
 import NotificationContext from "./context/NotificationContext";
 import GeneralSettings from "./pages/GeneralSettings";
+import Permissions from "./pages/Permissions";
 
 function App() {
   return (
@@ -61,6 +62,10 @@ function App() {
                   <Route
                     path="general-settings"
                     element={<GeneralSettings />}
+                  />
+                   <Route
+                    path="manage-permissions"
+                    element={<Permissions />}
                   />
                 </Route>
               </Routes>

@@ -1,4 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
+import { Link } from "react-router";
 import { RiSettings5Line } from "react-icons/ri";
 import { DarkModeContext } from "../context/DarkModeContext";
 import { IoMdAdd } from "react-icons/io";
@@ -218,15 +219,17 @@ const GeneralSettings = () => {
           } border-b-2 pb-3`}
         >
           <h1>General</h1>
-          <button
-            //   onClick={() => {
-            //     //  setIsSettingsModal(!isSettingsModal);
-            //   }}
-            className="flex justify-end gap-1 p-2  rounded-md bg-primary cursor-pointer ml-auto items-center"
-          >
-            <RiSettings5Line fill="#ffffff" />
-            <span className="text-white text-xs">Manage Permissions</span>
-          </button>
+          <Link to="/dashboard/manage-permissions">
+            <button
+              //   onClick={() => {
+              //     //  setIsSettingsModal(!isSettingsModal);
+              //   }}
+              className="flex justify-end gap-1 p-3 rounded-md bg-primary cursor-pointer ml-auto items-center"
+            >
+              <RiSettings5Line fill="#ffffff" />
+              <span className="text-white text-xs">Manage Permissions</span>
+            </button>
+          </Link>
         </div>
         <div className="pt-3 flex justify-between items-start w-full">
           <div

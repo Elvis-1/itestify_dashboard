@@ -96,7 +96,7 @@ const Notifications = () => {
         <div
           className={`rounded-2xl h-[30rem] ${
             isDarkMode ? `bg-grayBlack` : `bg-white`
-          } mt-10`}
+          } `}
         >
           <div className={`flex justify-between items-center w-full px-4 py-5`}>
             <h3 className="">Notifications</h3>

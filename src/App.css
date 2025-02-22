@@ -364,3 +364,8 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   align-items: center;
   justify-content: center;
 }
+.sidebar-container {
+  overflow-y: auto; 
+  scrollbar-width: none; 
+  -ms-overflow-style: none; 
+}
