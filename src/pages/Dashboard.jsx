@@ -645,16 +645,18 @@ function Dashboard() {
               <IoIosNotificationsOutline style={{ fontSize: "24px" }} />
               <p className="opacity-[0.7]">Notification settings</p>
             </div>
-
-            <div className="cursor-pointer font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]">
-              <MdOutlinePrivacyTip style={{ fontSize: "20px" }} />
-              <p className="opacity-[0.7]">Privacy and security</p>
-            </div>
-
-            <div className="cursor-pointer font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]">
-              <MdOutlineSettings style={{ fontSize: "20px" }} />
-              <p className="opacity-[0.7]">General</p>
-            </div>
+            <Link to="general-settings">
+              <div
+                className={`font-sans flex items-center gap-1 p-3 text-[13px] cursor-pointer ${
+                  location.pathname === "/dashboard/general-settings"
+                    ? "bg-primary text-white"
+                    : "bg-transparent"
+                }`}
+              >
+                <MdOutlineSettings style={{ fontSize: "20px" }} />
+                <p>General</p>
+              </div>
+            </Link>
 
             <div className="cursor-pointer font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]">
               <IoIosLogOut style={{ fontSize: "20px" }} />

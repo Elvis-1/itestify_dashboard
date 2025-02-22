@@ -18,6 +18,13 @@ import { IoMdArrowDropdown } from "react-icons/io";
 import noData from "../assets/images/No-data.png";
 import noDataLightMode from "../assets/images/Nodata-lightmode.png";
 import { addDays } from "date-fns";
+import subDays from "date-fns/subDays";
+import startOfWeek from "date-fns/startOfWeek";
+import endOfWeek from "date-fns/endOfWeek";
+import startOfMonth from "date-fns/startOfMonth";
+import endOfMonth from "date-fns/endOfMonth";
+import addMonths from "date-fns/addMonths";
+
 ChartJS.register(
   CategoryScale,
   LinearScale,
@@ -83,38 +90,90 @@ const DonationsAnalytics = () => {
     );
   }, [approvedDonations]);
 
+  const predefinedRanges = [
+    {
+      label: "Today",
+      value: [new Date(), new Date()],
+      placement: "left",
+    },
+    {
+      label: "Yesterday",
+      value: [addDays(new Date(), -1), addDays(new Date(), -1)],
+      placement: "left",
+    },
+    {
+      label: "This week",
+      value: [startOfWeek(new Date()), endOfWeek(new Date())],
+      placement: "left",
+    },
+    {
+      label: "Last 7 days",
+      value: [subDays(new Date(), 6), new Date()],
+      placement: "left",
+    },
+    {
+      label: "Last 30 days",
+      value: [subDays(new Date(), 29), new Date()],
+      placement: "left",
+    },
+    {
+      label: "This month",
+      value: [startOfMonth(new Date()), new Date()],
+      placement: "left",
+    },
+    {
+      label: "Last month",
+      value: [
+        startOfMonth(addMonths(new Date(), -1)),
+        endOfMonth(addMonths(new Date(), -1)),
+      ],
+      placement: "left",
+    },
+    {
+      label: "This year",
+      value: [new Date(new Date().getFullYear(), 0, 1), new Date()],
+      placement: "left",
+    },
+    {
+      label: "Last year",
+      value: [
+        new Date(new Date().getFullYear() - 1, 0, 1),
+        new Date(new Date().getFullYear(), 0, 0),
+      ],
+      placement: "left",
+    },
+    {
+      label: "All time",
+      value: [new Date(new Date().getFullYear() - 1, 0, 1), new Date()],
+      placement: "left",
+    },
+    {
+      label: "Clear",
+      value: null,
+      placement: "left",
+    },
+  ];
+
   return (
     <div className={`p-5 ${isDarkMode ? "bg-black" : "bg-off-white"}`}>
       <div className="flex w-full justify-between items-center pb-5">
         <p>Analytics</p>
-        <DateRangePicker
-          showOneCalendar
-          format="dd.MM.yyyy"
-          character="-"
-          caretAs={IoMdArrowDropdown}
-          defaultValue={[dateRange.from, dateRange.to]}
-          value={[dateRange.from, dateRange.to]}
-          onChange={(range) => setRangeDate({ from: range[0], to: range[1] })}
-          limitEndYear={new Date().getFullYear()}
-          onClean={(range) => setRangeDate({ from: null, to:null })}
-          ranges={[
-            {
-              label: "Last 1 year",
-              value: [addDays(new Date(), -700), new Date()],
-              placement: "bottom",
-            },
-            {
-              label: "Last 1 month",
-              value: [addDays(new Date(), -31), new Date()],
-              placement: "bottom",
-            },
-          ]}
-          className={
-            isDarkMode
-              ? "rs-theme-dark bg-off-black"
-              : "rs-theme-light bg-white"
-          }
-        />
+        <div className="mr-28">
+          <DateRangePicker
+            showOneCalendar
+            format="dd.MM.yyyy"
+            character="-"
+            caretAs={IoMdArrowDropdown}
+            defaultValue={[dateRange.from, dateRange.to]}
+            value={[dateRange.from, dateRange.to]}
+            onChange={(range) => setRangeDate({ from: range[0], to: range[1] })}
+            limitEndYear={new Date().getFullYear()}
+            ranges={predefinedRanges}
+            className={ 
+              isDarkMode ? "rs-theme-dark " : "rs-theme-light"
+            }
+          />
+        </div>
       </div>
 
       <div className="flex items-center justify-between w-full gap-10 pb-4">
