@@ -322,13 +322,6 @@ function Dashboard() {
             </div>
             {showAnalyticsMenu ? (
               <div className=" cursor-pointer text-[13px] flex flex-col  justify-normal pl-2">
-                <Link to="users-analytics">
-                  <input
-                    type="button"
-                    value={"Users"}
-                    className=" border-none outline-none p-2 bg-tranparent cursor-pointer"
-                  />
-                </Link>
                 <Link>
                   <input
                     type="button"

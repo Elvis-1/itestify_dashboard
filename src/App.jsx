@@ -7,7 +7,6 @@ import Overview from "./component/testimonies/Overview";
 import { DarkModeContextProvider } from "./context/DarkModeContext";
 import Users from "./pages/Users";
 import Donations from "./pages/Donations";
-import UsersAnalytics from "./pages/UsersAnalytics";
 import DonationsAnalytics from "./pages/DonationsAnalytics";
 import DonationContext from "./context/DonationContext";
 import Notifications from "./pages/Notifications";
@@ -53,7 +52,6 @@ function App() {
                     path="upload-inspirational-pictures"
                     element={<UploadInspirational />}
                   />
-                  <Route path="users-analytics" element={<UsersAnalytics />} />
                   <Route
                     path="donations-analytics"
                     element={<DonationsAnalytics />}
