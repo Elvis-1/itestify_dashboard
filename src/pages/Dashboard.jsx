@@ -17,10 +17,12 @@ import { CiChat1 } from "react-icons/ci";
 import { MdOutlineAnalytics } from "react-icons/md";
 import { MdOutlinePrivacyTip } from "react-icons/md";
 import { MdOutlineSettings } from "react-icons/md";
-import { FaRegUser } from "react-icons/fa6";
+import { FaBullseye, FaRegUser } from "react-icons/fa6";
 import { FaRegMoneyBill1 } from "react-icons/fa6";
 import { Link, Outlet, useNavigate } from 'react-router-dom'
 import { DarkModeContext } from '../context/DarkModeContext';
+
+import { Modal } from 'antd';
 
 
 
@@ -371,6 +373,8 @@ function Dashboard() {
   const [showAnalyticsMenu, setShowAnalyticsMenu] = useState(false)
   const [showInspirationalMenu, setShowInspirationalMenu] = useState(false)
   const [showAllTestimonies, setShowAllTestimonies] = useState(true)
+
+  const [logoutModal, setLogoutModal] = useState(false)
   
   const {isDarkMode, toggleTheme} = useContext(DarkModeContext)
 
@@ -385,8 +389,53 @@ function Dashboard() {
     }
   }
 
+  function handleCloseModal() {
+    setLogoutModal(false)
+  }
+
   return (
     <div className={`flex min-h-screen border  ${isDarkMode ? "bg-black text-white" : "bg-white text-black"}`}>
+
+        {/* Logout  modal */}
+        <Modal
+            open={logoutModal}
+            onCancel={handleCloseModal}
+            closeIcon={null}
+            footer={null}
+            styles={{
+                content: {
+                    backgroundColor: 'black',
+                    width: '350px',
+                    height: 'auto',
+                    color: 'white',
+                    margin: '0 auto',
+                    borderRadius: '8px',
+                    marginTop: '50px'
+                },
+                body: {
+                    backgroundColor: '#1717171',
+                    color: 'white',
+                
+                },
+            }}
+        >
+            <div className='flex flex-col w-[114%] ml-[-20px] mt-[-5px] items-center justify-center'>
+                <div>
+                    <>
+                    <p className='text-[20px] text-center pt-1'>Are you sure you want to logout?</p>
+                  
+                    <div className="flex text-center justify-center gap-2">
+                      <button onClick={handleCloseModal} className='border border-[#9966CC] mt-5 rounded text-[#9966CC] p-1 w-[120px]'>
+                        Cancel
+                      </button>
+                      <button className='mt-5 rounded bg-[#9966CC] p-1  w-[120px]'>Log Out</button>
+                    </div>
+                   
+                    </>
+                </div>
+            </div>
+
+        </Modal>
 
       {/* whole side bar starts here */}
       <div className={`flex-1 w-[100%] ${isDarkMode ? "bg-[#313131] text-white" : "bg-white text-black border-r border-r-slate-100"}`}>
@@ -402,7 +451,7 @@ function Dashboard() {
         {/* sidebar header ends here */}
 
         {/* sidebar main section starts here */}
-        <div className={`${isDarkMode ? "bg-[#313131] text-white" : "bg-white text-black "} pt-5`}>
+        <div className={`sidebar-scroll ${isDarkMode ? "bg-[#313131] text-white" : "bg-white text-black "} pt-5`}>
 
             <div className='p-3 text-[13px] mt-8 font-sans opacity-[0.7]'>
               <h1 className='p-1 font-sans'>MAIN MENU</h1>
@@ -494,10 +543,12 @@ function Dashboard() {
           </div>
           </Link>
         
-          <div className='flex items-center gap-2 w-[90%] m-[auto] font-sans mt-2'>
+        <Link to="review">
+          <div className='flex items-center gap-2 w-[90%] m-[auto] font-sans mt-2 cursor-pointer'>
             <CiChat1 style={{ fontSize: '20px' }} />
             <p className='font-sans text-[13px] mb-2 opacity-[0.8]'>Reviews</p>
           </div>
+        </Link>
 
 
           <div className='font-sans flex items-center gap-1 p-3 text-[13px]'>
@@ -513,22 +564,30 @@ function Dashboard() {
           {showAnalyticsMenu ?
           <div className=' cursor-pointer text-[13px] flex flex-col items-center'>
             <input type='button' value={'Users'}  className='ml-[-155px] border-none outline-none p-2 bg-tranparent'/>
-            <input type='button' value={'Testimonies'} placeholder='' className='ml-[-120px] border-none outline-none p-2 bg-transparent'/>
+
+            <Link to='testimony-analytics'>
+              <input type='button' value={'Testimonies'} placeholder='' className='ml-[-120px] border-none outline-none p-2 bg-transparent'/>
+            </Link>
+            
             <input type='button' value={'Donations'} placeholder='' className='ml-[-125px] border-none outline-none p-2 bg-transparent'/>
           </div>: ""
           }
 
           {/* settings section starts here */}
           <h1 className='p-3 text-[13px] mt-5 font-sans opacity-[0.7]'>SETTINGS</h1>
-          <div className='cursor-pointer font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]'>
-            <FaRegUser style={{ fontSize: '15px' }}/>
-            <p className='opacity-[0.7]'>My Profile</p>
-          </div>
+          <Link to="profile">
+            <div className='cursor-pointer font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]'>
+              <FaRegUser style={{ fontSize: '15px' }}/>
+              <p className='opacity-[0.7]'>My Profile</p>
+            </div>
+          </Link>
 
-          <div className='cursor-pointer font-sans flex items-center gap-1 p-3 text-[13px] ml-[-5px] active:bg-[#9966CC]'>
-            <IoIosNotificationsOutline style={{ fontSize: '24px' }}/>
-            <p className='opacity-[0.7]'>Notification settings</p>
-          </div>
+          <Link to="notification-settings">
+            <div className='cursor-pointer font-sans flex items-center gap-1 p-3 text-[13px] ml-[-5px] active:bg-[#9966CC]'>
+              <IoIosNotificationsOutline style={{ fontSize: '24px' }}/>
+              <p className='opacity-[0.7]'>Notification settings</p>
+            </div>
+          </Link>
 
           <div className='cursor-pointer font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]'>
             <MdOutlinePrivacyTip style={{ fontSize: '20px' }}/>
@@ -540,7 +599,10 @@ function Dashboard() {
             <p className='opacity-[0.7]'>General</p>
           </div>
 
-          <div className='cursor-pointer font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]'>
+          <div onClick={() => {
+            setLogoutModal(true)
+          }}
+          className='cursor-pointer font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]'>
             <IoIosLogOut style={{ fontSize: '20px' }}/>
             <p className='opacity-[0.7]'>Logout</p>
           </div>
@@ -555,7 +617,7 @@ function Dashboard() {
         <div className='flex-[6] min-h-screen'>
 
           {/* main dashboard section header starts here */}
-          <div className={`flex items-center justify-between overflow-hidden w-[85.5%] h-[50px]
+          <div className={`flex items-center justify-between w-[85.5%] h-[50px]
              fixed z-[1000] top-0 p-3 mb-[100px]
              ${isDarkMode ? "bg-[#313131] text-white" : "bg-white text-black border-b border-b-slate-200"}`}>
               <div className='h-[50px] opacity-[0.7] w-[130px] mt-5 font-sans'>
@@ -587,7 +649,12 @@ function Dashboard() {
               </div>
           </div><br/><br/>
           {/* main dashboard section header ends here sec*/}
+          
+          <div className=" z-[1000]">
           <Outlet/>
+          </div>
+            
+        
         </div>
         {/* main dashboard section ends here */}
     </div>

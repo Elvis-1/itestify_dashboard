@@ -365,4 +365,11 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   justify-content: center;
 }
 
+.sidebar-scroll{
+  overflow: scroll;
+}
+.sidebar-scroll::-webkit-scrollbar{
+  display: none;
+}
+
 
