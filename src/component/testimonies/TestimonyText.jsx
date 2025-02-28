@@ -323,7 +323,7 @@ function TestimonyText() {
                 onClick={handleCloseModal}
                 className='border border-[#9966CC] outline-none 
                 text-[#9966CC] w-[100px] p-1 rounded ml-[-20px] mr-2'>Cancel
-            </button>
+                </button>
                 <button 
                 onClick={deleteSuccessFulModal}
                 className='border-none outline-none
