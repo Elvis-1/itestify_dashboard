@@ -301,7 +301,7 @@ function Dashboard() {
 
             <div
               className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
-                location.pathname === "/dashboard/users-analytics" ||
+                location.pathname === "/dashboard/testmonies-analytics" ||
                 location.pathname === "/dashboard/donations-analytics"
                   ? `bg-primary text-white`
                   : `bg-transparent`
