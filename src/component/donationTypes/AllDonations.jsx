@@ -213,6 +213,7 @@ const AllDonations = () => {
               <tr className="border-b-0">
                 <td colSpan={8} className="hover:bg-lightBlack border-b-0">
                   <NoDataComponent/>
+                </td>
                 <td colSpan={8} className="hover:bg-transparent border-b-0 border-b-transparent">
                   <EmptyState />
                 </td>
