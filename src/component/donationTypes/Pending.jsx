@@ -14,7 +14,7 @@ import FailedDonation from "../Popups/FailedDonation";
 import useVerifiedandFailed from "../../hooks/useVerifiedandFailed";
 import SuccessModal from "../Popups/SuccessModal";
 import { DonationsContext } from "../../context/DonationContext";
-import NoDataComponent from "../NoDataComponent";
+import EmptyState from "../EmptyState";
 
 const Pending = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -39,7 +39,7 @@ const Pending = () => {
   }, [searchItem, pendingDonations]);
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
     usePagination(filteredDonations);
-    console.log(pendingDonations)
+  console.log(pendingDonations);
   const { sort, sortHeader, sortArray } = useSort();
   const tableHeaders = [
     {
@@ -175,7 +175,7 @@ const Pending = () => {
         />
       )}
 
-      <div className={` rounded-t-2xl h-[26rem]`}>
+      <div className={` rounded-t-2xl h-[27rem]`}>
         <div className={`flex justify-between items-center w-full pb-3 px-3`}>
           <h3 className="py-5">Donations</h3>
 
@@ -203,18 +203,28 @@ const Pending = () => {
         </div>
         <table
           className={`custom-table font-sans text-[14px] ${
-            isDarkMode ? `dark-mode` : `light-mode`
+            isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
           } `}
         >
-          <thead>
-            <tr>
+          <thead
+            className={` text-xs ${
+              isDarkMode ? `bg-near-black` : `bg-off-white text-black`
+            }`}
+          >
+            <tr
+              className={` ${
+                isDarkMode
+                  ? `bg-off-black text-white hover:bg-off-black`
+                  : `bg-white text-black hover:bg-off-white`
+              }`}
+            >
               {tableHeaders.map((header, index) => (
                 <th
-                  className={`cursor-pointer border-b-2 text-[10px] ${
-                    isDarkMode
-                      ? ` border-b-[#333333]  bg-off-black  `
-                      : ` border-b-off-white`
-                  }`}
+                className={`cursor-pointer text-xs ${
+                  isDarkMode
+                    ? `bg-off-black text-white`
+                    : `bg-off-white text-black`
+                }`}
                   onClick={() => {
                     sortHeader(header), console.log(header);
                   }}
@@ -242,7 +252,7 @@ const Pending = () => {
                 <tr
                   className={`relative ${
                     isDarkMode
-                      ? `hover:bg-[#313131]`
+                      ? `hover:bg-off-black`
                       : `hover:bg-off-white text-black`
                   }`}
                 >
@@ -267,7 +277,7 @@ const Pending = () => {
                           isDarkMode
                             ? `text-white bg-[#292929]`
                             : `text-black bg-white`
-                        } w-[120px] border-[1px] border-white absolute top-10 right-10 z-50 shadow-lg`}
+                        } w-[120px] border-[1px] border-white absolute top-10 right-10 z-[9999] shadow-lg`}
                       >
                         <p
                           onClick={() => {
@@ -314,8 +324,8 @@ const Pending = () => {
           ) : (
             <tbody>
               <tr className="border-b-0">
-                <td colSpan={9} className="hover:bg-lightBlack border-b-0">
-                <NoDataComponent />
+                <td colSpan={9} className="hover:bg-transparent border-b-0 border-b-transparent">
+                  <EmptyState />
                 </td>
               </tr>
             </tbody>

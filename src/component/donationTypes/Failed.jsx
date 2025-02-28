@@ -9,7 +9,7 @@ import DonationsDetails from "../Popups/DonationsDetails";
 import usePagination from "../../hooks/usePagination";
 import useProfile from "../../hooks/useProfile";
 import { DonationsContext } from "../../context/DonationContext";
-import NoDataComponent from "../NoDataComponent";
+import EmptyState from "../EmptyState";
 
 const Failed = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -103,7 +103,7 @@ const Failed = () => {
           DonationUser={eachUser}
         />
       )}
-      <div className={` rounded-t-2xl h-[24rem]`}>
+      <div className={` rounded-t-2xl h-[25rem]`}>
         <div className={`flex justify-between items-center w-full pb-2 px-3`}>
           <h3 className="py-5">Donations</h3>
           <div
@@ -130,18 +130,28 @@ const Failed = () => {
         </div>
         <table
           className={`custom-table font-sans text-[14px] ${
-            isDarkMode ? `dark-mode` : `light-mode`
+            isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
           } `}
         >
-          <thead>
-            <tr>
+          <thead
+            className={` text-xs ${
+              isDarkMode ? `bg-near-black` : `bg-off-white text-black`
+            }`}
+          >
+            <tr
+              className={` ${
+                isDarkMode
+                  ? `bg-off-black text-white hover:bg-[#313131]`
+                  : `bg-white text-black hover:bg-off-white`
+              }`}
+            >
               {tableHeaders.map((header, index) => (
                 <th
-                  className={`cursor-pointer border-b-2 text-[10px] ${
-                    isDarkMode
-                      ? ` border-b-[#333333]  bg-off-black  `
-                      : ` border-b-off-white`
-                  }`}
+                className={`cursor-pointer text-[10px] ${
+                  isDarkMode
+                    ? `bg-off-black text-white`
+                    : `bg-off-white text-black`
+                }`}
                   onClick={() => {
                     sortHeader(header), console.log(header);
                   }}
@@ -194,9 +204,9 @@ const Failed = () => {
                       <div
                         className={`rounded-lg ${
                           isDarkMode
-                            ? `text-white bg-[#292929]`
-                            : `text-black bg-white`
-                        } w-[120px] border-[1px] border-white absolute top-10 right-10 z-30 shadow-lg`}
+                            ? `text-white bg-[#292929] border-white`
+                            : `text-black bg-white border-borderColor`
+                        } w-[120px] border-[1px]  absolute top-10 right-10 z-30 shadow-lg`}
                       >
                         <p
                           onClick={() => {
@@ -221,10 +231,10 @@ const Failed = () => {
               </tbody>
             ))
           ) : (
-            <tbody>
-              <tr className="border-b-0">
-                <td colSpan={9} className="hover:bg-lightBlack border-b-0">
-                <NoDataComponent />
+            <tbody className="border-b-0 border-b-transparent">
+              <tr className="border-b-0 border-b-transparent">
+                <td colSpan={9} className="hover:bg-transparent border-b-0 border-b-transparent">
+                  <EmptyState />
                 </td>
               </tr>
             </tbody>

@@ -11,7 +11,7 @@ const Users = () => {
     { label: "Deleted Accounts", value: "deleted" },
   ];
   return (
-    <div className={`p-5 ${isDarkMode ? `bg-black` : `bg-off-white`}`}>
+    <div className={`p-5 ${isDarkMode ? `bg-black` : `bg-off-white`} h-screen`}>
       <div
         className={` ${
           isDarkMode ? ` bg-off-black` : `bg-white`
@@ -21,7 +21,7 @@ const Users = () => {
           <p
             key={type.value}
             onClick={() => setUserType(type.value)}
-            className={`${
+            className={`text-xs ${
               userType === type.value
                 ? ` bg-primary text-white`
                 : `${isDarkMode ? `text-gray-300` : `text-black`}`

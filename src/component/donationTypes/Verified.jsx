@@ -12,7 +12,7 @@ import useProfile from "../../hooks/useProfile";
 import FailedStatus from "../Popups/FailedStatus";
 import SuccessModal from "../Popups/SuccessModal";
 import { DonationsContext } from "../../context/DonationContext";
-import NoDataComponent from "../NoDataComponent";
+import EmptyState from "../EmptyState";
 
 const Verified = () => {
   //Usestates
@@ -160,19 +160,25 @@ const Verified = () => {
           </div>
         </div>
         <table
-          className={`custom-table font-sans text-[14px] ${
-            isDarkMode ? `dark-mode` : `light-mode`
-          }`}
+         className={`custom-table font-sans text-[14px] ${
+          isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
+        } `}
         >
-          <thead>
-            <tr>
+          <thead className={` text-xs ${
+              isDarkMode ? `bg-near-black` : `bg-off-white text-black`
+            }`}>
+            <tr className={` ${
+                isDarkMode
+                  ? `bg-off-black text-white hover:bg-[#313131]`
+                  : `bg-white text-black hover:bg-off-white`
+              }`}>
               {tableHeaders.map((header, index) => (
                 <th
-                  className={`cursor-pointer border-b-2 text-[10px] ${
-                    isDarkMode
-                      ? ` border-b-[#333333] bg-off-black`
-                      : ` border-b-off-white`
-                  }`}
+                className={`cursor-pointer text-xs ${
+                  isDarkMode
+                    ? `bg-off-black text-white`
+                    : `bg-off-white text-black`
+                }`}
                   onClick={() => sortHeader(header)}
                   key={index}
                 >

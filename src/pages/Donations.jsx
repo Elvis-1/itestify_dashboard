@@ -1,4 +1,4 @@
-import React, { useContext, useState,useEffect } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { RiSettings5Line } from "react-icons/ri";
 import { DarkModeContext } from "../context/DarkModeContext";
 import AllDonations from "../component/donationTypes/AllDonations";
@@ -21,20 +21,19 @@ const Donations = () => {
     { user: "Failed" },
   ];
 
-   useEffect(() => {
-      if(isSuccessModal){
-      const timeout = 
-      setTimeout(() => {
+  useEffect(() => {
+    if (isSuccessModal) {
+      const timeout = setTimeout(() => {
         setISSuccessModal(false);
       }, 2000);
-  
+
       return () => clearTimeout(timeout);
     }
-    }, [isSuccessModal]);
-  
+  }, [isSuccessModal]);
 
   return (
-    <div className="m-5">
+    <div className={`${isDarkMode? `bg-black`: `bg-off-white`} h-screen`}>
+    <div className={`p-5 ${isDarkMode ? `bg-black` : `bg-off-white`}`}>
       {isSettingsModal && (
         <DonationsSettings
           isSettingsModal={isSettingsModal}
@@ -82,6 +81,7 @@ const Donations = () => {
         {userType === "Pending" && <Pending />}
         {userType === "Failed" && <Failed />}
       </div>
+    </div>
     </div>
   );
 };
