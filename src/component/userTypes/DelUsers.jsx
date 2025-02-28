@@ -11,7 +11,7 @@ import useSort from "../../hooks/useSort.jsx";
 import usePagination from "../../hooks/usePagination.jsx";
 import Pagination from "../Pagination.jsx";
 import SuccessModal from "../Popups/SuccessModal.jsx";
-import EmptyState from "../EmptyState.jsx";
+import NoDataComponent from "../NoDataComponent.jsx";
 const DelUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [deletedUsers, setDeletedUsers] = useState(
@@ -342,7 +342,7 @@ const DelUsers = () => {
                   colSpan={8}
                   className="hover:bg-transparent border-b-0 border-b-transparent"
                 >
-                  <EmptyState />
+                  <NoDataComponent />
                 </td>
               </tr>
             </tbody>

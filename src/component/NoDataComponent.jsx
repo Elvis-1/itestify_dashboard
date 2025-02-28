@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import nodata from "../assets/images/No-data.png";
 import { DarkModeContext } from "../context/DarkModeContext";
 import noDataLightMode from "../assets/images/Nodata-lightmode.png";
-const EmptyState = () => {
+const NoDataComponent = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   return (
     <div className="grid place-items-center">

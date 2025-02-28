@@ -14,7 +14,7 @@ import FailedDonation from "../Popups/FailedDonation";
 import useVerifiedandFailed from "../../hooks/useVerifiedandFailed";
 import SuccessModal from "../Popups/SuccessModal";
 import { DonationsContext } from "../../context/DonationContext";
-import EmptyState from "../EmptyState";
+import NoDataComponent from "../NoDataComponent";
 
 const Pending = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -325,7 +325,7 @@ const Pending = () => {
             <tbody>
               <tr className="border-b-0">
                 <td colSpan={9} className="hover:bg-transparent border-b-0 border-b-transparent">
-                  <EmptyState />
+                  <NoDataComponent />
                 </td>
               </tr>
             </tbody>

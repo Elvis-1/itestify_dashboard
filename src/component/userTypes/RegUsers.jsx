@@ -8,7 +8,7 @@ import UserRegProfile from "../Popups/UserRegProfile";
 import useSort from "../../hooks/useSort";
 import usePagination from "../../hooks/usePagination";
 import Pagination from "../Pagination";
-import EmptyState from "../EmptyState";
+import NoDataComponent from "../NoDataComponent";
 const RegUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [registeredUsers, setRegisteredUsers] = useState(regUsers);
@@ -212,7 +212,7 @@ const RegUsers = () => {
             <tbody>
               <tr className="border-b-0">
                 <td colSpan={8} className="hover:bg-transparent border-b-0 border-b-transparent">
-                  <EmptyState />
+                  <NoDataComponent />
                 </td>
               </tr>
             </tbody>

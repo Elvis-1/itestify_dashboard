@@ -215,7 +215,7 @@ const AllDonations = () => {
                   <NoDataComponent/>
                 </td>
                 <td colSpan={8} className="hover:bg-transparent border-b-0 border-b-transparent">
-                  <EmptyState />
+                  <NoDataComponent />
                 </td>
               </tr>
             </tbody>
