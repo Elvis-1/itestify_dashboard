@@ -8,16 +8,15 @@
   color: white !important; /* Changes the eye icon color */
 }
 
-
 .my-switch.ant-switch-checked {
   background-color: black !important;
 }
 
 .manage-settings-switch.ant-switch-checked {
-  background-color: #9966CC !important;
+  background-color: #9966cc !important;
 }
 
-.manage-settings-switch{
+.manage-settings-switch {
   background-color: grey !important;
 }
 
@@ -26,59 +25,59 @@
 }
 
 .table-container {
-width: 100%;
-height: 300px;
-overflow-x: auto;
-margin: 20px 0;
-background-color: #171717;
-border-radius: 20px;
+  width: 100%;
+  height: 300px;
+  overflow-x: auto;
+  margin: 20px 0;
+  background-color: #171717;
+  border-radius: 20px;
 }
 
 .custom-table {
-width: 100%;
-border-collapse: collapse;
-text-align: left;
-opacity: 0.7;
-color: #fff;
-/* background-color: #171717; */
+  width: 100%;
+  border-collapse: collapse;
+  text-align: left;
+  opacity: 0.7;
+  color: #fff;
+  /* background-color: #171717; */
 }
 
 .custom-table thead {
-/* background-color: #171717; */
-color: white;
+  /* background-color: #171717; */
+  color: white;
 }
 
 .custom-table thead th {
-padding: 12px;
-text-transform: capitalize;
-letter-spacing: 0.5px;
-border-bottom: 2px solid #333333;
+  padding: 12px;
+  text-transform: capitalize;
+  letter-spacing: 0.5px;
+  border-bottom: 2px solid #333333;
 }
 
 .custom-table tbody tr:nth-child(odd) {
-/* background-color: #171717; */
+  /* background-color: #171717; */
 }
 
 .custom-table tbody tr:hover {
-/* background-color: #313131; */
-cursor: pointer;
+  /* background-color: #313131; */
+  cursor: pointer;
 }
 
 .custom-table th,
 .custom-table td {
-padding: 10px 12px;
-border-bottom: 1px solid #ddd;
+  padding: 10px 12px;
+  border-bottom: 1px solid #ddd;
 }
 
 .custom-table tbody td {
-vertical-align: middle;
+  vertical-align: middle;
 }
 
 .rdt_TableHeadRow {
   border-bottom: none !important; /* Remove border from the header row */
 }
 
-.no-icon{
+.no-icon {
   background-color: transparent;
   margin-left: 6px;
   width: 120px;
@@ -86,25 +85,25 @@ vertical-align: middle;
   border: none;
   outline: none;
 }
-.no-icon::-webkit-calendar-picker-indicator{
+.no-icon::-webkit-calendar-picker-indicator {
   opacity: 0;
 }
 
-.test-input::placeholder{
+.test-input::placeholder {
   color: white;
 }
-.myInput{
+.myInput {
   display: none;
 }
 input[type="date"]::-webkit-calendar-picker-indicator,
 input[type="time"]::-webkit-calendar-picker-indicator {
-  background-color:white;
+  background-color: white;
   color: white; /* This changes the color of the icon (browser-dependent) */
   border-radius: 4px;
   padding: 1px;
   cursor: pointer;
 }
-#video_player{
+#video_player {
   position: relative;
   width: 300px;
   height: 300px;
@@ -112,7 +111,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   overflow: hidden;
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.24);
 }
-#video_player #main_video{
+#video_player #main_video {
   position: relative;
   width: 100%;
   height: 300px;
@@ -144,8 +143,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   height: 100%;
 }
 
-
-#video_player .controls{
+#video_player .controls {
   position: absolute;
   bottom: 0;
   left: 0;
@@ -170,7 +168,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   top: 0;
   left: 0;
   height: 100%;
-  background: #9966CC;
+  background: #9966cc;
   width: 0%; /* Default to 0, dynamically updated by JS */
   border-radius: inherit;
   cursor: pointer;
@@ -178,7 +176,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 
 .controls .progress-area .progress-bar::before {
-  content: '';
+  content: "";
   position: absolute;
   width: 10px;
   height: 10px;
@@ -186,10 +184,10 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   top: 50%;
   right: 0; /* Positioned at the end of the progress */
   transform: translate(50%, -50%);
-  background: #9966CC;
+  background: #9966cc;
 }
 
-.controls .controls-list{
+.controls .controls-list {
   display: flex;
   flex-wrap: nowrap;
   align-items: center;
@@ -199,20 +197,20 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   margin: 0 auto;
 }
 .controls .controls-list .control-left,
-.controls .controls-list .control-right{
+.controls .controls-list .control-right {
   display: flex;
   justify-content: center;
   align-items: center;
 }
 .controls .control-left .timer {
   display: inline-block;
-  font-size:  13px;
+  font-size: 13px;
   white-space: nowrap;
   color: #fff;
   margin-left: 5px;
   text-align: center;
 }
-.controls .icon{
+.controls .icon {
   display: inline-flex;
   justify-content: center;
   align-items: center;
@@ -221,17 +219,17 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   margin-left: 8px;
   margin-right: 5px;
 }
-.controls .fast-rewind:active{
+.controls .fast-rewind:active {
   transition: 0.2s;
   transform: rotate(-45deg);
   cursor: pointer;
 }
-.controls .fast-forward:active{
+.controls .fast-forward:active {
   transition: 0.2s;
   transform: rotate(45deg);
   cursor: pointer;
 }
-.controls .speed{
+.controls .speed {
   background: #fff;
   width: 16px;
   height: 16px;
@@ -242,19 +240,19 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   font-weight: bolder;
   text-align: center;
 }
-.controls .icon .volume_range{
+.controls .icon .volume_range {
   -webkit-appearance: none;
   appearance: none;
   width: 0px;
   height: 3px;
-  background: #9966CC;
+  background: #9966cc;
   color: #fff;
   cursor: pointer;
   outline: none;
   border: none;
   transition: 0.4s;
 }
-.controls .icon .volume_range::-webkit-slider-thumb{
+.controls .icon .volume_range::-webkit-slider-thumb {
   -webkit-appearance: none;
   appearance: none;
   width: 10px;
@@ -267,23 +265,23 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   opacity: 0;
   transition: 0.3s;
 }
-.controls .icon:hover .volume_range{
+.controls .icon:hover .volume_range {
   display: inline-block;
   width: 20px;
 }
-.controls .icon:hover .volume_range::-webkit-slider-thumb{
+.controls .icon:hover .volume_range::-webkit-slider-thumb {
   opacity: 1;
   pointer-events: auto;
   transition: 0.5s;
 }
-.control-right .icon .settingsBtn{
+.control-right .icon .settingsBtn {
   transition: 0.3s;
 }
-.control-right .icon .settingsBtn:active{
+.control-right .icon .settingsBtn:active {
   transform: rotate(45deg);
 }
 
-#video_player #settings{
+#video_player #settings {
   position: absolute;
   right: 25px;
   bottom: 120px;
@@ -294,17 +292,15 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   border-radius: 10px;
 }
 
-
-#settings input[type="checkbox"]{
+#settings input[type="checkbox"] {
   width: 15px;
   height: 15px;
   border-radius: 3px;
 }
 
-
-#settings input[type="checkbox"]:checked{
+#settings input[type="checkbox"]:checked {
   appearance: none;
-  background: #9966CC;
+  background: #9966cc;
   cursor: pointer;
   width: 15px;
   height: 15px;
@@ -319,7 +315,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   justify-content: center;
 }
 
-#playback_settings{
+#playback_settings {
   padding: 5px;
   position: absolute;
   left: 10px;
@@ -332,23 +328,23 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   overflow: scroll;
 }
 
-#playback_settings::-webkit-scrollbar{
+#playback_settings::-webkit-scrollbar {
   display: none;
 }
-#settings::-webkit-scrollbar{
+#settings::-webkit-scrollbar {
   display: none;
 }
 
-#settings input[type="checkbox"]{
+#settings input[type="checkbox"] {
   width: 15px;
   height: 15px;
   border-radius: 3px;
   color: #fff;
 }
 
-#playback_settings input[type="checkbox"]:checked{
+#playback_settings input[type="checkbox"]:checked {
   appearance: none;
-  background: #9966CC;
+  background: #9966cc;
   cursor: pointer;
   width: 15px;
   height: 15px;
@@ -365,7 +361,12 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   justify-content: center;
 }
 .sidebar-container {
-  overflow-y: auto; 
-  scrollbar-width: none; 
-  -ms-overflow-style: none; 
+  overflow-y: auto;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+input[type="checkbox"] {
+  background-color: #9966cc;
+  cursor: pointer;
+  accent-color: #9966cc;
 }

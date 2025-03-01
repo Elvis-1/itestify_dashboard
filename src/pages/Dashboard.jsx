@@ -24,12 +24,15 @@ import { DarkModeContext } from "../context/DarkModeContext";
 import NotificationModal from "../component/Popups/NotificationModal";
 import { NotificationContextProvider } from "../context/NotificationContext";
 import { useLocation } from "react-router-dom";
+import { Modal } from "antd";
 
 function Dashboard() {
   const [showTestimonyMenu, setShowTestimonyMenu] = useState(false);
   const [showAnalyticsMenu, setShowAnalyticsMenu] = useState(false);
   const [showInspirationalMenu, setShowInspirationalMenu] = useState(false);
   const [showAllTestimonies, setShowAllTestimonies] = useState(true);
+  const [logoutModal, setLogoutModal] = useState(false);
+  const [isNotifModal, setIsNotifModal] = useState(false);
 
   const { isDarkMode, toggleTheme } = useContext(DarkModeContext);
 
@@ -47,8 +50,10 @@ function Dashboard() {
       navigate("upload-testimonies");
     }
   }
-  const [isNotifModal, setIsNotifModal] = useState(false);
   const location = useLocation();
+  const handleCloseModal = () => {
+    setLogoutModal(false);
+  };
   return (
     <div className="relative">
       {isNotifModal && (
@@ -57,7 +62,54 @@ function Dashboard() {
           setIsNotifModal={setIsNotifModal}
         />
       )}
+      <Modal
+        open={logoutModal}
+        onCancel={handleCloseModal}
+        closeIcon={null}
+        footer={null}
+        styles={{
+          content: {
+            backgroundColor: "black",
+            width: "350px",
+            height: "auto",
+            color: "white",
+            margin: "0 auto",
+            borderRadius: "8px",
+            marginTop: "50px",
+          },
+          body: {
+            backgroundColor: "#1717171",
+            color: "white",
+          },
+        }}
+      >
+        <div className="flex flex-col max-w-xl items-center justify-center">
+          <div>
+            <>
+              <p className="text-[20px] text-center pt-1">
+                Are you sure you want to logout?
+              </p>
 
+              <div className="flex text-center items-center justify-center gap-2 mt-10">
+                <button
+                  onClick={handleCloseModal}
+                  className="border border-primary rounded text-primary  px-5 text-sm py-2"
+                >
+                  Cancel
+                </button>
+                <Link to="/login">
+                  <button
+                    onClick={handleCloseModal}
+                    className="rounded bg-primary px-5 text-sm py-2"
+                  >
+                    Log Out
+                  </button>
+                </Link>
+              </div>
+            </>
+          </div>
+        </div>
+      </Modal>
       {/* <---------------------------TOP NAV BAR STARTS HERE ---------------------------> */}
       <div
         className={` flex font-sans font-bold px-2 h-12 fixed z-20 w-full
@@ -278,30 +330,40 @@ function Dashboard() {
                 <IoIosNotificationsOutline style={{ fontSize: "24px" }} />
                 <div className="flex items-center justify-between w-[100%]">
                   <p className="">Notifications history</p>
-                  <div
-                    className="flex items-center justify-center 
+                  {notifications?.filter((notif) => notif.status === "unread")
+                    .length > 0 && (
+                    <div
+                      className="flex items-center justify-center 
                 bg-red  w-[30px] h-[30px] p-2 rounded-full text-center"
-                  >
-                    <p
-                      className={`font-sans text-[12px] text-center text-white`}
                     >
-                      {notifications?.filter(
-                        (notif) => notif.status === "unread"
-                      ).length || ""}
-                    </p>
-                  </div>
+                      <p
+                        className={`font-sans text-[12px] text-center text-white`}
+                      >
+                        {notifications?.filter(
+                          (notif) => notif.status === "unread"
+                        ).length || ""}
+                      </p>
+                    </div>
+                  )}
                 </div>
               </div>
             </Link>
-
-            <div className="flex items-center gap-2 w-[90%] m-[auto] font-sans my-3 cursor-pointer ">
-              <CiChat1 style={{ fontSize: "20px" }} />
-              <p className="font-sans text-[13px] ">Reviews</p>
-            </div>
+            <Link to="reviews">
+              <div
+                className={`font-sans flex items-center gap-1 p-3 text-[13px] cursor-pointer ${
+                  location.pathname === "/dashboard/reviews"
+                    ? "bg-primary text-white"
+                    : "bg-transparent"
+                }`}
+              >
+                <CiChat1 style={{ fontSize: "20px" }} />
+                <p className="font-sans text-[13px] ">Reviews</p>
+              </div>
+            </Link>
 
             <div
               className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
-                location.pathname === "/dashboard/users-analytics" ||
+                location.pathname === "/dashboard/testimonies-analytics" ||
                 location.pathname === "/dashboard/donations-analytics"
                   ? `bg-primary text-white`
                   : `bg-transparent`
@@ -322,7 +384,7 @@ function Dashboard() {
             </div>
             {showAnalyticsMenu ? (
               <div className=" cursor-pointer text-[13px] flex flex-col  justify-normal pl-2">
-                <Link>
+                <Link to="testimonies-analytics">
                   <input
                     type="button"
                     value={"Testimonies"}
@@ -347,15 +409,31 @@ function Dashboard() {
             <h1 className="p-3 text-[13px] mt-5 font-sans opacity-[0.7]">
               SETTINGS
             </h1>
-            <div className="cursor-pointer font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]">
-              <FaRegUser style={{ fontSize: "15px" }} />
-              <p className="opacity-[0.7]">My Profile</p>
-            </div>
+            <Link to="profile">
+              <div
+                className={`font-sans flex items-center gap-1 p-3 text-[13px] cursor-pointer ${
+                  location.pathname === "/dashboard/profile"
+                    ? "bg-primary text-white"
+                    : "bg-transparent"
+                }`}
+              >
+                <FaRegUser style={{ fontSize: "15px" }} />
+                <p className="opacity-[0.7]">My Profile</p>
+              </div>
+            </Link>
+            <Link to="notification-settings">
+              <div
+                className={`font-sans flex items-center gap-1 p-3 text-[13px] cursor-pointer ${
+                  location.pathname === "/dashboard/notification-settings"
+                    ? "bg-primary text-white"
+                    : "bg-transparent"
+                }`}
+              >
+                <IoIosNotificationsOutline style={{ fontSize: "24px" }} />
+                <p className="opacity-[0.7]">Notification settings</p>
+              </div>
+            </Link>
 
-            <div className="cursor-pointer font-sans flex items-center gap-1 p-3 text-[13px] ml-[-5px] active:bg-[#9966CC]">
-              <IoIosNotificationsOutline style={{ fontSize: "24px" }} />
-              <p className="opacity-[0.7]">Notification settings</p>
-            </div>
             <Link to="general-settings">
               <div
                 className={`font-sans flex items-center gap-1 p-3 text-[13px] cursor-pointer ${
@@ -369,7 +447,10 @@ function Dashboard() {
               </div>
             </Link>
 
-            <div className="cursor-pointer font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]">
+            <div
+              onClick={() => setLogoutModal(true)}
+              className="cursor-pointer font-sans flex items-center gap-1 p-3 text-[13px] active:bg-[#9966CC]"
+            >
               <IoIosLogOut style={{ fontSize: "20px" }} />
               <p className="opacity-[0.7]">Logout</p>
             </div>

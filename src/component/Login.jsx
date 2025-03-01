@@ -1,57 +1,79 @@
-import React, { useState } from 'react'
-import { MailOutlined, LockOutlined } from '@ant-design/icons';
-import logo from '../assets/icons/Logo.png'
+import React from "react";
+import { Form, Input, Button } from "antd";
+import logo from "../assets/icons/Logo.png";
+import { MailOutlined, LockOutlined } from "@ant-design/icons";
+import { Link, useNavigate } from "react-router-dom";
 
-import '../App.css'
-import { Button, Form, Input, message } from 'antd';
-import { useNavigate } from 'react-router-dom';
-
-function Login() {
+const Login = () => {
     const navigate = useNavigate()
-
-    const onFinish = (values) => {
-        console.log({values})
-        navigate('/create-password')
-    }
+  const onFinish = (values) => {
+    console.log({ values });
+    navigate("/dashboard/");
+  };
 
   return (
-    <div className='w-[250px] h-[320px]'>
-        <div className='w-[50%] m-[auto] mt-4 pt-3 mb-3'>
-            <img className='w-[50px] m-[auto]' src={logo} alt="" />
-            <p className='font-sans text-white text-center pt-2'>Welcome!</p>
+    <div className="flex justify-center items-center min-h-screen bg-[#0B0B0B]">
+      <div className="flex flex-col w-[350px]">
+        <div className="flex justify-center items-center flex-col">
+          <img className="w-[50px]" src={logo} alt="" />
+          <p className="font-sans text-white text-center pt-2">
+            Welcome Back, Admin!
+          </p>
         </div>
-
-        <Form onFinish={onFinish} layout='vertical'>
-            <label className='text-white pl-1'>Email Address</label>
-            <Form.Item name='email' rules={[{required:true, message:'email is reqiured'}]}>
-                <Input
-                id='email'
-                placeholder='Enter Email Address'
-                className='border-none outline-none' 
-                prefix={<MailOutlined className='text-white' />}
-                style={{backgroundColor:'#313131', color: 'white'}}
-                />
+        <div>
+          <Form onFinish={onFinish} layout="vertical">
+            <label className="text-white pl-1">Email Address</label>
+            <Form.Item
+              name="email"
+              rules={[{ required: true, message: "email is reqiured" }]}
+            >
+              <Input
+                id="email"
+                placeholder="Enter Email Address"
+                className="border-none outline-none"
+                prefix={<MailOutlined className="text-white" />}
+                style={{ backgroundColor: "#313131", color: "white" }}
+              />
             </Form.Item>
 
-            <label className='text-white pl-1'>Entry Code</label>
-            <Form.Item name='password' rules={[{required:true, message:'entry code is reqiured'}]}>
-                <Input.Password
-                id='password'
-                className='border-none outline-none'
-                placeholder='Enter code'
-                prefix={<LockOutlined className='text-white'/>}
-                style={{backgroundColor:'#313131', color: 'white'}} 
-                />
+            <label className="text-white pl-1">Password</label>
+            <Form.Item
+              name="password"
+              rules={[{ required: true}]}
+            >
+              <Input.Password
+                id="password"
+                className="border-none outline-none"
+                placeholder="Enter password"
+                prefix={<LockOutlined className="text-white" />}
+                style={{ backgroundColor: "#313131", color: "white" }}
+              />
             </Form.Item>
-
-            <Form.Item style={{marginTop: '30px'}}>
-                <Button  block htmlType='submit' className='bg-[#9966CC] text-white text-[13px] outline-none border-none'>Login</Button>
+            <div className="flex w-full items-center justify-between text-xs">
+              <div className="flex items-center gap-1 text-white">
+                <input type="checkbox" name="" id="" />
+                <p>Remember me</p>
+              </div>
+              <Link to="/forgot-password">
+                <a className="text-primary" href="">
+                  Forgot Password
+                </a>
+              </Link>
+            </div>
+            <Form.Item >
+              <Button
+                block
+                htmlType="submit"
+                className="bg-[#9966CC] text-white text-[13px] outline-none border-none py-4 mt-4"
+              >
+                Login
+              </Button>
             </Form.Item>
-        </Form>
-        
+          </Form>
+        </div>
+      </div>
     </div>
-     
-  )
-}
+  );
+};
 
-export default Login
+export default Login;

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import Login from '../component/Login'
+import Login from '../component/Signup'
 import LogoDisplay from '../component/LogoDisplay'
 
 function Home() {
