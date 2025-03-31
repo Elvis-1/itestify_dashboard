@@ -1,30 +1,6 @@
-import React, { useContext, useState } from "react";
-import { DarkModeContext } from "../../context/DarkModeContext";
-import { MdClose } from "react-icons/md";
-import { IoMdArrowDropdown } from "react-icons/io";
-const AddMemeber = ({
-  setMemberModal,
-  onConfirm,
-  adminDetails,
-  setAdminDetails,
-  isEditing,
-  onProceed,
+import React from "react";
 
-}) => {
-  const { isDarkMode } = useContext(DarkModeContext);
-  const [isOpenDropdown, setIsOpenDropdown] = useState(false);
-
-  const options = [
-    { value: "Super admin", label: "Super admin" },
-    { value: "Admin", label: "Admin" },
-    { value: "Viewer", label: "Viewer" },
-  ];
-  const handleChange = (e) => {
-    const { name, value } = e.target;
-    setAdminDetails({ ...adminDetails, [name]: value });
-    console.log(adminDetails);
-  };
-
+const EditScripture = () => {
   return (
     <div>
       {" "}
@@ -93,10 +69,12 @@ const AddMemeber = ({
               <button
                 onClick={() => setIsOpenDropdown(!isOpenDropdown)}
                 className={`w-full p-2 ${
-                  isDarkMode ? `bg-off-black hover:bg-zinc-800` : `bg-off-white hover:bg-near-white`
+                  isDarkMode
+                    ? `bg-off-black hover:bg-zinc-800`
+                    : `bg-off-white hover:bg-near-white`
                 } flex items-center justify-between
-               p-1 rounded-md outline-none text-sm placeholder:text-xs
-               transition-colors duration-200`}
+                   p-1 rounded-md outline-none text-sm placeholder:text-xs
+                   transition-colors duration-200`}
               >
                 <span className="text-sm opacity-80">
                   {adminDetails.role
@@ -106,7 +84,7 @@ const AddMemeber = ({
                 </span>
                 <IoMdArrowDropdown
                   className={`w-5 h-5 transition-transform duration-200 
-                ${isOpenDropdown ? "transform rotate-180" : ""}`}
+                    ${isOpenDropdown ? "transform rotate-180" : ""}`}
                 />
               </button>
               {isOpenDropdown && (
@@ -130,7 +108,7 @@ const AddMemeber = ({
                           ? `text-white hover:bg-zinc-800 border-b-off-white`
                           : `text-black hover:bg-near-white border-b-borderColor`
                       } text-sm
-                     transition-colors duration-150 last-of-type:border-t first-of-type:border-b`}
+                         transition-colors duration-150 last-of-type:border-t first-of-type:border-b`}
                     >
                       {option.label}
                     </div>
@@ -169,4 +147,4 @@ const AddMemeber = ({
   );
 };
 
-export default AddMemeber;
+export default EditScripture;

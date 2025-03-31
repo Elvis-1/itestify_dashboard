@@ -32,7 +32,7 @@ const Donations = () => {
   }, [isSuccessModal]);
 
   return (
-    <div className={`${isDarkMode? `bg-black`: `bg-off-white`} h-screen`}>
+    <div className={`${isDarkMode? `bg-black`: `bg-off-white`} `}>
     <div className={`p-5 ${isDarkMode ? `bg-black` : `bg-off-white`}`}>
       {isSettingsModal && (
         <DonationsSettings

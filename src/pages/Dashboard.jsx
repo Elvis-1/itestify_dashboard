@@ -19,6 +19,7 @@ import { MdOutlinePrivacyTip } from "react-icons/md";
 import { MdOutlineSettings } from "react-icons/md";
 import { FaBullseye, FaRegUser } from "react-icons/fa6";
 import { FaRegMoneyBill1 } from "react-icons/fa6";
+import { FaBible } from "react-icons/fa";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../context/DarkModeContext";
 import NotificationModal from "../component/Popups/NotificationModal";
@@ -203,7 +204,18 @@ function Dashboard() {
                 <p>Overview</p>
               </div>
             </Link>
-
+            <Link to="daily-verse">
+              <div
+                className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
+                  location.pathname === "/dashboard/daily-verse"
+                    ? "bg-primary text-white"
+                    : "bg-transparent"
+                }`}
+              >
+                <FaBible style={{ fontSize: "20px" }} />
+                <p>Scripture for the day</p>
+              </div>
+            </Link>
             <Link to="users">
               <div
                 className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
