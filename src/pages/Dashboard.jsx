@@ -1,4 +1,4 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useEffect, useState } from "react";
 import {
   AppstoreOutlined,
   CaretDownFilled,
@@ -23,7 +23,7 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../context/DarkModeContext";
 import NotificationModal from "../component/Popups/NotificationModal";
 import { NotificationContextProvider } from "../context/NotificationContext";
-import { useLocation } from "react-router-dom";
+import { useLocation} from "react-router-dom";
 import { Modal } from "antd";
 
 function Dashboard() {
@@ -33,12 +33,24 @@ function Dashboard() {
   const [showAllTestimonies, setShowAllTestimonies] = useState(true);
   const [logoutModal, setLogoutModal] = useState(false);
   const [isNotifModal, setIsNotifModal] = useState(false);
+  const [userFullname, setUserFullName] = useState('')
+  const [userRole, setUserRole] = useState('')
 
   const { isDarkMode, toggleTheme } = useContext(DarkModeContext);
 
   const { notifications, setNotifications } = useContext(
     NotificationContextProvider
   );
+
+  let user = localStorage.getItem('user')
+
+  useEffect(() => {
+    const userString = localStorage.getItem('user'); // Get the stored string
+    const user = userString ? JSON.parse(userString) : null; // Parse safely
+  
+    setUserFullName(user?.full_name)
+    setUserRole(user?.role)
+  }, []);
 
   const navigate = useNavigate();
 
@@ -54,6 +66,17 @@ function Dashboard() {
   const handleCloseModal = () => {
     setLogoutModal(false);
   };
+
+  const handleLogout = () => {
+    // Clear token and user data from localStorage
+    localStorage.removeItem("token");
+    // localStorage.removeItem("user");
+  
+    // Redirect to the login page
+    navigate("/login");
+    message.success("Logged out successfully!");
+  }
+
   return (
     <div className="relative">
       {isNotifModal && (
@@ -99,7 +122,10 @@ function Dashboard() {
                 </button>
                 <Link to="/login">
                   <button
-                    onClick={handleCloseModal}
+                    onClick={() => {
+                      handleLogout()
+                      handleCloseModal()
+                    }}
                     className="rounded bg-primary px-5 text-sm py-2"
                   >
                     Log Out
@@ -159,7 +185,7 @@ function Dashboard() {
                 <PictureOutlined style={{ fontSize: "15px" }} />
               </div>
               <p className="text-[12px] w-[100px] font-bold">
-                Elvis Igiebor Admin
+                {userFullname} {userRole}
               </p>
             </div>
           </div>
