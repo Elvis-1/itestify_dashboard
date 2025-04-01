@@ -5,4 +5,13 @@ import react from '@vitejs/plugin-react'
 export default defineConfig({
   base: '/',
   plugins: [react()],
+  server: {
+    proxy: {
+      "/auth": {
+        target: "https://itestify-backend-nxel.onrender.com/mobile",
+        changeOrigin: true,
+        secure: false,
+      },
+    },
+  },
 })

@@ -84,12 +84,20 @@ export const DonationsSettings = ({
         id={id}
         className={`${
           isDarkMode ? `bg-off-black` : `bg-off-white`
-        } p-[5px] rounded-md outline-none text-sm placeholder:text-xs uppercase`}
+        } p-[5px] rounded-md outline-none text-sm placeholder:text-xs uppercase placeholder:capitalize`}
         type="text"
+        placeholder="Type here..."
       />
     </div>
   );
-  const fields = [
+  const NGNfields = [
+    { label: "Account Name", id: "account-name" },
+    { label: "Bank Name", id: "bank-name" },
+    { label: "Account Number", id: "account-number" },
+   
+  ];
+
+  const USDfields = [
     { label: "Account Holder", id: "acc-name" },
     { label: "Bank Name", id: "bank-name" },
     { label: "Account Number", id: "account-number" },
@@ -99,7 +107,7 @@ export const DonationsSettings = ({
   ];
 
   return (
-    <div className="fixed inset-0 z-10 flex items-center justify-center overflow-y-scroll -top-48">
+    <div className="fixed inset-0 z-20 flex items-center justify-center overflow-y-scroll -top-48">
       <div
         className={`fixed inset-0 bg-opacity-50 ${
           isDarkMode ? "bg-black" : "bg-off-white"
@@ -109,7 +117,7 @@ export const DonationsSettings = ({
       <div
         className={`relative z-10 ${
           isDarkMode ? `bg-black` : `bg-white`
-        } shadow-2xl rounded-lg w-[420px] px-3 mt-[40rem] modal`}
+        } shadow-2xl rounded-lg w-[420px] px-3 mt-[55rem] modal`}
       >
         <div className="flex justify-between items-center p-3 border-b-[1px] border-b-near-white">
           <h2 className="text-xl">Donations</h2>
@@ -197,8 +205,17 @@ export const DonationsSettings = ({
         {/* <-------------------------------------------NAIRA DONATIONS ---------------------------------------> */}
         <div className="p-3 border-b-[1px] border-b-near-white ">
           <h3 className="py-2 text-[16px]">NGN Donations</h3>
+          <div className="grid grid-cols-2 place-items-center w-full">
+            {NGNfields.map((field) => (
+              <InputField label={field.label} key={field.id} id={field.id} />
+            ))}
+          </div>
+        </div>
+         {/* <-------------------------------------------DOLLAR DONATIONS ---------------------------------------> */}
+         <div className="p-3 border-b-[1px] border-b-near-white ">
+          <h3 className="py-2 text-[16px]">USD Donations</h3>
           <div className="grid grid-cols-2 place-items-center">
-            {fields.map((field) => (
+            {USDfields.map((field) => (
               <InputField label={field.label} key={field.id} id={field.id} />
             ))}
           </div>

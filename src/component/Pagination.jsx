@@ -13,7 +13,7 @@ const Pagination = ({
       {data.length > 0 && (
         <div className="flex justify-between items-center w-full px-4">
           <p>
-            Showing {firstIndex + 1} - {lastIndex} of {data.length}
+          Showing {firstIndex + 1} - {Math.min(lastIndex, data.length)} of {data.length}
           </p>
 
           <div className="flex gap-2 items-center">

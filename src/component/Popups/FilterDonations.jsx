@@ -78,27 +78,23 @@ const FilterDonations = ({
       const itemDate = new Date(item.date);
       const fromDate = dateRange.from ? new Date(dateRange.from) : null;
       const toDate = dateRange.to ? new Date(dateRange.to) : null;
-        const isWithinDateRange =
-          (!fromDate || itemDate >= fromDate) &&
-          (!toDate || itemDate <= toDate);
+      const isWithinDateRange =
+        (!fromDate || itemDate >= fromDate) && (!toDate || itemDate <= toDate);
 
-        const isWithinAmount =
-          (!amountRange.min ||
-            parseFloat(item.amount) >= parseFloat(amountRange.min)) &&
-          (!amountRange.max ||
-            parseFloat(item.amount) <= parseFloat(amountRange.max));
+      const isWithinAmount =
+        (!amountRange.min ||
+          parseFloat(item.amount) >= parseFloat(amountRange.min)) &&
+        (!amountRange.max ||
+          parseFloat(item.amount) <= parseFloat(amountRange.max));
 
-        const currencyMatches =
-          !selectedCurrency || item.currency === selectedCurrency;
+      const currencyMatches =
+        !selectedCurrency || item.currency === selectedCurrency;
 
-        const matchesStatus = !selectedOption || item.status === selectedOption;
+      const matchesStatus = !selectedOption || item.status === selectedOption;
 
-        return (
-          isWithinDateRange &&
-          isWithinAmount &&
-          matchesStatus &&
-          currencyMatches
-        );
+      return (
+        isWithinDateRange && isWithinAmount && matchesStatus && currencyMatches
+      );
     });
 
     setUserDonation(getFilterData); // Update filtered data
@@ -221,10 +217,12 @@ const FilterDonations = ({
                 setIsOpenDropdown(!isOpenDropdown);
               }}
               className={`w-full px-2 py-1 ${
-                isDarkMode ? "bg-off-black" : "bg-off-white"
+                isDarkMode
+                  ? "bg-off-black hover:bg-zinc-800"
+                  : "bg-off-white hover:bg-near-white"
               } flex items-center justify-between
                 p-1 rounded-md outline-none text-sm placeholder:text-xs
-                hover:bg-zinc-800 transition-colors duration-200`}
+                 transition-colors duration-200`}
             >
               <span className="text-[15px]">
                 {selectedCurrency
@@ -240,17 +238,19 @@ const FilterDonations = ({
             </button>
             {isOpenDropdown && (
               <div
-                className={`absolute w-[350px] mt-1 p-1 rounded-lg border-[1px] border-off-white outline-none text-sm placeholder:text-xs overflow-hidden ${
+                className={` w-[350px] mt-1 p-1 rounded-lg border-[1px] border-off-white outline-none text-sm placeholder:text-xs overflow-hidden ${
                   isDarkMode ? "bg-black" : "bg-off-white"
-                }`}
+                } ${isOpenDropdown? `mb-2`: ``}`}
               >
                 {currencyOptions.map((option) => (
                   <div
                     key={option.value}
                     onClick={(e) => handleCurrencySelect(e, option.value)}
-                    className="p-2 cursor-pointer text-white text-sm
-                      hover:bg-zinc-800 transition-colors duration-150 
-                      first-of-type:border-b-[1px] border-b-off-white"
+                    className={`p-2 cursor-pointer text-sm
+                      ${
+                        isDarkMode ? `hover:bg-zinc-800 text-white` : `hover:bg-near-white text-black`
+                      } transition-colors duration-150 
+                      first-of-type:border-b-[1px] border-b-off-white hover:rounded-xl`}
                   >
                     {option.label}
                   </div>

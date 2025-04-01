@@ -127,13 +127,9 @@ const DelUsers = () => {
     }
   }, [isSuccessModal]);
 
-  const { sort, sortHeader, sortArray } = useSort();
-  const sortedUsers = useMemo(
-    () => sortArray(delUsersIndex),
-    [delUsersIndex, sort]
-  );
+ const { sort, sortHeader,sortedData } = useSort(delUsersIndex);
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
-    usePagination(sortedUsers);
+    usePagination(sortedData);
 
   return (
     <div className="relative">
@@ -270,7 +266,7 @@ const DelUsers = () => {
             </tr>
           </thead>
           {delUsersIndex.length > 0 ? (
-            sortedUsers.slice(firstIndex, lastIndex).map((data) => (
+            users.map((data) => (
               <tbody className="relative" key={data.id}>
                 <tr
                   className={` ${
