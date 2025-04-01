@@ -19,6 +19,7 @@ import { MdOutlinePrivacyTip } from "react-icons/md";
 import { MdOutlineSettings } from "react-icons/md";
 import { FaBullseye, FaRegUser } from "react-icons/fa6";
 import { FaRegMoneyBill1 } from "react-icons/fa6";
+import { FaBible } from "react-icons/fa";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../context/DarkModeContext";
 import NotificationModal from "../component/Popups/NotificationModal";
@@ -29,6 +30,7 @@ import { Modal } from "antd";
 function Dashboard() {
   const [showTestimonyMenu, setShowTestimonyMenu] = useState(false);
   const [showAnalyticsMenu, setShowAnalyticsMenu] = useState(false);
+  const [showScriptureMenu, setShowScriptureMenu] = useState(false);
   const [showInspirationalMenu, setShowInspirationalMenu] = useState(false);
   const [showAllTestimonies, setShowAllTestimonies] = useState(true);
   const [logoutModal, setLogoutModal] = useState(false);
@@ -203,7 +205,49 @@ function Dashboard() {
                 <p>Overview</p>
               </div>
             </Link>
-
+            <div
+              className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
+                location.pathname === "/dashboard/daily-scripture" ||
+                location.pathname === "/dashboard/upload-scripture"
+                  ? `bg-primary text-white`
+                  : `bg-transparent`
+              }`}
+            >
+              <FaBible style={{ fontSize: "20px" }} />
+              <div
+                onClick={() => setShowScriptureMenu(!showScriptureMenu)}
+                className="flex items-center justify-between w-[100%] cursor-pointer "
+              >
+                <p className=" font-sans">Scripture of the day</p>
+                {showScriptureMenu ? (
+                  <CaretUpFilled style={{ fontSize: "15px" }} />
+                ) : (
+                  <CaretDownFilled style={{ fontSize: "15px" }} />
+                )}
+              </div>
+            </div>
+            {showScriptureMenu ? (
+              <div className=" cursor-pointer text-[13px] flex flex-col  justify-normal pl-2">
+                <Link to="daily-scripture">
+                  <input
+                    type="button"
+                    value={"All Scriptures"}
+                    placeholder=""
+                    className=" border-none outline-none p-2 bg-transparent cursor-pointer "
+                  />
+                </Link>
+                <Link to="upload-scripture">
+                  <input
+                    type="button"
+                    value={"Upload Scriptures"}
+                    placeholder=""
+                    className=" border-none outline-none p-2 bg-transparent cursor-pointer "
+                  />
+                </Link>
+              </div>
+            ) : (
+              ""
+            )}
             <Link to="users">
               <div
                 className={`font-sans flex items-center gap-1 p-3 text-[13px] ${

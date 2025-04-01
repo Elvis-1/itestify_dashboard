@@ -43,11 +43,11 @@ const Verified = () => {
   };
 
   // <---------------------------------------Custom Hooks-------------------------------------->
-  const { sort, sortHeader, sortArray } = useSort();
+  const { sort, sortHeader, sortedData } = useSort(filteredDonations);
   const { isFailedModal, setISFailedModal, isSuccessModal, setIsSuccessModal } =
     useVerifiedandFailed();
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
-    usePagination(filteredDonations);
+    usePagination(sortedData);
   const {
     openProfileModal,
     isUserDetails,
@@ -208,7 +208,7 @@ const Verified = () => {
             </tbody>
           ) : (
             <tbody className="relative text-xs">
-              {sortArray(users).map((data) => (
+              {users.map((data) => (
                 <tr
                   key={data.id}
                   className={`relative ${

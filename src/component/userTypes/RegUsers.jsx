@@ -1,6 +1,5 @@
-import React, { useContext, useState, useMemo } from "react";
+import React, { useContext, useState, useMemo, useEffect } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
-import { regUsers } from "../../data/userdetails";
 import { MdOutlineMoreHoriz } from "react-icons/md";
 import { SearchOutlined } from "@ant-design/icons";
 import { LuChevronsUpDown } from "react-icons/lu";
@@ -11,7 +10,7 @@ import Pagination from "../Pagination";
 import NoDataComponent from "../NoDataComponent";
 const RegUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
-  const [registeredUsers, setRegisteredUsers] = useState(regUsers);
+  const [registeredUsers, setRegisteredUsers] = useState([]);
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
   const [searchItem, setSearchItem] = useState("");
 
@@ -59,19 +58,44 @@ const RegUsers = () => {
     }
   };
 
-  const { sort, sortHeader, sortArray } = useSort();
   const regUsersIndex = useMemo(() => {
     const searchTerm = searchItem.toLowerCase().trim();
     return registeredUsers.filter(
       (item) =>
         searchTerm === "" ||
-        item.name.toLowerCase().includes(searchTerm) ||
-        item.email.toLowerCase().includes(searchTerm) ||
-        item.userId.toLowerCase().includes(searchTerm)
+        item.full_name?.toLowerCase().includes(searchTerm) ||
+        item.email?.toLowerCase().includes(searchTerm) ||
+        item.id?.toLowerCase().includes(searchTerm)
     );
   }, [searchItem, registeredUsers]);
+  const { sort, sortHeader,sortedData, sortArray  } = useSort(regUsersIndex);
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
-    usePagination(regUsersIndex);
+    usePagination(sortedData);
+
+  // const API_URL = "/auth/register";
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch("/auth/get_users", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setRegisteredUsers(data.data); 
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching users:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   return (
     <div className="relative">
       {/* <<----------------------------Profile Modal -------------------------->> */}
@@ -161,15 +185,19 @@ const RegUsers = () => {
                   </div>
                 </th>
               ))}
-              <th  className={`cursor-pointer ${
-                    isDarkMode
-                      ? `bg-off-black text-white`
-                      : `bg-off-white text-black`
-                  }`}>Action</th>
+              <th
+                className={`cursor-pointer ${
+                  isDarkMode
+                    ? `bg-off-black text-white`
+                    : `bg-off-white text-black`
+                }`}
+              >
+                Action
+              </th>
             </tr>
           </thead>
           {regUsersIndex.length > 0 ? (
-            sortArray(users).map((data, index) => (
+            users.map((data, index) => (
               <tbody className="relative" key={data.id}>
                 <tr
                   className={` ${
@@ -178,12 +206,12 @@ const RegUsers = () => {
                       : `hover:bg-off-white text-black`
                   }`}
                 >
+                  <td>{firstIndex + index + 1}</td>
                   <td>{data.id}</td>
-                  <td>{data.userId}</td>
-                  <td>{data.name}</td>
+                  <td>{data.full_name}</td>
                   <td>{data.email}</td>
-                  <td>{data.regDate}</td>
-                  <td>{data.lastLogin}</td>
+                  <td>{new Date(data.created_at).toLocaleDateString()}</td>
+                  <td>{new Date(data.last_login).toLocaleDateString()}</td>
                   <td>
                     {isOpenOptions === data.id && (
                       <div
@@ -211,7 +239,10 @@ const RegUsers = () => {
           ) : (
             <tbody>
               <tr className="border-b-0">
-                <td colSpan={8} className="hover:bg-transparent border-b-0 border-b-transparent">
+                <td
+                  colSpan={8}
+                  className="hover:bg-transparent border-b-0 border-b-transparent"
+                >
                   <NoDataComponent />
                 </td>
               </tr>

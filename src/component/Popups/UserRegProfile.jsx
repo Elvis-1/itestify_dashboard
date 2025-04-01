@@ -49,11 +49,11 @@ const UserRegProfile = ({ registeredUsers, setProfile }) => {
           >
             <div className="flex justify-between items-center w-full py-2">
               <p>User ID</p>
-              <p>{registeredUsers?.userId || "----"}</p>
+              <p>{registeredUsers?.id || "----"}</p>
             </div>
             <div className="flex justify-between items-center w-full py-2">
               <p>Name</p>
-              <p>{registeredUsers?.name || "----"}</p>
+              <p>{registeredUsers?.full_name || "----"}</p>
             </div>
             <div className="flex justify-between items-center w-full py-2">
               <p>Email</p>
@@ -65,7 +65,7 @@ const UserRegProfile = ({ registeredUsers, setProfile }) => {
             </div>
             <div className="flex justify-between items-center w-full py-2">
               <p>Registration date</p>
-              <p>{registeredUsers?.regDate || "----"}</p>
+              <p>{new Date(registeredUsers?.created_at).toLocaleDateString() || "----"}</p>
             </div>
           </div>
         </div>

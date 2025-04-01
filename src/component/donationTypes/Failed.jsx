@@ -28,8 +28,7 @@ const Failed = () => {
         item.email?.toLowerCase().includes(searchItem.toLowerCase())
     );
   }, [searchItem]);
-  const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
-    usePagination(filteredDonations);
+
   //Profile custom hooks
   const {
     openProfileModal,
@@ -39,7 +38,9 @@ const Failed = () => {
     isOpenOptions,
     setIsOpenOptions,
   } = useProfile({ donationType: filteredDonations });
-  const { sort, sortHeader, sortArray } = useSort();
+  const { sort, sortHeader, sortedData } = useSort(filteredDonations);
+  const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
+    usePagination(sortedData);
   const tableHeaders = [
     {
       key: "serialno",
@@ -147,11 +148,11 @@ const Failed = () => {
             >
               {tableHeaders.map((header, index) => (
                 <th
-                className={`cursor-pointer text-[10px] ${
-                  isDarkMode
-                    ? `bg-off-black text-white`
-                    : `bg-off-white text-black`
-                }`}
+                  className={`cursor-pointer text-[10px] ${
+                    isDarkMode
+                      ? `bg-off-black text-white`
+                      : `bg-off-white text-black`
+                  }`}
                   onClick={() => {
                     sortHeader(header), console.log(header);
                   }}
@@ -174,7 +175,7 @@ const Failed = () => {
             </tr>
           </thead>
           {filteredDonations.length > 0 ? (
-            sortArray(users).map((data) => (
+            users.map((data) => (
               <tbody className="relative text-xs" key={data.id}>
                 <tr
                   className={` ${
@@ -233,7 +234,10 @@ const Failed = () => {
           ) : (
             <tbody className="border-b-0 border-b-transparent">
               <tr className="border-b-0 border-b-transparent">
-                <td colSpan={9} className="hover:bg-transparent border-b-0 border-b-transparent">
+                <td
+                  colSpan={9}
+                  className="hover:bg-transparent border-b-0 border-b-transparent"
+                >
                   <NoDataComponent />
                 </td>
               </tr>

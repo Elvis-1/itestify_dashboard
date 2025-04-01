@@ -24,67 +24,89 @@ import NotificationSettings from "./pages/NotificationSettings";
 import Reviews from "./pages/Reviews";
 import Login from "./component/Login";
 import ForgotPassword from "./component/ForgotPassword";
+import ScriptureForDay from "./pages/ScriptureForDay";
+import ScriptureContext from "./context/ScriptureContext";
+import UploadScriptures from "./pages/UploadScriptures";
 
 function App() {
   return (
     <div>
-      <NotificationContext>
-        <DonationContext>
-          <DarkModeContextProvider>
-            <BrowserRouter>
-              <Routes>
-                <Route path="/" element={<Home />} />
-                <Route path="/create-password" element={<CreatePassword />} />
-                <Route path="/login" element={<Login />} />
-                <Route path="forgot-password" element={<ForgotPassword />} />
-                <Route path="/dashboard" element={<Dashboard />}>
-                  <Route path="" element={<Overview />} />
+      <ScriptureContext>
+        <NotificationContext>
+          <DonationContext>
+            <DarkModeContextProvider>
+              <BrowserRouter>
+                <Routes>
+                  <Route path="/" element={<Home />} />
+                  <Route path="/create-password" element={<CreatePassword />} />
+                  <Route path="/login" element={<Login />} />
+                  <Route path="forgot-password" element={<ForgotPassword />} />
+                  <Route path="/dashboard" element={<Dashboard />}>
+                    <Route path="" element={<Overview />} />
 
-                  <Route path="all-testimonies" element={<AllTestimonies />} />
-                  <Route
-                    path="upload-testimonies"
-                    element={<UploadTestimonies />}
-                  />
-                  <Route path="users" element={<Users />} />
-                  <Route path="donations" element={<Donations />} />
-                  <Route path="notifications" element={<Notifications />} />
+                    <Route
+                      path="all-testimonies"
+                      element={<AllTestimonies />}
+                    />
+                    <Route
+                      path="upload-testimonies"
+                      element={<UploadTestimonies />}
+                    />
+                    <Route path="users" element={<Users />} />
+                    <Route path="donations" element={<Donations />} />
+                    <Route path="notifications" element={<Notifications />} />
 
-                  <Route path="all-testimonies" element={<AllTestimonies />} />
-                  <Route
-                    path="upload-testimonies"
-                    element={<UploadTestimonies />}
-                  />
-                  <Route path="users" element={<Users />} />
-                  <Route path="inspirational-pictures" element={<Allpics />} />
-                  <Route
-                    path="upload-inspirational-pictures"
-                    element={<UploadInspirational />}
-                  />
-                  <Route path="reviews" element={<Reviews />} />
-                  <Route
-                    path="donations-analytics"
-                    element={<DonationsAnalytics />}
-                  />
-                  <Route
-                    path="testimonies-analytics"
-                    element={<TestimonyAnalytics />}
-                  />
-                  <Route
-                    path="general-settings"
-                    element={<GeneralSettings />}
-                  />
-                  <Route path="manage-permissions" element={<Permissions />} />
-                  <Route path="profile" element={<Profile />} />
-                  <Route
-                    path="notification-settings"
-                    element={<NotificationSettings />}
-                  />
-                </Route>
-              </Routes>
-            </BrowserRouter>
-          </DarkModeContextProvider>
-        </DonationContext>
-      </NotificationContext>
+                    <Route
+                      path="all-testimonies"
+                      element={<AllTestimonies />}
+                    />
+                    <Route
+                      path="upload-testimonies"
+                      element={<UploadTestimonies />}
+                    />
+                    <Route path="users" element={<Users />} />
+                    <Route
+                      path="inspirational-pictures"
+                      element={<Allpics />}
+                    />
+                    <Route
+                      path="upload-inspirational-pictures"
+                      element={<UploadInspirational />}
+                    />
+                    <Route path="reviews" element={<Reviews />} />
+                    <Route
+                      path="donations-analytics"
+                      element={<DonationsAnalytics />}
+                    />
+                    <Route
+                      path="testimonies-analytics"
+                      element={<TestimonyAnalytics />}
+                    />
+                    <Route path="daily-scripture" element={<ScriptureForDay />} />
+                    <Route
+                      path="upload-scripture"
+                      element={<UploadScriptures />}
+                    />
+                    <Route
+                      path="general-settings"
+                      element={<GeneralSettings />}
+                    />
+                    <Route
+                      path="manage-permissions"
+                      element={<Permissions />}
+                    />
+                    <Route path="profile" element={<Profile />} />
+                    <Route
+                      path="notification-settings"
+                      element={<NotificationSettings />}
+                    />
+                  </Route>
+                </Routes>
+              </BrowserRouter>
+            </DarkModeContextProvider>
+          </DonationContext>
+        </NotificationContext>
+      </ScriptureContext>
     </div>
   );
 }

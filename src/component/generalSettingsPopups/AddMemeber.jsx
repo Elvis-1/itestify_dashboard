@@ -45,7 +45,7 @@ const AddMemeber = ({
             {/* Header */}
             <div className="flex items-center justify-between w-full border-b border-gray-300 p-2">
               <h1 className="text-lg">
-                {isEditing ? "Edit Member" : "Verify Details"}
+                {isEditing ? "Edit Member" : "Add Member"}
               </h1>
               <button
                 className="cursor-pointer"

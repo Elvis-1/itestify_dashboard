@@ -11,7 +11,6 @@ import FilterDonations from "../Popups/FilterDonations";
 import { DonationsContext } from "../../context/DonationContext";
 import NoDataComponent from "../NoDataComponent";
 
-
 const AllDonations = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const { userDonation } = useContext(DonationsContext);
@@ -28,7 +27,6 @@ const AllDonations = () => {
     setIsFilter(!isFilter);
   };
 
-  const { sort, sortHeader, sortArray } = useSort();
   const allDonations = useMemo(() => {
     return userDonations.filter(
       (item) =>
@@ -36,8 +34,9 @@ const AllDonations = () => {
         item.email?.toLowerCase().includes(searchItem.toLowerCase())
     );
   }, [searchItem, userDonations]);
+  const { sort, sortHeader, sortedData } = useSort(userDonations);
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
-    usePagination(allDonations);
+    usePagination(sortedData);
   const tableHeaders = [
     {
       key: "serialno",
@@ -136,20 +135,22 @@ const AllDonations = () => {
               isDarkMode ? `bg-near-black` : `bg-off-white text-black`
             }`}
           >
-            <tr className={` ${
+            <tr
+              className={` ${
                 isDarkMode
                   ? `bg-off-black text-white hover:bg-[#313131]`
                   : `bg-white text-black hover:bg-off-white`
-              }`}>
+              }`}
+            >
               {tableHeaders.map((header, index) => (
                 <th
-                className={`cursor-pointer text-xs ${
-                  isDarkMode
-                    ? `bg-off-black text-white`
-                    : `bg-off-white text-black`
-                }`}
+                  className={`cursor-pointer text-xs ${
+                    isDarkMode
+                      ? `bg-off-black text-white`
+                      : `bg-off-white text-black`
+                  }`}
                   onClick={() => {
-                    sortHeader(header);
+                    sortHeader({ key: header.key }), console.log(header.key);
                   }}
                   key={index}
                 >
@@ -170,7 +171,7 @@ const AllDonations = () => {
             </tr>
           </thead>
           {allDonations.length > 0 ? (
-            sortArray(users).map((data) => (
+            users.map((data) => (
               <tbody className="relative text-xs" key={data.id}>
                 <tr
                   className={` ${
@@ -212,9 +213,12 @@ const AllDonations = () => {
             <tbody>
               <tr className="border-b-0">
                 <td colSpan={8} className="hover:bg-lightBlack border-b-0">
-                  <NoDataComponent/>
+                  <NoDataComponent />
                 </td>
-                <td colSpan={8} className="hover:bg-transparent border-b-0 border-b-transparent">
+                <td
+                  colSpan={8}
+                  className="hover:bg-transparent border-b-0 border-b-transparent"
+                >
                   <NoDataComponent />
                 </td>
               </tr>

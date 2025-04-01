@@ -37,10 +37,10 @@ const Pending = () => {
         item.email?.toLowerCase().includes(searchItem.toLowerCase())
     );
   }, [searchItem, pendingDonations]);
-  const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
-    usePagination(filteredDonations);
   console.log(pendingDonations);
-  const { sort, sortHeader, sortArray } = useSort();
+  const { sort, sortHeader, sortedData } = useSort(filteredDonations);
+  const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
+    usePagination(sortedData);
   const tableHeaders = [
     {
       key: "serialno",
@@ -220,11 +220,11 @@ const Pending = () => {
             >
               {tableHeaders.map((header, index) => (
                 <th
-                className={`cursor-pointer text-xs ${
-                  isDarkMode
-                    ? `bg-off-black text-white`
-                    : `bg-off-white text-black`
-                }`}
+                  className={`cursor-pointer text-xs ${
+                    isDarkMode
+                      ? `bg-off-black text-white`
+                      : `bg-off-white text-black`
+                  }`}
                   onClick={() => {
                     sortHeader(header), console.log(header);
                   }}
@@ -247,7 +247,7 @@ const Pending = () => {
             </tr>
           </thead>
           {filteredDonations.length > 0 ? (
-            sortArray(users).map((data) => (
+            users.map((data) => (
               <tbody className="relative text-xs" key={data.id}>
                 <tr
                   className={`relative ${
@@ -324,7 +324,10 @@ const Pending = () => {
           ) : (
             <tbody>
               <tr className="border-b-0">
-                <td colSpan={9} className="hover:bg-transparent border-b-0 border-b-transparent">
+                <td
+                  colSpan={9}
+                  className="hover:bg-transparent border-b-0 border-b-transparent"
+                >
                   <NoDataComponent />
                 </td>
               </tr>
