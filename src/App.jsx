@@ -26,6 +26,7 @@ import Login from "./component/Login";
 import ForgotPassword from "./component/ForgotPassword";
 import ScriptureForDay from "./pages/ScriptureForDay";
 import ScriptureContext from "./context/ScriptureContext";
+import UploadScriptures from "./pages/UploadScriptures";
 
 function App() {
   return (
@@ -81,7 +82,11 @@ function App() {
                       path="testimonies-analytics"
                       element={<TestimonyAnalytics />}
                     />
-                    <Route path="daily-verse" element={<ScriptureForDay />} />
+                    <Route path="daily-scripture" element={<ScriptureForDay />} />
+                    <Route
+                      path="upload-scripture"
+                      element={<UploadScriptures />}
+                    />
                     <Route
                       path="general-settings"
                       element={<GeneralSettings />}

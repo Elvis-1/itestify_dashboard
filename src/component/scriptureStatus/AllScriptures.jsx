@@ -41,10 +41,10 @@ const AllScriptures = ({scriptures, allScriptures}) => {
       key: "status",
       Label: "Status",
     },
-    {
-      key: "action",
-      Label: "Action",
-    },
+    // {
+    //   key: "action",
+    //   Label: "Action",
+    // },
   ];
   const { sort, sortHeader, sortedData } = useSort(allScriptures);
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
@@ -142,7 +142,7 @@ const AllScriptures = ({scriptures, allScriptures}) => {
                       {data.status}
                     </button>
                   </td>
-                  <td>
+                  {/* <td>
                     {isOpenOptions === data.id && (
                       <div
                         className={`rounded-lg ${
@@ -184,7 +184,7 @@ const AllScriptures = ({scriptures, allScriptures}) => {
                     >
                       <MdOutlineMoreHoriz />
                     </i>
-                  </td>
+                  </td> */}
                 </tr>
               </tbody>
             ))

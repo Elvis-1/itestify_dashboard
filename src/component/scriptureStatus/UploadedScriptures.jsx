@@ -7,6 +7,7 @@ import { MdOutlineMoreHoriz } from "react-icons/md";
 import usePagination from "../../hooks/usePagination";
 import useSort from "../../hooks/useSort";
 import Pagination from "../Pagination";
+import EditUploadedScripture from "../DailyScripturePopups/EditUploadedScripture";
 const UploadedScriptures = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
@@ -50,6 +51,7 @@ const UploadedScriptures = () => {
   const { sort, sortHeader, sortedData } = useSort(uploadedScriptures);
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
     usePagination(sortedData);
+
   // close options with click outside
   const dropdownRef = useRef(null);
   useEffect(() => {
@@ -62,8 +64,15 @@ const UploadedScriptures = () => {
     document.addEventListener("mousedown", handleClickOutside);
     return () => document.removeEventListener("mousedown", handleClickOutside);
   }, []);
+  const [editModal, setEditModal] = useState(false);
   return (
     <div className="relative">
+      {editModal && (
+        <EditUploadedScripture
+          editModal={editModal}
+          setEditModal={setEditModal}
+        />
+      )}
       <div
         className={` h-[20rem] pb-6 rounded-b-lg ${
           isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
@@ -148,9 +157,10 @@ const UploadedScriptures = () => {
                           View
                         </p>
                         <p
-                          // onClick={() => {
-                          //   openProfileModal(data.id);
-                          // }}
+                          onClick={() => {
+                            setIsOpenOptions(null);
+                            setEditModal(true);
+                          }}
                           className="border-b-[1px] border-gray-200 p-[6px] cursor-pointer"
                         >
                           Edit

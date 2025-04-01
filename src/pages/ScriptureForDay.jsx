@@ -8,6 +8,7 @@ import UploadedScriptures from "../component/scriptureStatus/UploadedScriptures"
 import ScheduledScriptures from "../component/scriptureStatus/ScheduledScriptures";
 import DraftScriptures from "../component/scriptureStatus/DraftScriptures";
 import { ScriptureProvider } from "../context/ScriptureContext";
+import { Link } from "react-router-dom";
 
 const ScriptureForDay = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -40,9 +41,14 @@ const ScriptureForDay = () => {
   return (
     <div className={`${isDarkMode ? `bg-black` : `bg-off-white`}`}>
       <div className={`p-5 ${isDarkMode ? `bg-black` : `bg-off-white`}`}>
-        <button className="flex justify-end gap-1 p-2 rounded-md bg-primary cursor-pointer ml-auto">
-          <IoAdd fill="#ffffff" />
-          <span className="text-white text-xs">Upload New Scripture</span>
+        <button className=" flex justify-end ml-auto p-2 rounded-md bg-primary cursor-pointer">
+          <Link
+            to="/dashboard/upload-scripture"
+            className="flex justify-end gap-1 ml-auto"
+          >
+            <IoAdd fill="#ffffff" />
+            <span className="text-white text-xs">Upload New Scripture</span>
+          </Link>
         </button>
         <div
           className={`${

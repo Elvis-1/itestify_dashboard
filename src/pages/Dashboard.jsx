@@ -30,6 +30,7 @@ import { Modal } from "antd";
 function Dashboard() {
   const [showTestimonyMenu, setShowTestimonyMenu] = useState(false);
   const [showAnalyticsMenu, setShowAnalyticsMenu] = useState(false);
+  const [showScriptureMenu, setShowScriptureMenu] = useState(false);
   const [showInspirationalMenu, setShowInspirationalMenu] = useState(false);
   const [showAllTestimonies, setShowAllTestimonies] = useState(true);
   const [logoutModal, setLogoutModal] = useState(false);
@@ -204,18 +205,49 @@ function Dashboard() {
                 <p>Overview</p>
               </div>
             </Link>
-            <Link to="daily-verse">
+            <div
+              className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
+                location.pathname === "/dashboard/daily-scripture" ||
+                location.pathname === "/dashboard/upload-scripture"
+                  ? `bg-primary text-white`
+                  : `bg-transparent`
+              }`}
+            >
+              <FaBible style={{ fontSize: "20px" }} />
               <div
-                className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
-                  location.pathname === "/dashboard/daily-verse"
-                    ? "bg-primary text-white"
-                    : "bg-transparent"
-                }`}
+                onClick={() => setShowScriptureMenu(!showScriptureMenu)}
+                className="flex items-center justify-between w-[100%] cursor-pointer "
               >
-                <FaBible style={{ fontSize: "20px" }} />
-                <p>Scripture for the day</p>
+                <p className=" font-sans">Scripture of the day</p>
+                {showScriptureMenu ? (
+                  <CaretUpFilled style={{ fontSize: "15px" }} />
+                ) : (
+                  <CaretDownFilled style={{ fontSize: "15px" }} />
+                )}
               </div>
-            </Link>
+            </div>
+            {showScriptureMenu ? (
+              <div className=" cursor-pointer text-[13px] flex flex-col  justify-normal pl-2">
+                <Link to="daily-scripture">
+                  <input
+                    type="button"
+                    value={"All Scriptures"}
+                    placeholder=""
+                    className=" border-none outline-none p-2 bg-transparent cursor-pointer "
+                  />
+                </Link>
+                <Link to="upload-scripture">
+                  <input
+                    type="button"
+                    value={"Upload Scriptures"}
+                    placeholder=""
+                    className=" border-none outline-none p-2 bg-transparent cursor-pointer "
+                  />
+                </Link>
+              </div>
+            ) : (
+              ""
+            )}
             <Link to="users">
               <div
                 className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
