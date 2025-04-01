@@ -4,12 +4,14 @@ import { LockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 import { CheckOutlined } from "@ant-design/icons";
+import axios from 'axios'
 
 function CreatePassword() {
   const navigate = useNavigate()
 
   const [password1, setPassword1] = useState('')
   const [password2, setPassword2] = useState('')
+  const [loading, setLoading] = useState(false);
 
 
   const validations = {
@@ -21,22 +23,56 @@ function CreatePassword() {
     match: password1 === password2 && password2 !== "",
   };
   
+  const onFinish = async () => {
+    
+    if (password1 !== password2) {
+      message.error("Passwords do not match");
+      return;
+    }
+  
+    
+    let regEx = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d).{8,}$/;
+    if (!regEx.test(password1)) {
+      message.error("Invalid credentials");
+      return;
+    }
+  
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      console.log("Token:", token); // Log the token
+      console.log("Payload:", {
+        password: password1,
+        confirm_password: password2, // Log the payload
+      });
+  
+      const response = await axios.post(
+        "https://itestify-backend-nxel.onrender.com/dashboard/create_password/",
+        {
+          password: password1,
+          confirm_password: password2,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      const user = JSON.parse(localStorage.getItem("user"));
+      user.created_password = true;
+      localStorage.setItem("user", JSON.stringify(user));
+  
+      navigate("/dashboard");
+      message.success("Password updated successfully!");
 
-  const onFinish = (values) => {
-
-    // create password validations
-     let regEx = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d).{8}$/;
-     if(!validations.length 
-      || !validations.lowercase 
-      || !validations.match || !validations.number 
-      || !validations.specialChar || !validations.uppercase){
-        message.error("Invalid credentials")
-      }else{
-        navigate('/dashboard')
-      }
-     
-     
-  }
+    } catch (error) {
+      // console.error("Failed to update password:", error.response ? error.response.data : error.message);
+      message.error("Failed to update password. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
     <div className='flex justify-center items-center min-h-screen bg-slate-800'>
         <div className='w-[300px]  h-[430px] rounded-xl bg-black'>
@@ -121,7 +157,11 @@ function CreatePassword() {
               </div>
 
               <Form.Item style={{marginTop: '30px'}}>
-                <Button  block htmlType='submit' className='bg-[#9966CC] font-sans text-white text-[13px] outline-none border-none'>Update Password</Button>
+                <Button  block htmlType='submit' 
+                className='bg-[#9966CC] font-sans text-white text-[13px] outline-none border-none'
+                loading={loading}>
+                  Update Password
+                </Button>
               </Form.Item>
             </div>
           </Form>

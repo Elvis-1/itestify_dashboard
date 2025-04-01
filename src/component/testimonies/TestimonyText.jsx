@@ -1,4 +1,4 @@
-import React, { useState, useContext, useRef } from 'react'
+import React, { useState, useContext, useRef, useEffect } from 'react'
 import { CiSearch } from "react-icons/ci";
 import { IoFilterOutline } from "react-icons/io5";
 
@@ -9,7 +9,7 @@ import { FaCaretDown, FaCaretUp } from "react-icons/fa6";
 
 
 
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io';
+import { IoIosArrowDown, IoIosArrowUp, IoIosMore } from 'react-icons/io';
 
 import testimonyData from '../../data/Testimonydata';
 import { Modal } from 'antd';
@@ -17,6 +17,8 @@ import { Modal } from 'antd';
 import modalpic from '../../assets/images/modalPic.png'
 
 import { DarkModeContext } from '../../context/DarkModeContext';
+import { ClipLoader } from "react-spinners";
+import axios from 'axios'
 
 
 
@@ -31,6 +33,15 @@ const getStatusStyle = (status) => {
       default:
         return {};
     }
+};
+
+const formatDate = (isoDateString) => {
+    const date = new Date(isoDateString);
+    return date.toLocaleDateString("en-US", {
+      year: "numeric",
+      month: "long",
+      day: "numeric",
+    });
 };
 
 
@@ -58,16 +69,64 @@ function TestimonyText() {
     const [deleteAlert, setDeleteAlert] = useState(false)
     const [deleteStatus, setDeleteStatus] = useState(false)
     const [deleteSuccessful, setDeleteSuccessful] = useState(false)
+    const [rejectionReason, setRejectionReason] = useState('')
+
+
+    const [testimonies, setTestimonies] = useState([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+
+
+    useEffect(() => {
+        const fetchTestimonies = async () => {
+            try {
+                setLoading(true)
+                const token = localStorage.getItem("token");
+                if (!token) {
+                    setError("You are not logged in. Please log in to access testimonies.");
+                    setLoading(false);
+                    return;
+                }
+        
+                const response = await axios.get(
+                    "https://itestify-backend-nxel.onrender.com/testimonies/texts/",
+                    {
+                        headers: {
+                            Authorization: `Bearer ${token}`,
+                        },
+                    }
+                );
+        
+                const testimoniesWithDefaults = response.data.data.map((item) => ({
+                    ...item,
+                    full_name: item.full_name ?? "Unknown",
+                    category: item.category ?? "Uncategorized",
+                    status: item.status ?? "Pending",
+                }));
+        
+                setTestimonies(testimoniesWithDefaults);
+            } catch (error) {
+                console.error("Failed to fetch testimonies:", error.response ? error.response.data : error.message);
+                setError("Failed to fetch testimonies. Please try again later.");
+            } finally {
+                setLoading(false); // Stop loading
+            }
+        };
+    
+        fetchTestimonies();
+    }, []);
+
+    useEffect(()=> {
+        
+    }, [testimonies])
+
 
     const itemsPerPage = 4;
 
     // Pagination logic
     const startIndex = (currentPage - 1) * itemsPerPage;
-    testimonyData.slice(startIndex, startIndex + itemsPerPage);
-    const totalPages = Math.ceil(testimonyData.length / itemsPerPage);
-
-    
-
+    testimonies.slice(startIndex, startIndex + itemsPerPage);
+    const totalPages = Math.ceil(testimonies.length / itemsPerPage);
 
 
     // sortData logic
@@ -81,22 +140,22 @@ function TestimonyText() {
 
     // search Data logic
     const searchedData = React.useMemo(() => {
-        const dataToSearch = getFilteredData.length > 0 ? getFilteredData : testimonyData;
+        const dataToSearch = getFilteredData.length > 0 ? getFilteredData : testimonies;
     
-        if (searchQuery.trim() !== "") {
-            const filteredData = dataToSearch.filter((item) => {
-                const lowerCaseQuery = searchQuery.toLowerCase();
-                return (
-                    item.name.toLowerCase().includes(lowerCaseQuery) ||
-                    item.category.toLowerCase().includes(lowerCaseQuery) ||
-                    item.status.toLowerCase().includes(lowerCaseQuery)
-                );
-            });
-            return filteredData;
+        if (searchQuery.trim() === "") {
+            return dataToSearch;
         }
     
-        return dataToSearch;
-    }, [getFilteredData, testimonyData, searchQuery]);
+        const lowerCaseQuery = searchQuery.toLowerCase();
+        return dataToSearch.filter((item) => {
+            return (
+                item.full_name.toLowerCase().includes(lowerCaseQuery) ||
+                item.category.toLowerCase().includes(lowerCaseQuery) ||
+                item.status.toLowerCase().includes(lowerCaseQuery)
+            );
+        });
+    }, [getFilteredData, testimonies, searchQuery]);
+
     
     // sorted Data logic
     const sortedData = React.useMemo(() => {
@@ -132,16 +191,52 @@ function TestimonyText() {
     };
 
     // function to get testimony details on click
-    function handleDetail(id) {
-        const testimonyDetail = testimonyData.find((item) => item.id === id)
-        if(testimonyDetail) {
-            setDetails(testimonyDetail)
-            setOpenModal(true)
-            setGetStatus(testimonyDetail.status)
-            setActionModal(false)
+    async function handleDetail(id) {
+        try {
+            const token = localStorage.getItem("token");
+            if (!token) {
+                console.error("No token found. Please log in.");
+                return;
+            }
+    
+            const response = await axios.get(
+                `https://itestify-backend-nxel.onrender.com/testimonies/texts/${id}/`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+    
+            if (response.data) {
+                const testimonyDetails = response.data;
+    
+                if (!testimonyDetails) {
+                    console.error("No testimony details found in the response.");
+                    return;
+                }
+    
+                if (!testimonyDetails.uploaded_by) {
+                    testimonyDetails.uploaded_by = {
+                        full_name: "N/A",
+                        email: "N/A",
+                    };
+                }
+
+    
+                setDetails(testimonyDetails);
+                setOpenModal(true);
+                setGetStatus(testimonyDetails.status);
+                setActionModal(false);
+            } else {
+                console.error("No data found in the response.");
+            }
+        } catch (error) {
+            console.error("Failed to fetch testimony details:", error.response ? error.response.data : error.message);
         }
-       
     }
+    
+    
 
     // function to close testimony  modals
     const handleCloseModal = () => {
@@ -156,32 +251,80 @@ function TestimonyText() {
 
     // function to dynamically handle details modal footer buttons
     function handleModalFooterButton() {
-        if(getStatus === 'Pending') {
-            return[
-                <button
-                onClick={handleRejectionReason}
-                className='text-[12px] 
-                border border-red-600 
-                text-red-600 p-1 w-[100px] 
-                rounded'>Reject Testimony</button>,
-                <button
-                onClick={() => {
-                    setIsApproved(true)
-                    showStatusAlert()
-                }}
-                className='text-[12px]
-                text-white bg-[#9966CC] p-1 w-[120px] 
-                rounded ml-2'>Approve Testimony</button>
-            ]
-        }else if(getStatus === 'Rejected') {
-            return[
-                <div className='text-left'>
-                    <h3 className='text-[13px]'>Reason For Rejection</h3>
-                    <p className='text-[11px] opacity-[0.7]'>Use of Foul Languages</p>
-                </div> 
-            ]
+        if (getStatus === 'pending') {
+          return [
+            <button
+              key="reject"
+              onClick={() => {
+                setRejectionReason(''); // Clear previous rejection reason
+                handleRejectionReason();
+              }}
+              className='text-[12px] border border-red-600 text-red p-1 w-[100px] rounded'
+            >
+              Reject Testimony
+            </button>,
+            <button
+              key="approve"
+              onClick={async () => {
+                const success = await handleTestimonyStatus(controlDetail, "approve"); // Note: changed to "approve" to match your API
+                if (success) {
+                  setIsApproved(true);
+                  showStatusAlert();
+                }
+              }}
+              className='text-[12px] text-white bg-[#9966CC] p-1 w-[120px] rounded ml-2'
+            >
+              Approve Testimony
+            </button>
+          ];
+        } else if (getStatus === 'Rejected') {
+          return [
+            <div key="reason" className='text-left'>
+              <h3 className='text-[13px]'>Reason For Rejection</h3>
+              <p className='text-[11px] opacity-[0.7]'>Use of Foul Languages</p>
+            </div> 
+          ];
         }
-        return null
+        return null;
+    }
+
+    async function handleTestimonyStatus(id, newStatus, reason = '') {
+        const token = localStorage.getItem('token');
+        try {
+          const payload = { action: newStatus };
+          if (newStatus === 'reject') {
+            payload.rejection_reason = reason;
+          }
+
+          const response = await axios.post(
+            `https://itestify-backend-nxel.onrender.com/text-testimonies/${id}/review/`,
+            payload,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+                'Content-Type': 'application/json'
+              }
+            }
+          );
+      
+          if (response.status === 200) {
+
+            setTestimonies(prevTestimonies => 
+              prevTestimonies.map(testimony => 
+                testimony.id === id 
+                  ? { ...testimony, status: newStatus === 'approve' ? 'Approved' : 'Rejected' } 
+                  : testimony
+              )
+            );
+            return true;
+          }
+          return false;
+
+        } catch (error) {
+          console.error('Error updating testimony status:', error);
+          // You might want to show an error message to the user here
+          return false;
+        }
     }
 
     // function to handle reason for rejection modal
@@ -200,10 +343,18 @@ function TestimonyText() {
             border-[#9966CC] p-1 w-[80px] 
             text-[#9966CC] rounded mr-4'>Cancel</button>,
 
-            <button key='Rejected' onClick={() => {
-                setIsApproved(false)
-                showStatusAlert()
-            }}
+            <button key='Rejected' 
+            onClick={async () => {
+                if (!rejectionReason.trim()) {
+                  alert('Please provide a rejection reason');
+                  return;
+                }
+                const success = await handleTestimonyStatus(controlDetail, "reject", rejectionReason);
+                if (success) {
+                  setIsApproved(false);
+                  showStatusAlert();
+                }
+              }}
             className='bg-[#9966CC] p-1 w-[80px] 
             text-[#FFFFFF] rounded'>Confirm</button>
         ]
@@ -214,6 +365,7 @@ function TestimonyText() {
         setStatusAlert(true)
         setOpenModal(false)
         setRejectionReasonModal(false)
+        setRejectionReason('')
 
         const alertTimer = setTimeout(() => {
             handleCloseModal()
@@ -264,7 +416,7 @@ function TestimonyText() {
 
     //function handling the filtering logic
     function handleFiltering() {
-        const getFilterData = testimonyData.filter((item) => {
+        const getFilterData = testimonies.filter((item) => {
             const itemDate = new Date(item.date);
          
             if(filterDate1 !== "" && filterDate2 !== "" 
@@ -287,7 +439,7 @@ function TestimonyText() {
                 );
 
             }else{
-                return (item.date === filterDate1 || item.date === filterDate2
+                return (item.created_at === filterDate1 || item.created_at === filterDate2
                     || item.category === selectTestType || item.status === ApprovalStatus
                 )
             }
@@ -347,6 +499,30 @@ function TestimonyText() {
         }
     } 
 
+    async function handleTestimonyDelete(id) {
+        const token = localStorage.getItem('token');
+        try {
+            setLoading(true);
+            await axios.delete(
+                `https://itestify-backend-nxel.onrender.com/testimonies/texts/${id}/`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                }
+            );
+            
+            setTestimonies(prev => prev.filter(item => item.id !== id));
+            setDeleteSuccessful(true);
+            handleCloseModal();
+        } catch (error) {
+            console.error("Delete failed:", error);
+            // You might want to show an error notification here
+        } finally {
+            setLoading(false);
+        }
+    }
+
     
     const dateInputRef1 = useRef(null);
     const dateInputRef2 = useRef(null);
@@ -362,7 +538,23 @@ function TestimonyText() {
         }
     };
 
+    if (loading) {
+        return (
+            <div className="flex justify-center items-center h-screen">
+                <ClipLoader color="#9966CC" size={50} />
+            </div>
+        );
+    }
+
+
+    if (error) {
+    return <div>{error}</div>;
+    }
+
+   
+
   return (
+    
     <div className={`${!isDarkMode ? 'border h-[400px] rounded-xl w-[98%] m-[auto]' : 'border-none'}`}>
         
         {/* testimony details modal */}
@@ -376,7 +568,7 @@ function TestimonyText() {
                 content: {
                     backgroundColor: 'black',
                     width: '340px',
-                    height: '420px',
+                    height: 'auto',
                     color: 'white',
                     margin: '0 auto',
                     borderRadius: '8px',
@@ -395,37 +587,36 @@ function TestimonyText() {
                     w-[116%] h-[50px] ml-[-24px] mt-[-22px] 
                     rounded-tl-xl rounded-tr-xl'>
                     </div>
-                    <div lassName='w-[50px] h-[50px] m-[auto] z-[1000]'>
+                    <div className='w-[50px] h-[50px] m-[auto] z-[1000]'>
                         <img className='w-[50px] h-[50px] m-[auto] mt-[-25px]' src={modalpic} alt="" />
                     </div>
                     <div className='flex border rounded-2xl border-gray-100 items-center justify-between w-[110%] h-[70px] m-[auto] ml-[-15px] mt-[20px]'>
                         <div className='text-center ml-5 opacity-[0.6] border-r h-[50px] pr-3 font-sans'>
                             <p className='text-[10px]'>Name</p>
-                            <p className='text-[9px]'>{details.name}</p>
+                            <p className='text-[9px]'>{details.uploaded_by.full_name || "N/A"}</p>
                         </div>
-                        <div className='text-center ml-3 text-[12px] opacity-[0.6] w-[100%] h-[50px] m-[auto] border-r pr-3 font-sans'>
+                        <div className='text-center ml-2 text-[12px] opacity-[0.6] w-[100%] h-[50px] m-[auto] border-r pr-3 font-sans'>
                             <p>Email</p>
-                            <p className='ml-3'>johnstone@gmail.com</p>
+                            <p className='ml-3 w-[130px]'>{details.uploaded_by.email || "N/A"}</p>
                         </div>
                         <div className='text-center text-[9px] opacity-[0.6] w-[100%] h-[45px] m-[auto] pr-4 font-sans'>
                             <p className='mb-1'>Status</p>
-                            <p className={` w-[70px] ml-1 p-[2px] rounded ${details.status === 'Pending' ? 
-                            'text-yellow-400 border border-yellow-500' :
+                            <p className={`w-[70px] ml-1.5 p-[2px] rounded ${
+                            details.status === 'pending' ? 
+                                'text-yellow-400 border border-yellow-500' :
                             details.status === 'Approved' ? 
-                            'text-green-500 border border-green-500' : 
-                            'text-red-500 border border-red-500'}`}>{details.status}</p>
+                                'text-green-500 border border-green-500' : 
+                                'text-red border border-red'
+                            }`}>
+                            {details.status}
+                             </p>
                         </div>
                     </div>
 
                     <div className='mt-3 mb-7'>
-                        <h3 className='text-white font-sans text-[11px]'>Miraculous Healling after prayer</h3>
+                        <h3 className='text-white font-sans text-[11px]'>{details.title || "no title"}</h3>
                         <p className='text-[11px] text-white pt-2'>
-                            I want to give all the glory to God for the Miraculous healing I recieve
-                            For the past few months I have being suffering from severe back pain
-                            that made it even difficult to get out of bed in the morning. I tried everything
-                            from medication to physical thyraphy, but nothing seems to work but one Sunday
-                            after the service I approach the prayer team and asked for prayers for healing as they did laid hands
-                            on me and prayed.
+                            {details.content.slice(0, 500) + "..."}
                         </p>
                     </div>    
                 </div>
@@ -466,7 +657,9 @@ function TestimonyText() {
                 <div className='mt-2'>
                     <textarea className='rounded-xl
                      bg-[#313131] w-[100%] 
-                     h-[180px] indent-2 p-1 text-[12px]' placeholder='Type here...'/>
+                     h-[180px] indent-2 p-1 text-[12px]' placeholder='Type here...'
+                     value={rejectionReason}
+                     onChange={(e) => setRejectionReason(e.target.value)}/>
                 </div>
             </div>
         </div>
@@ -774,11 +967,15 @@ function TestimonyText() {
                 </div>
 
                 <div className='w-[150%] ml-[-25px] pb-2 opacity-[0.6] cursor-pointer'>
-                    <button onClick={() => {
+                    <button 
+                    onClick={() => {
+                        setActionModal(false);
+                        handleTestimonyDelete(controlDetail);
                         showDeleteNotification(deleteStatus)
-                        setActionModal(false)
                     }} 
-                    className='pl-2 pt-4 text-red'>Delete</button>
+                    className='pl-2 pt-4 text-red'>
+                       {loading ? <ClipLoader size={15} color="#ff0000" /> : 'Delete'}
+                    </button>
                 </div>
             </div>
 
@@ -861,7 +1058,7 @@ function TestimonyText() {
 
         </Modal>
         
-                
+             
         <div className={`${isDarkMode ? 'w-[98%]' : 'w-[100%]'} h-[400px] m-[auto] bg-[#171717] rounded-xl
             ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}>
             <div className='flex items-center justify-between p-3'>
@@ -891,7 +1088,7 @@ function TestimonyText() {
                 <div className={`w-[100%] h-[50px] text-[14px] m-[auto] bg-[#313131] grid grid-cols-9 items-center justify-between
                     ${isDarkMode ? "text-white" : "bg-slate-100 text-black border-b border-b-slate-200"}`}>
                     <div className='p-2 flex items-center'>
-                    S/N
+                        S/N
                         <div className='flex flex-col'>
                             <IoIosArrowUp
                             onClick={() => sortData('id')}
@@ -909,12 +1106,12 @@ function TestimonyText() {
                         Name
                         <div className='flex flex-col'>
                             <IoIosArrowUp
-                            onClick={() => sortData('name')}
+                            onClick={() => sortData('full_name')}
                             size={10}
                             className='ml-2 cursor-pointer'
                             />
                             <IoIosArrowDown
-                            onClick={() => sortData('name')}
+                            onClick={() => sortData('full_name')}
                             size={10}
                             className='ml-2 cursor-pointer'
                             />
@@ -939,12 +1136,12 @@ function TestimonyText() {
                         Date
                         <div className='flex flex-col'>
                             <IoIosArrowUp
-                            onClick={() => sortData('date')}
+                            onClick={() => sortData('created_at')}
                             size={10}
                             className='ml-2 cursor-pointer'
                             />
                             <IoIosArrowDown
-                            onClick={() => sortData('date')}
+                            onClick={() => sortData('created_at')}
                             size={10}
                             className='ml-2 cursor-pointer'
                             />
@@ -1005,7 +1202,11 @@ function TestimonyText() {
                 {/* end of table header section */}
 
                 {/* Data Rows */}
+                
+                {testimonies.length > 0 ?
+                <div>
                 {sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => (
+                    
                     <div
                     onClick={() => {
                         setControlDetail(item.id)
@@ -1015,25 +1216,29 @@ function TestimonyText() {
                     className={`text-[13px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-9
                         ${isDarkMode ? "text-white border-b border-b-slate-200" : "bg-white text-black border-b border-b-slate-200"}`}
                     >
-                        <div onClick={()=>handleDetail(item.id)} className='ml-[15px] mt-4'>{item.id}</div>
-                        <div className='ml-[-15px] text-[12px] w-[200px] mt-4'>{item.name}</div>
+                        <div onClick={()=>handleDetail(item.id)} className='ml-[15px] mt-4'>{(currentPage - 1) * itemsPerPage + index + 1}</div>
+                        <div className='ml-[-15px] text-[12px] w-[200px] mt-4'>{item.uploaded_by.full_name || 'N/A'}</div>
                         <div className='ml-[15px] mt-4'>{item.category}</div>
-                        <div className='ml-[10px] mt-4'>{item.date}</div>
-                        <div className='ml-[20px] mt-4'>{item.likes}</div>
-                        <div className='ml-[20px] mt-4'>{item.comments}</div>
-                        <div className='ml-[20px] mt-4'>{item.shares}</div>
+                        <div className='ml-[10px] mt-4'>{formatDate(item.uploaded_by.created_at)}</div>
+                        <div className='ml-[20px] mt-4'>{item?.likes || 0}</div>
+                        <div className='ml-[20px] mt-4'>{item?.comment || 0}</div>
+                        <div className='ml-[20px] mt-4'>{item?.shares || 0}</div>
                         <div className={`ml-[-5px] mt-3 w-[90%]  m-[auto] text-center rounded-xl p-1 ${item.status === 'Rejected' ? 
-                        'text-red-600 border border-red-600' : item.status === 'Pending' ? 
+                        'text-red border border-red' : item.status === 'pending' ? 
                         'text-yellow-400 border border-yellow-500' : 'text-green-700 border border-green-700'}`}>
                             {item.status}
                         </div>
                         <div  onClick={() => {
                             setActionModal(true)
-                        }} className='ml-[30px] mt-4 cursor-pointer'>{item.action}
+                        }} className='ml-[30px] mt-4 cursor-pointer'><IoIosMore />
 
                         </div>
                     </div>
                 ))}
+                </div>: 
+                <div className='flex items-center justify-center mt-24'>
+                    <p>No Testimony available</p>
+                </div>}
                 {/* end of Data row */}
 
             </div>
@@ -1043,7 +1248,7 @@ function TestimonyText() {
             <div className='flex justify-between items-center mt-10'>
                 <div className={`text-[12px] ml-[10px]
                 ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
-                    Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, testimonyData.length)} of {testimonyData.length}
+                    Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, testimonies.length)} of {testimonies.length}
                 </div>
                 <div className='text-[13px] mr-5 flex items-center gap-3'>
                 <button
