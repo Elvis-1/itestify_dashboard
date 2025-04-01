@@ -96,7 +96,7 @@ const Login = () => {
       setLoading(true)
       
       const response = await axios.post(
-        "https://itestify-backend.onrender.com/login/password/",
+        "https://itestify-backend-nxel.onrender.com/login/password/",
         {
           email: values.email,
           password: values.password,
