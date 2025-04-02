@@ -64,7 +64,7 @@ function CreatePassword() {
       localStorage.setItem("user", JSON.stringify(user));
   
       navigate("/dashboard");
-      message.success("Password updated successfully!");
+      message.success("Password created successfully!");
 
     } catch (error) {
       // console.error("Failed to update password:", error.response ? error.response.data : error.message);

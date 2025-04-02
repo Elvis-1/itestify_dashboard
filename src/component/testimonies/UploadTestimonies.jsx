@@ -3,13 +3,13 @@ import { Upload, message, DatePicker, TimePicker } from 'antd';
 import { FaPlay, FaTimes, FaCloudUploadAlt, FaInfoCircle } from "react-icons/fa";
 import { FaCaretDown, FaCaretUp } from "react-icons/fa6";
 import axios from 'axios';
-import { uploadTestContext } from '../../context/UploadTestimonyContext';
+
 import dayjs from 'dayjs';
 
 const { Dragger } = Upload;
 
 function UploadTestimonies() {
-  const { uploadTestFn, setUploadTestFn } = useContext(uploadTestContext);
+  
 
   // Form state
   const [uploadStatus, setUploadStatus] = useState('drafts');
