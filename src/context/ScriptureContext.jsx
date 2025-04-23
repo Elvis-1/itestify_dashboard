@@ -39,6 +39,13 @@ const ScriptureContextProvider = ({ children }) => {
       )
     );
   };
+  const uploadScheduledScripture = (id, updatedScripture) => {
+    setScriptureUploadedDetails((prev) =>
+      prev.map((scripture) =>
+        scripture.id === id ? { ...scripture, ...updatedScripture } : scripture
+      )
+    );
+  }
 
   const viewScriptureModal = (id, scriptureStatus) => {
     const scriptureDetailsMatch = scriptureStatus.find((s) => s.id === id);
@@ -67,6 +74,7 @@ const ScriptureContextProvider = ({ children }) => {
         viewScriptureModal,
         eachScripture,
         setEachScripture,
+        uploadScheduledScripture
       }}
     >
       {children}

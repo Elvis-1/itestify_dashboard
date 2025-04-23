@@ -96,6 +96,7 @@ const AllScriptures = ({ scriptures, setScriptures }) => {
           setIsFilter={setIsFilter}
           filters={filters}
           setFilters={setFilters}
+          onFilterChange={(filtered) => console.log("Filtered:", filtered)}
         />
       )}
       <div

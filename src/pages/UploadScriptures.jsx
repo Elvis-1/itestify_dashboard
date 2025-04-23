@@ -62,6 +62,22 @@ const UploadScriptures = () => {
         item.status === "scheduled" && item.selectedDate === selectedDate
     );
   };
+  const checkForExistingUpload = () => {
+    if (scriptureUpload.selectedOption !== "UploadNow") return false;
+    return scriptureUploadedDetails.some(
+      (item) =>
+        item.status === "uploaded" &&
+        item.uploadedDate === new Date().toLocaleDateString()
+    );
+  };
+  const checkForExistingScheduleToUpload = () => {
+    if (scriptureUpload.selectedOption !== "ScheduleForLater") return false;
+    // const selectedDate = scriptureUpload.selectedDate;
+    return scriptureUploadedDetails.some(
+      (item) =>
+        item.status === "scheduled" && item.selectedDate === item.uploadedDate
+    );
+  };
 
   const submitScripture = (replace = false) => {
     const newScripture = {
@@ -121,9 +137,9 @@ const UploadScriptures = () => {
   };
 
   const handleSubmit = () => {
-    if (checkForExistingSchedule()) {
+    if (checkForExistingSchedule() || checkForExistingUpload()) {
       setIsWarningScheduledModal(true);
-    } else if (scriptureUpload.selectedOption === "UploadNow") {
+    } else if (!checkForExistingScheduleToUpload) {
       setIsWarningUploadModal(true);
     } else {
       submitScripture();
@@ -172,8 +188,8 @@ const UploadScriptures = () => {
       )}
       {isWarningUploadModal && (
         <WarningModal
-          title={`Upload Scripture`}
-          message={`You are about to upload this scripture ahead of the scheduled date and time. Once uploaded, it will immediately become visible to all users, and the original schedule will be canceled. Do you wish to proceed?`}
+          title={`Scripture Has been Posted for Today`}
+          message={`A scripture was already posted earlier today. Do you want to replace it with this new one? This change will be visible to all users immediately`}
           onCancel={handleCancelUpload}
           onReplace={handleSubmitUpload}
           buttonText="Upload it"

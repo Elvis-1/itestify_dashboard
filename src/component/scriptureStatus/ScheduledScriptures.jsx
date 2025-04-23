@@ -13,6 +13,7 @@ import DeleteScripture from "../DailyScripturePopups/DeleteScripture";
 import EditScripture from "../DailyScripturePopups/EditScripture";
 import SuccessModal from "../DailyScripturePopups/SuccessModal";
 import ViewScriptureDetails from "../DailyScripturePopups/ViewScriptureDetails";
+import WarningModal from "../DailyScripturePopups/WarningModal";
 
 const ScheduledScriptures = ({
   scriptures,
@@ -24,15 +25,18 @@ const ScheduledScriptures = ({
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
   const [searchItem, setSearchItem] = useState("");
   const [successEditModal, setSuccessEditModal] = useState(false);
+  const [successUploadModal, setSuccessUploadModal] = useState(false);
+  const [isWarningUploadModal, setIsWarningUploadModal] = useState(false);
   useEffect(() => {
-    if (successEditModal) {
+    if (successEditModal || successUploadModal) {
       const timeout = setTimeout(() => {
         setSuccessEditModal(false);
+        setSuccessUploadModal(false)
       }, 2000);
 
       return () => clearTimeout(timeout);
     }
-  }, [successEditModal]);
+  }, [successEditModal, successUploadModal]);
   const {
     deleteScripture,
     deleteModal,
@@ -41,6 +45,7 @@ const ScheduledScriptures = ({
     setIsScriptureDetails,
     viewScriptureModal,
     eachScripture,
+    uploadScheduledScripture
   } = useContext(ScriptureContext);
   const [selectedScriptureId, setSelectedScriptureId] = useState(null);
   const scheduledScriptures = scriptures.filter(
@@ -128,6 +133,38 @@ const ScheduledScriptures = ({
     const searchValue = e.target.value;
     setSearchItem(searchValue);
   };
+  const handleUploadScheduled = () => {
+    const currentDate = new Date();
+    const formattedDate = currentDate.toLocaleDateString();
+    const hours = currentDate.getHours() % 12 || 12;
+    const minutes = currentDate.getMinutes().toString().padStart(2, "0");
+    const timeFormat = currentDate.getHours() >= 12 ? "PM" : "AM";
+
+    // Update the scripture to mark it as uploaded
+    uploadScheduledScripture(selectedScriptureId, {
+      status: "uploaded",
+      dateUploaded: formattedDate,
+      selectedDate: formattedDate,
+      selectedTime: `${hours}:${minutes}`,
+      selectedTimeFormat: timeFormat,
+    });
+
+    setIsWarningUploadModal(false);
+    setSuccessUploadModal(true); // Show success modal
+  };
+  const handleOpenScheduledModal = (id) => {
+    setSelectedScriptureId(id);
+    setIsWarningUploadModal(true);
+    setIsOpenOptions(null);
+  };
+  const handleSubmitUpload = () => {
+    //submitScripture(); // Upload scripture immediately
+    setIsWarningUploadModal(false);
+    //resetForm();
+  };
+  const handleCancelUpload = () => {
+    setIsWarningUploadModal(false); // Close warning modal without action
+  };
   return (
     <div className="relative">
       {editModal && (
@@ -155,12 +192,24 @@ const ScheduledScriptures = ({
       {successEditModal && (
         <SuccessModal successMessage="Changes saved Successfully!" />
       )}
+      {successUploadModal && (
+        <SuccessModal successMessage="Scripture Uploaded Successfully" />
+      )}
+      {isWarningUploadModal && (
+        <WarningModal
+          title={`Upload Scripture`}
+          message={`You are about to upload this scripture ahead of the scheduled date and time. Once uploaded, it will immediately become visible to all users, and the original schedule will be canceled. Do you wish to proceed?`}
+          onCancel={handleCancelUpload}
+          onReplace={handleUploadScheduled}
+          buttonText="Yes, Upload"
+        />
+      )}
       <div
         className={`h-[22rem] pb-6 rounded-b-lg ${
           isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
         } `}
       >
-         <div className="absolute -top-16 right-6 flex items-center gap-4">
+        <div className="absolute -top-16 right-6 flex items-center gap-4">
           {/*---------------------------------------- Search Bar  ---------------------------------*/}
           <div
             className={`flex justify-left items-center gap-2 p-3 rounded-lg w-[300px] ${
@@ -283,6 +332,14 @@ const ScheduledScriptures = ({
                         </p>
                         <p
                           onClick={() => {
+                            handleOpenScheduledModal(data.id);
+                          }}
+                          className="border-b-[1px] border-gray-200 p-2 cursor-pointer"
+                        >
+                          Upload
+                        </p>
+                        <p
+                          onClick={() => {
                             handleDeleteClick(data.id);
                           }}
                           className=" p-2 text-red cursor-pointer"
@@ -305,10 +362,7 @@ const ScheduledScriptures = ({
           ) : (
             <tbody>
               <tr className="border-b-0">
-                <td
-                  colSpan={8}
-                  className=" border-b-transparent"
-                >
+                <td colSpan={8} className=" border-b-transparent">
                   <NoDataComponent />
                 </td>
               </tr>

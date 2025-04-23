@@ -283,7 +283,7 @@ const UploadedScriptures = ({
 
                         <p
                           onClick={() => {
-                            handleDeleteClick(data.id);
+                            handleDeleteClick(data.id3);
                           }}
                           className=" p-[6px] text-red cursor-pointer"
                         >
