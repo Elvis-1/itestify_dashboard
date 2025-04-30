@@ -72,7 +72,7 @@ const GeneralSettings = () => {
     setConfirmAddAdmin(false);
     setSelectedRole(adminDetails.role);
     setTimeout(() => {
-      setAdminDetails({ name: "", email: "", role: "" });
+      setAdminDetails({ name: "", email: "", role: "" })
     }, 5000);
     setMemberModal(false);
   };
