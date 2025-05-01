@@ -8,11 +8,14 @@ import useSort from "../../hooks/useSort";
 import usePagination from "../../hooks/usePagination";
 import Pagination from "../Pagination";
 import NoDataComponent from "../NoDataComponent";
+import LoadingState from "../LoadingState.jsx";
+
 const RegUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [registeredUsers, setRegisteredUsers] = useState([]);
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
   const [searchItem, setSearchItem] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
 
   const tableHeaders = [
     {
@@ -68,28 +71,33 @@ const RegUsers = () => {
         item.id?.toLowerCase().includes(searchTerm)
     );
   }, [searchItem, registeredUsers]);
-  const { sort, sortHeader,sortedData, sortArray  } = useSort(regUsersIndex);
+  const { sort, sortHeader, sortedData } = useSort(regUsersIndex);
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
     usePagination(sortedData);
 
-  // const API_URL = "/auth/register";
   useEffect(() => {
     const fetchData = async () => {
       try {
-        const response = await fetch("/auth/get_users", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
-        });
+        const response = await fetch(
+          "https://itestify-backend-nxel.onrender.com/users/registered/",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc2NTI5NjAxLCJpYXQiOjE3NDQ5OTM2MDEsImp0aSI6IjQxOWRhZGI3MTQyYzQ3MjRhZWExYjIxMjZmYWM3N2RjIiwidXNlcl9pZCI6IjM0YjM0NTU3LTU4YmMtNDllYi04M2Q3LTE1MzM0YWM3YWI0OSJ9.Z9WEhCFG2VaKCt8REzD8cjGHhEaHfZWCYHA2a_3Sk4M",
+            },
+          }
+        );
         if (!response.ok) {
           throw new Error(`HTTP error! Status: ${response.status}`);
         }
         const data = await response.json();
-        setRegisteredUsers(data.data); 
+        setRegisteredUsers(data.data);
+        setIsLoading(false);
         console.log(data);
       } catch (error) {
-        console.error("Error fetching users:", error);
+        console.error("Error fetching deleted users:", error);
       }
     };
 
@@ -98,6 +106,7 @@ const RegUsers = () => {
 
   return (
     <div className="relative">
+      {isLoading && <LoadingState />}
       {/* <<----------------------------Profile Modal -------------------------->> */}
       {profile && (
         <UserRegProfile setProfile={setProfile} registeredUsers={eachUser} />
@@ -207,7 +216,7 @@ const RegUsers = () => {
                   }`}
                 >
                   <td>{firstIndex + index + 1}</td>
-                  <td>{data.id}</td>
+                  <td>{data.id.slice(0, 6)}</td>
                   <td>{data.full_name}</td>
                   <td>{data.email}</td>
                   <td>{new Date(data.created_at).toLocaleDateString()}</td>

@@ -200,7 +200,7 @@ const DonationsAnalytics = () => {
       </div>
 
       <div
-        className={`p-5 rounded-lg h-[380px] pb-12 w-full mb-72 object-cover ${
+        className={`p-5 rounded-lg h-[380px] pb-12 w-full object-cover ${
           isDarkMode ? "bg-grayBlack" : "bg-white"
         }`}
       >

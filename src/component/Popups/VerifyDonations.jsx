@@ -7,7 +7,7 @@ import "../../styles/animation.css";
 export const VerifyDonations = ({
   setIsVerified,
   setIsSuccessModal,
-  verifyDonation
+  verifyDonation,
 }) => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
@@ -47,8 +47,8 @@ export const VerifyDonations = ({
           }`}
         >
           {/* Header */}
-          <div className="flex items-center justify-between w-full border-b border-gray-300 p-2">
-            <h1 className="text-lg">Verify Details</h1>
+          <div className="flex items-center justify-between w-full border-b border-gray-300 p-3">
+            <h1 className="text-lg">Donations Verification</h1>
             <button
               className="cursor-pointer"
               aria-label="Close Modal"
@@ -62,9 +62,7 @@ export const VerifyDonations = ({
           <div className="p-4 space-y-4">
             {/* Amount Input */}
             <div className="flex flex-col gap-2">
-              <label className="text-sm font-medium" htmlFor="amount">
-                Amount
-              </label>
+              <p className="text-sm font-medium">Amount</p>
               <input
                 type="number"
                 value={amount}
@@ -73,19 +71,21 @@ export const VerifyDonations = ({
                 }}
                 className={`${
                   isDarkMode ? `bg-off-black` : `bg-off-white`
-                } p-1 rounded-md outline-none text-sm placeholder:text-xs`}
+                } p-2 rounded-md outline-none text-sm placeholder:text-xs`}
+                placeholder="e.g 50000"
               />
             </div>
             {/* Dropdown  */}
+            <p className="text-sm font-medium">Currency</p>
             <button
               onClick={() => setIsOpenDropdown(!isOpenDropdown)}
-              className={`w-full px-2 py-1 ${
+              className={`w-full px-2 py-2 ${
                 isDarkMode ? `bg-off-black` : `bg-off-white`
               } flex items-center justify-between
            p-1 rounded-md outline-none text-sm placeholder:text-xs
           hover:bg-zinc-800 transition-colors duration-200`}
             >
-              <span className="text-[15px]">
+              <span className="font-medium opacity-0.7">
                 {selected
                   ? options.find((opt) => opt.value === selected)?.label
                   : "Select"}
@@ -126,8 +126,8 @@ export const VerifyDonations = ({
           >
             <button
               onClick={() => setIsVerified(false)}
-              className={`btn-secondary ${
-                isDarkMode ? `` : `text-primary border-near-black `
+              className={`btn-secondary text-primary border-primary border ${
+                isDarkMode ? `` : ` border-near-black `
               }`}
             >
               Cancel

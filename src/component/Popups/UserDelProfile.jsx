@@ -48,11 +48,11 @@ const UserDelProfile = ({ deletedUsers, setProfile }) => {
           >
             <div className="flex justify-between items-center w-full py-2">
               <p>User ID</p>
-              <p>{deletedUsers?.userId || "----"}</p>
+              <p>{deletedUsers?.id || "----"}</p>
             </div>
             <div className="flex justify-between items-center w-full py-2">
               <p>Name</p>
-              <p>{deletedUsers?.name || "----"}</p>
+              <p>{deletedUsers?.full_name || "----"}</p>
             </div>
             <div className="flex justify-between items-center w-full py-2">
               <p>Email</p>
@@ -64,7 +64,7 @@ const UserDelProfile = ({ deletedUsers, setProfile }) => {
             </div>
             <div className="flex justify-between items-center w-full py-2">
               <p>Deletion date</p>
-              <p>{deletedUsers?.deletionDate || "----"}</p>
+              <p>{new Date(deletedUsers?.updated_at).toLocaleDateString() || "----"}</p>
             </div>
           </div>
         </div>

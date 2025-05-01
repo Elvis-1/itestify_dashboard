@@ -7,7 +7,7 @@ export default defineConfig({
   plugins: [react()],
   server: {
     proxy: {
-      "/auth": {
+      "/users": {
         target: "https://itestify-backend-nxel.onrender.com/mobile",
         changeOrigin: true,
         secure: false,

@@ -10,7 +10,8 @@ export const ScriptureDetails=[
     },
     {
         id: 2,
-        dateUploaded: "10th Aug 2024",
+        dateScheduled: "10th Aug 2024",
+        timeScheduled: "10:23 AM",
         bibleText: "Philippians 4:13",
         scripture: "I can do all things through Christ which strengtheneth me.",
         bibleVersion: "MSG",
@@ -55,7 +56,8 @@ export const ScriptureDetails=[
       },
       {
         id: 7,
-        dateUploaded: "22nd Aug 2024",
+        dateScheduled: "22nd Aug 2024",
+        timeScheduled: "12:00 PM",
         bibleText: "Romans 8:28",
         scripture: "And we know that all things work together for good to them that love God, to them who are the called according to his purpose.",
         bibleVersion: "NKJV",
@@ -82,7 +84,8 @@ export const ScriptureDetails=[
       },
       {
         id: 10,
-        dateUploaded: "30th Aug 2024",
+        dateScheduled: "30th Aug 2024",
+        timeScheduled: "2:30 PM",
         bibleText: "1 Corinthians 13:13",
         scripture: "And now abideth faith, hope, charity, these three; but the greatest of these is charity. ",
         bibleVersion: "NIV",
