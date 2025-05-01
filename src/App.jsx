@@ -13,7 +13,7 @@ import DonationContext from "./context/DonationContext";
 import Notifications from "./pages/Notifications";
 import AllTestimonies from "./component/testimonies/AllTestimonies";
 import UploadTestimonies from "./component/testimonies/UploadTestimonies";
-import VideoPlayer from "./component/testimonies/VideoPlayer";
+import ProtectedRoute from "./component/ProtectedRoutes";
 import Allpics from "./component/inspirationalPics/Allpics";
 import UploadInspirational from "./component/inspirationalPics/UploadInspirational";
 import NotificationContext from "./context/NotificationContext";
@@ -28,6 +28,7 @@ import ForgotPassword from "./component/ForgotPassword";
 import ScriptureForDay from "./pages/ScriptureForDay";
 import ScriptureContext from "./context/ScriptureContext";
 import UploadScriptures from "./pages/UploadScriptures";
+import HomeManagement from "./pages/HomeManagement";
 
 function App() {
   return (
@@ -42,65 +43,68 @@ function App() {
                   <Route path="/create-password" element={<CreatePassword />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="forgot-password" element={<ForgotPassword />} />
-                  <Route path="/dashboard" element={<Dashboard />}>
-                    <Route path="" element={<Overview />} />
+                  <Route element={<ProtectedRoute />}>
+                    <Route path="/dashboard" element={<Dashboard />}>
+                      <Route path="" element={<Overview />} />
+                      <Route path="home-management" element={<HomeManagement />} />
 
-                    <Route
-                      path="all-testimonies"
-                      element={<AllTestimonies />}
-                    />
-                    <Route
-                      path="upload-testimonies"
-                      element={<UploadTestimonies />}
-                    />
-                    <Route path="users" element={<Users />} />
-                    <Route path="donations" element={<Donations />} />
-                    <Route path="notifications" element={<Notifications />} />
+                      <Route
+                        path="all-testimonies"
+                        element={<AllTestimonies />}
+                      />
+                      <Route
+                        path="upload-testimonies"
+                        element={<UploadTestimonies />}
+                      />
+                      <Route path="users" element={<Users />} />
+                      <Route path="donations" element={<Donations />} />
+                      <Route path="notifications" element={<Notifications />} />
 
-                    <Route
-                      path="all-testimonies"
-                      element={<AllTestimonies />}
-                    />
-                    <Route
-                      path="upload-testimonies"
-                      element={<UploadTestimonies />}
-                    />
-                    <Route path="users" element={<Users />} />
-                    <Route
-                      path="inspirational-pictures"
-                      element={<Allpics />}
-                    />
-                    <Route
-                      path="upload-inspirational-pictures"
-                      element={<UploadInspirational />}
-                    />
-                    <Route path="reviews" element={<Reviews />} />
-                    <Route
-                      path="donations-analytics"
-                      element={<DonationsAnalytics />}
-                    />
-                    <Route
-                      path="testimonies-analytics"
-                      element={<TestimonyAnalytics />}
-                    />
-                    <Route path="daily-scripture" element={<ScriptureForDay />} />
-                    <Route
-                      path="upload-scripture"
-                      element={<UploadScriptures />}
-                    />
-                    <Route
-                      path="general-settings"
-                      element={<GeneralSettings />}
-                    />
-                    <Route
-                      path="manage-permissions"
-                      element={<Permissions />}
-                    />
-                    <Route path="profile" element={<Profile />} />
-                    <Route
-                      path="notification-settings"
-                      element={<NotificationSettings />}
-                    />
+                      <Route
+                        path="all-testimonies"
+                        element={<AllTestimonies />}
+                      />
+                      <Route
+                        path="upload-testimonies"
+                        element={<UploadTestimonies />}
+                      />
+                      <Route path="users" element={<Users />} />
+                      <Route
+                        path="inspirational-pictures"
+                        element={<Allpics />}
+                      />
+                      <Route
+                        path="upload-inspirational-pictures"
+                        element={<UploadInspirational />}
+                      />
+                      <Route path="reviews" element={<Reviews />} />
+                      <Route
+                        path="donations-analytics"
+                        element={<DonationsAnalytics />}
+                      />
+                      <Route
+                        path="testimonies-analytics"
+                        element={<TestimonyAnalytics />}
+                      />
+                      <Route path="daily-scripture" element={<ScriptureForDay />} />
+                      <Route
+                        path="upload-scripture"
+                        element={<UploadScriptures />}
+                      />
+                      <Route
+                        path="general-settings"
+                        element={<GeneralSettings />}
+                      />
+                      <Route
+                        path="manage-permissions"
+                        element={<Permissions />}
+                      />
+                      <Route path="profile" element={<Profile />} />
+                      <Route
+                        path="notification-settings"
+                        element={<NotificationSettings />}
+                      />
+                    </Route>
                   </Route>
                 </Routes>
               </BrowserRouter>

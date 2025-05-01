@@ -3,7 +3,7 @@ import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import logo from "../assets/icons/Logo.png";
 import "../App.css";
 import { Button, Form, Input, message } from "antd";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 function EntryCodeLogin() {
@@ -92,14 +92,21 @@ function EntryCodeLogin() {
         </Form.Item>
 
         <Form.Item style={{ marginTop: "30px" }}>
-          <Button
-            block
-            htmlType="submit"
-            className="bg-[#9966CC] text-white text-[13px] outline-none border-none"
-            loading={loading}
-          >
-            Login
-          </Button>
+        <Button
+          block
+          htmlType="submit"
+          className="bg-primary text-white text-[13px] outline-none border-none
+                    hover:!bg-primary-light-mode hover:!text-white 
+                    transition-colors duration-200 ease-in-out"
+          loading={loading}
+        >
+          Login
+        </Button>
+          <p className="text-white">Already have an account? 
+            <Link to='/login'>
+              <span className="text-[#9966CC] px-1 font-bold">Login</span>
+            </Link>
+          </p>
         </Form.Item>
       </Form>
     </div>

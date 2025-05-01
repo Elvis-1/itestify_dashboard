@@ -137,10 +137,10 @@ function AllTestimonies() {
         }}>
             <div>
                 <h1 className="text-[25px]">Testimony Settings</h1>
-                <hr className="w-[112%] ml-[-25px] mt-5 bg-gray-300 h-[0.1px]"/>
+                {/* <hr className="w-[112%] ml-[-25px] mt-5 bg-gray-300 h-[0.1px]"/> */}
 
                 <div className="mt-7">
-                    <div className="flex items-center justify-between mb-2">
+                    {/* <div className="flex items-center justify-between mb-2">
                         <div>
                             <h2 className="text-[17px]">Allow likes on testimonies</h2>
                             <p className="text-gray-300 text-[11px]" >Enable or disable likes on testimonies</p>
@@ -169,9 +169,9 @@ function AllTestimonies() {
                         <div>
                         <Switch className="manage-settings-switch"/>
                         </div>
-                    </div>
+                    </div> */}
 
-                    <hr className="w-[100%] ml-[-5px] mt-5 bg-gray-300 h-[0.1px]"/>
+                    {/* <hr className="w-[100%] ml-[-5px] mt-5 bg-gray-300 h-[0.1px]"/> */}
 
                     <div className="flex items-center justify-between mb-3 mt-3">
                         <div>
@@ -188,7 +188,7 @@ function AllTestimonies() {
                         </div>
                     </div>
 
-                    <div className="flex items-center justify-between mb-2">
+                    {/* <div className="flex items-center justify-between mb-2">
                         <div>
                             <h2 className="text-[17px]">
                                 Notify Users of Rejected Testimonies
@@ -201,7 +201,7 @@ function AllTestimonies() {
                         <div>
                         <Switch className="manage-settings-switch"/>
                         </div>
-                    </div>
+                    </div> */}
                 </div>
 
                 <div className="flex items-center justify-end gap-2 mt-5">

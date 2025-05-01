@@ -360,7 +360,8 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
         } finally {
           setLoading(false);
         }
-      };
+    };
+
 
     const handleSaveEdit = async (id) => {
         if (!id) {
@@ -535,7 +536,10 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                   ? handleCloseModal
                   : () => handleUploadEdit(editDetails?.id)
               }
-              className='border border-[#9966CC] outline-none p-2 rounded w-[90px] text-[#9966CC]'
+              className='border border-[#9966CC] p-2 rounded w-[90px]
+               text-white text-[13px] outline-none
+                    hover:!bg-primary-light-mode hover:!text-white 
+                    transition-colors duration-200 ease-in-out'
             >
               {editDetails?.upload_status === 'upload_now' ? 'Cancel' : 'Upload'}
             </button>
@@ -543,7 +547,9 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
             <Button 
               loading={loading}
               onClick={() => handleSaveEdit(editDetails?.id)}
-              className='bg-[#9966CC] ml-2 border-none outline-none rounded p-2 w-[auto] h-[40px]'
+              className='bg-[#9966CC] text-white ml-2 border-none outline-none rounded p-2 w-[auto] h-[40px]
+               hover:!bg-primary-light-mode hover:!text-white 
+                    transition-colors duration-200 ease-in-out'
             >
               Save Changes
             </Button>
@@ -590,57 +596,32 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
           dateInputRef2.current.showPicker(); 
         }
     };
-
-    // const renderCategoryDropdown = () => (
-    //     <div className='flex flex-col rounded-xl cursor-pointer p-1 opacity-[0.6] mt-3 border overflow-hidden w-[110%] ml-[-13px]'>
-    //         {['healing', 'deliverance', 'faith', 'salvation'].map((category) => (
-    //             <div
-    //                 key={category}
-    //                 onClick={() => {
-    //                     handleSelectCategory(category);
-    //                     setFilterDropDown(false);
-    //                 }}
-    //                 className="w-[110%] ml-[-15px] border-b pl-5 pb-1 hover:bg-gray-700"
-    //             >
-    //                 <button 
-    //                     type="button"
-    //                     className="w-full text-left p-2 capitalize"
-    //                 >
-    //                     {category}
-    //                 </button>
-    //             </div>
-    //         ))}
-    //     </div>
-    // );
-
     
     return (
-        <div className={`${!isDarkMode ? 'border h-[350px] rounded-xl' : 'border-none'}`}>
-             
-             {/* all video filter modal */}
+        <div className={`${!isDarkMode ? 'border h-[350px] rounded-xl' : 'border-none'}`}> 
+            {/* all video filter modal */}
             <Modal
-            open={filterModal}
-            onCancel={handleCloseModal}
-            footer={filterModalFooterButton}
-            closeIcon={<span style={{ color: 'white', fontSize: '12px', marginTop: '-15px' }}>X</span>}
-            styles={{
-                content: {
-                    backgroundColor: '#0B0B0B',
-                    width: '330px',
-                    height: 'auto',
-                    color: 'white',
-                    margin: '0 auto',
-                    borderRadius: '8px',
-                    marginLeft: '100%',
-                    marginTop: '50px'
-                },
-                body: {
-                    backgroundColor: '#1717171',
-                    color: 'white',
-                   
-                },
-            }}
-            >
+                open={filterModal}
+                onCancel={handleCloseModal}
+                footer={filterModalFooterButton}
+                closeIcon={<span style={{ color: 'white', fontSize: '12px', marginTop: '-15px' }}>X</span>}
+                styles={{
+                    content: {
+                        backgroundColor: '#0B0B0B',
+                        width: '330px',
+                        height: 'auto',
+                        color: 'white',
+                        margin: '0 auto',
+                        borderRadius: '8px',
+                        marginLeft: '100%',
+                        marginTop: '50px'
+                    },
+                    body: {
+                        backgroundColor: '#1717171',
+                        color: 'white',
+                    
+                    },
+                }}>
     
                 <div>
                     <h3 className='text-white text-[13px] font-sans pb-2 mt-[-10px]'>Filter</h3>
@@ -978,8 +959,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                         backgroundColor: '#1717171',
                         color: 'white',
                     },
-                }}
-            >
+                }}>
                 <div className='flex flex-col'>
                     <div className='border-b w-[150%] ml-[-25px] pb-2 opacity-[0.6]'>
                         <button onClick={() => {
@@ -1012,8 +992,8 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 </div>
             </Modal>
     
-             {/*all video Edit modal */}
-             <Modal
+            {/*all video Edit modal */}
+            <Modal
                 open={openEditModal}
                 onCancel={handleCloseModal}
                 footer={EditUploadedModalFooterButton}
@@ -1033,8 +1013,8 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                         padding: '0'
                     },
                 }}
-                confirmLoading={loading}
-            >
+                confirmLoading={loading}>
+
                 <div className="space-y-4">
                     <h3 className='text-white text-lg font-medium pb-2'>
                         Edit Video Testimony
@@ -1142,8 +1122,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                         color: 'white',
                     
                     },
-                }}
-            >
+                }}>
                 <div className='flex flex-col w-[128%] ml-[-20px] mt-[-5px] items-center justify-center'>
                     <div>
                         {deleteDetails === 'schedule_for_later' && 
@@ -1260,17 +1239,16 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                     color: 'white',
                    
                 },
-            }}
-            >
-            <div className='flex flex-col w-[128%] ml-[-20px] mt-5 items-center justify-center'>
-                <div className='bg-[#9966CC] w-[50px] h-[50px] 
-                rounded-full flex items-center justify-center'>
-                    <CheckOutlined style={{color: 'white', fontSize: '30px'}}/>
-                </div>
-                <div>
-                    <p className='text-[20px] text-center pt-3'>Changes Save successfully!</p>
-                </div>
-            </div> 
+                }}>
+                <div className='flex flex-col w-[128%] ml-[-20px] mt-5 items-center justify-center'>
+                    <div className='bg-[#9966CC] w-[50px] h-[50px] 
+                    rounded-full flex items-center justify-center'>
+                        <CheckOutlined style={{color: 'white', fontSize: '30px'}}/>
+                    </div>
+                    <div>
+                        <p className='text-[20px] text-center pt-3'>Changes Save successfully!</p>
+                    </div>
+                </div> 
     
             </Modal>
     

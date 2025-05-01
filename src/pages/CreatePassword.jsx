@@ -64,7 +64,7 @@ function CreatePassword() {
       localStorage.setItem("user", JSON.stringify(user));
   
       navigate("/dashboard");
-      message.success("Password updated successfully!");
+      message.success("Password created successfully!");
 
     } catch (error) {
       // console.error("Failed to update password:", error.response ? error.response.data : error.message);
@@ -74,8 +74,8 @@ function CreatePassword() {
     }
   };
   return (
-    <div className='flex justify-center items-center min-h-screen bg-slate-800'>
-        <div className='w-[300px]  h-[430px] rounded-xl bg-black'>
+    <div className='flex justify-center items-center min-h-screen bg-black'>
+        <div className='w-[500px]  h-[430px] rounded-xl shadow-sm shadow-slate-500'>
           <div className='text-white w-[80%] m-[auto] mt-6'>
               <h1 className='font-sans text-white text-center'>Create New Password</h1>
               <p className='text-[10px] font-sans text-center opacity-[0.6]'>For security reasons please change your password</p>
@@ -158,7 +158,9 @@ function CreatePassword() {
 
               <Form.Item style={{marginTop: '30px'}}>
                 <Button  block htmlType='submit' 
-                className='bg-[#9966CC] font-sans text-white text-[13px] outline-none border-none'
+                className="bg-primary text-white text-[13px] outline-none border-none
+                hover:!bg-primary-light-mode hover:!text-white 
+                transition-colors duration-200 ease-in-out"
                 loading={loading}>
                   Update Password
                 </Button>
