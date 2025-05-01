@@ -19,7 +19,7 @@ import { MdOutlinePrivacyTip } from "react-icons/md";
 import { MdOutlineSettings } from "react-icons/md";
 import { FaBullseye, FaRegUser } from "react-icons/fa6";
 import { FaRegMoneyBill1 } from "react-icons/fa6";
-import { FaBible } from "react-icons/fa";
+import { FaBible, FaHome } from "react-icons/fa";
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../context/DarkModeContext";
 import NotificationModal from "../component/Popups/NotificationModal";
@@ -64,6 +64,7 @@ function Dashboard() {
       navigate("upload-testimonies");
     }
   }
+
   const location = useLocation();
   const handleCloseModal = () => {
     setLogoutModal(false);
@@ -231,6 +232,20 @@ function Dashboard() {
                 <p>Overview</p>
               </div>
             </Link>
+
+            <Link to="home-management">
+              <div
+                className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
+                  location.pathname === "/dashboard/home-management"
+                    ? "bg-primary text-white"
+                    : "bg-transparent"
+                }`}
+              >
+                <FaHome style={{ fontSize: "18px" }} />
+                <p>Home Page Management</p>
+              </div>
+            </Link>
+
             <div
               className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
                 location.pathname === "/dashboard/daily-scripture" ||

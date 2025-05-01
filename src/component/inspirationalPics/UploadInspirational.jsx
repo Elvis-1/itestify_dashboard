@@ -54,47 +54,13 @@ function  UploadInspirational() {
 
       <div className='flex items-center gap-24 w-[90%] m-[auto]'>
         <div className='w-[450px] h-[auto] ml-5 rounded-2xl bg-[#171717]'>
-          <div className='w-[420px] h-[250px] m-[auto] mt-4 text-white rounded-xl'>
+          <div className='w-[420px] h-[290px] m-[auto] mt-1 text-white rounded-xl'>
             <Upload.Dragger style={{color: 'white'}}>
               <div className='w-[35px] h-[35px] rounded-xl mb-2 m-[auto] p-2 bg-[#313131]'><FaPlay size={20} 
               style={{color: '#9966CC', border: '2px solid #9966CC', padding: '2px'}}/></div>
               Drag and drop or<span className='text-[#9966CC]'> choose file</span> here to upload
               <p>MP4, Max size(200mb)</p>
             </Upload.Dragger>
-          </div>
-
-          <div>
-            <h2 className='ml-4 mt-8 text-[12px]'>Thumbnail</h2>
-            <div className='flex items-center ml-4 gap-1'>
-            <div className={`w-[16px] h-[16px] rounded-full 
-              border border-[#9966CC] mr-1 cursor-pointer
-              ${uploadType === 'Custom Upload' ? 
-              'bg-[#9966CC]' : 'bg-transparent'}`}></div>
-              <input type="radio" 
-              name='thumbnail' 
-              value="Custom Upload" 
-              id='custom'
-              checked={uploadType === 'Custom Upload'}
-              onChange={(e) => setUploadType(e.target.value)}
-              className='hidden peer'/>
-              <label htmlFor="custom" className='text-[12px] mt-1 cursor-pointer'>Custom Upload</label>
-            </div>
-           
-            <div className='flex items-center ml-4 gap-1 mb-4'>
-            <div className={`w-[16px] h-[16px] rounded-full 
-              border border-[#9966CC] mr-1 cursor-pointer
-              ${uploadType === 'Auto Generate' ? 
-              'bg-[#9966CC]' : 'bg-transparent'}`}></div>
-
-              <input type="radio" name='thumbnail' 
-              value="Auto Generate" 
-              id='auto'
-              checked={uploadType === 'Auto Generate'}
-              onChange={(e) => setUploadType(e.target.value)}
-              className='hidden peer'/>
-              <label htmlFor="auto" className='text-[12px] mt-1 cursor-pointer'>Auto Generate</label>
-            </div>
-            
           </div>
          
         </div>

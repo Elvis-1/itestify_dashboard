@@ -11,7 +11,7 @@ import { FaCaretDown, FaCaretUp } from "react-icons/fa6";
 
 import { IoIosArrowDown, IoIosArrowUp, IoIosMore } from 'react-icons/io';
 
-import testimonyData from '../../data/Testimonydata';
+
 import { Modal } from 'antd';
 
 import modalpic from '../../assets/images/modalPic.png'
@@ -20,20 +20,6 @@ import { DarkModeContext } from '../../context/DarkModeContext';
 import { ClipLoader } from "react-spinners";
 import axios from 'axios'
 
-
-
-const getStatusStyle = (status) => {
-    switch (status) {
-      case 'Approved':
-        return { width: '90px', fontSize: '12px', color: 'green', fontWeight: '200', border: '1px solid green', padding: '5px', borderRadius: '5px' };
-      case 'Rejected':
-        return { width: '90px', fontSize: '12px', color: 'red', fontWeight: '500', border: '1px solid red', padding: '5px', borderRadius: '5px'};
-      case 'pending':
-        return { width: '90px', fontSize: '12px', color: 'yellow', fontWeight: '50', border: '1px solid gold', padding: '5px', borderRadius: '5px' };
-      default:
-        return {};
-    }
-};
 
 const formatDate = (isoDateString) => {
     const date = new Date(isoDateString);

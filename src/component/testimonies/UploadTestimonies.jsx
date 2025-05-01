@@ -5,11 +5,13 @@ import { FaCaretDown, FaCaretUp } from "react-icons/fa6";
 import axios from 'axios';
 
 import dayjs from 'dayjs';
+import utc from 'dayjs-plugin-utc';
+
+dayjs.extend(utc)
 
 const { Dragger } = Upload;
 
 function UploadTestimonies() {
-  
 
   // Form state
   const [uploadStatus, setUploadStatus] = useState('drafts');
@@ -44,10 +46,19 @@ function UploadTestimonies() {
 
   // File handlers
   const beforeUpload = (file) => {
+    // File size validation
     if (file.size > 200 * 1024 * 1024) {
       message.error('File must be smaller than 200MB');
       return false;
     }
+  
+    // File type validation
+      const allowedTypes = ['video/mp4', 'video/quicktime'];
+      if (!allowedTypes.includes(file.type)) {
+        message.error('Only MP4/MOV videos are allowed');
+        return false;
+      }
+  
     setFile(file);
     return false;
   };
@@ -68,6 +79,118 @@ function UploadTestimonies() {
 
   const removeThumbnail = () => {
     setThumbnail(null);
+  };
+
+  const generateAutoThumbnail = async () => {
+    if (!file) {
+      message.error('Please upload a video first');
+      return;
+    }
+  
+    try {
+      // Create video element
+      const video = document.createElement('video');
+      const canvas = document.createElement('canvas');
+      const ctx = canvas.getContext('2d');
+  
+      // Load video
+      video.src = URL.createObjectURL(file);
+      video.crossOrigin = 'anonymous';
+      video.muted = true;
+      video.playsInline = true;
+  
+      // Wait for video to be ready
+      await new Promise((resolve, reject) => {
+        video.onloadedmetadata = resolve;
+        video.onerror = () => reject(new Error('Video loading failed'));
+        video.load();
+      });
+  
+      // Seek to a good frame (2 seconds in)
+      await new Promise((resolve, reject) => {
+        video.onseeked = resolve;
+        video.onerror = reject;
+        video.currentTime = Math.min(2, video.duration * 0.05); // Cap at 5% duration
+      });
+  
+      // Draw frame
+      canvas.width = video.videoWidth;
+      canvas.height = video.videoHeight;
+      ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+      // Convert to blob with error handling
+      const blob = await new Promise((resolve) => {
+        canvas.toBlob(
+          (blob) => {
+            if (!blob) {
+              console.error('Canvas returned null blob');
+              message.error('Failed to capture video frame');
+              resolve(null);
+              return;
+            }
+            resolve(blob);
+          },
+          'image/jpeg',
+          0.7 // Quality (70%)
+        );
+      });
+  
+      if (!blob) {
+        throw new Error('Thumbnail generation failed');
+      }
+  
+      // Create thumbnail file
+      const thumbnailFile = new File([blob], `thumbnail_${file.name.split('.')[0]}.jpg`, {
+        type: 'image/jpeg',
+      });
+  
+      setThumbnail(thumbnailFile);
+      message.success('Thumbnail generated successfully!');
+      
+      // Clean up
+      URL.revokeObjectURL(video.src);
+    } catch (error) {
+      console.error('Thumbnail generation error:', error);
+      message.error(`Thumbnail failed: ${error.message}`);
+      setThumbnail(null);
+      
+      // Fallback: Use first frame if seeking failed
+      try {
+        await generateFirstFrameFallback();
+      } catch (fallbackError) {
+        console.error('Fallback also failed:', fallbackError);
+      }
+    }
+  };
+  
+  // Fallback method
+  const generateFirstFrameFallback = async () => {
+    const video = document.createElement('video');
+    video.src = URL.createObjectURL(file);
+    video.crossOrigin = 'anonymous';
+    
+    await new Promise((resolve) => {
+      video.onloadeddata = resolve;
+      video.load();
+    });
+  
+    const canvas = document.createElement('canvas');
+    canvas.width = video.videoWidth;
+    canvas.height = video.videoHeight;
+    const ctx = canvas.getContext('2d');
+    ctx.drawImage(video, 0, 0, canvas.width, canvas.height);
+  
+    const blob = await new Promise((resolve) => {
+      canvas.toBlob(resolve, 'image/jpeg', 0.7);
+    });
+  
+    if (blob) {
+      const thumbnailFile = new File([blob], `fallback_thumb.jpg`, {
+        type: 'image/jpeg',
+      });
+      setThumbnail(thumbnailFile);
+      message.warning('Used first frame as thumbnail');
+    }
   };
 
   // Upload control
@@ -106,99 +229,171 @@ function UploadTestimonies() {
 
   // Main submit function
   const handleSubmit = async () => {
-    const token = localStorage.getItem('token');
-    if (!token) {
-      message.error('Authentication required. Please login again.');
-      return;
-    }
-
-    // Validation
-    if (!title || !source || !uploadCategory || !file) {
-      message.error('Please fill all required fields');
-      return;
-    }
-
-    if (uploadCategory === 'Select Category') {
-      message.error('Please select a category');
-      return;
-    }
-
-    // Additional validation for scheduled uploads
-    if (uploadStatus === 'schedule_for_later' && (!scheduleDate || !scheduleTime)) {
-      message.error('Please select both date and time for scheduling');
-      return;
-    }
-
-    // Prepare form data
-    const formData = new FormData();
-    formData.append('title', title);
-    formData.append('source', source);
-    formData.append('category', uploadCategory.toLowerCase());
-    formData.append('upload_status', uploadStatus);
-    formData.append('video_file', file);
+    console.log("[Upload] Starting submission process");
     
-    // Add scheduled datetime if applicable
-    if (uploadStatus === 'schedule_for_later' && scheduleDate && scheduleTime) {
-      const combinedDateTime = dayjs(scheduleDate)
-        .hour(scheduleTime.hour())
-        .minute(scheduleTime.minute())
-        .second(0)
-        .format('YYYY-MM-DDTHH:mm:ss');
-      formData.append('scheduled_datetime', combinedDateTime);
-    }
-    
-    if (thumbnail && uploadType === 'Custom Upload') {
-      formData.append('thumbnail', thumbnail);
-    }
-
+    let timeoutId;
+    const controller = new AbortController();
+  
     try {
+      // 1. Authentication Check
+      const token = localStorage.getItem('token');
+      if (!token) {
+        message.error('Authentication required. Please login again.');
+        return;
+      }
+  
+      // 2. Field Validation
+      if (!title?.trim()) {
+        message.error('Title is required');
+        return;
+      }
+      if (!source?.trim()) {
+        message.error('Source is required');
+        return;
+      }
+      if (uploadCategory === 'Select Category') {
+        message.error('Please select a category');
+        return;
+      }
+      if (!file) {
+        message.error('Video file is required');
+        return;
+      }
+  
+      // Schedule validation - more robust handling
+      let scheduledDateTime;
+      if (uploadStatus === 'schedule_for_later') {
+        if (!scheduleDate || !scheduleTime) {
+          message.error('Please select both date and time for scheduling');
+          return;
+        }
+        
+        // Combine date and time into a single dayjs object
+        scheduledDateTime = dayjs(scheduleDate)
+          .hour(scheduleTime.hour())
+          .minute(scheduleTime.minute())
+          .second(0)
+          .millisecond(0);
+  
+        // Validate scheduled time is in the future
+        if (scheduledDateTime.isBefore(dayjs())) {
+          message.error('Scheduled time must be in the future');
+          return;
+        }
+      }
+  
+      // 3. Prepare FormData (matches API requirements exactly)
+      const formData = new FormData();
+      formData.append('title', title.trim());
+      formData.append('source', source.trim());
+      formData.append('category', uploadCategory.toLowerCase()); // Ensure lowercase as per API
+      formData.append('upload_status', uploadStatus);
+      formData.append('video_file', file);
+      
+      // Add thumbnail if exists
+      if (thumbnail) {
+        formData.append('thumbnail', thumbnail);
+      }
+  
+      // Handle scheduling - format exactly as API expects
+      if (uploadStatus === 'schedule_for_later') {
+        // Format as ISO string with timezone offset
+        const isoString = scheduledDateTime.toISOString();
+        formData.append('scheduled_datetime', isoString);
+        
+        console.log('Scheduling video for:', isoString);
+      }
+  
+      // 4. Upload Configuration
       setLoading(true);
       setUploadProgress(0);
       setUploadError(null);
-      
-      const timeoutId = setTimeout(() => {
-        abortController.current.abort();
-        setUploadError('Upload timed out. Please check your connection.');
-        setLoading(false);
+  
+      timeoutId = setTimeout(() => {
+        controller.abort();
+        throw new Error('Upload timed out after 5 minutes');
       }, 5 * 60 * 1000);
-
+  
+      // 5. Execute Upload
       const response = await axios.post(
         'https://itestify-backend-nxel.onrender.com/testimonies/videos/create_video/',
         formData,
         {
           headers: {
-            'Content-Type': 'multipart/form-data',
-            'Authorization': `Bearer ${token}`
+            'Authorization': `Bearer ${token}`,
+            // Let browser set Content-Type with boundary
           },
-          signal: abortController.current.signal,
+          signal: controller.signal,
           onUploadProgress: (progressEvent) => {
             if (progressEvent.total) {
               const progress = Math.round(
                 (progressEvent.loaded * 100) / progressEvent.total
               );
               setUploadProgress(progress);
-              clearTimeout(timeoutId);
             }
           },
         }
       );
-
+  
+      // 6. Handle Response
       clearTimeout(timeoutId);
       
-      if (response.data.success) {
-        message.success(response.data.message || 'Video uploaded successfully!');
-        console.log('Uploaded video data:', response.data.data);
+      if (response.data?.success) {
+        const successMessage = uploadStatus === 'schedule_for_later' 
+          ? `Video scheduled successfully for ${scheduledDateTime.format('MMMM D, YYYY [at] h:mm A')}`
+          : 'Upload successful!';
+        
+        message.success(successMessage);
         resetForm();
       } else {
-        throw new Error(response.data.message || 'Upload failed');
+        // Handle success cases where response structure differs
+        if (response.status === 200 && response.data) {
+          const successMessage = uploadStatus === 'schedule_for_later'
+            ? 'Video scheduled successfully'
+            : 'Upload completed successfully';
+          
+          message.success(successMessage);
+          resetForm();
+        } else {
+          throw new Error(response.data?.message || 'Unexpected response format');
+        }
       }
+  
     } catch (error) {
-      handleUploadError(error);
-    } finally {
+      clearTimeout(timeoutId);
+      
+      // Special handling for scheduling errors
+      if (uploadStatus === 'schedule_for_later') {
+        if (error.response?.status === 400 && error.response.data?.scheduled_datetime) {
+          message.error(`Invalid schedule time: ${error.response.data.scheduled_datetime[0]}`);
+          return;
+        }
+      }
+      
+      if (error.message.includes('timed out')) {
+        message.error('Upload timed out. Please try again.');
+      } 
+      else if (error.response) {
+        message.error(
+          error.response.data?.message || 
+          `Server error (${error.response.status})`
+        );
+      } 
+      else {
+        message.error(error.message || 'Upload failed. Please try again.');
+      }
+  
+      console.error("Upload error details:", {
+        error: error.message,
+        response: error.response?.data,
+        stack: error.stack
+      });
+    } 
+    finally {
       setLoading(false);
     }
   };
-
+ 
   const resetForm = () => {
     setTitle('');
     setSource('');
@@ -352,7 +547,9 @@ function UploadTestimonies() {
                     showUploadList={false}
                     disabled={loading}
                   >
-                    <p className="text-center text-sm">Click or drag image to upload thumbnail</p>
+                    <p className="text-center mb-1 text-white">
+                      Drag and drop or <span className='text-[#9966CC]'>choose file</span> here to upload
+                    </p>
                     <p className="text-center text-xs text-gray-400 mt-1">Max size (5MB)</p>
                   </Dragger>
                   
@@ -385,9 +582,22 @@ function UploadTestimonies() {
                   id="auto"
                   className="hidden"
                   checked={uploadType === 'Auto Generate'}
-                  onChange={() => setUploadType('Auto Generate')}
+                  onChange={() => {
+                    setUploadType('Auto Generate')
+                    generateAutoThumbnail();
+                  }}
                 />
-                <label htmlFor="auto" className="text-sm cursor-pointer select-none">Auto Generate</label>
+                <div className='flex items-center gap-3'>
+                  <label htmlFor="auto" className="text-sm cursor-pointer select-none">Auto Generate</label>
+                  {thumbnail && (
+                    <img 
+                      src={URL.createObjectURL(thumbnail)} 
+                      alt="Preview" 
+                      className="max-h-20 w-10  rounded"
+                    />
+                  )}
+                </div>
+                
               </div>
             </div>
           </div>
@@ -440,7 +650,7 @@ function UploadTestimonies() {
               
               {uploadDropDown && (
                 <div className="absolute z-10 w-full mt-1 bg-[#292929] rounded-lg shadow-lg border border-[#444] overflow-hidden">
-                  {['Restoration', 'Healing', 'Deliverance', 'Faith', 'Salvation'].map((category) => (
+                  {['Marriage Restoration', "Breakthrough", "Career", "Financial", 'Healing', 'Deliverance', 'Faith', 'Salvation'].map((category) => (
                     <div
                       key={category}
                       className="px-3 py-2 hover:bg-[#9966CC] hover:text-white cursor-pointer transition-colors"
@@ -485,10 +695,10 @@ function UploadTestimonies() {
           {/* Upload Status */}
           <div className="mt-6">
             <label className="block text-sm font-medium mb-3">Upload Status*</label>
-            <div className="space-y-3 flex items-center gap-6">
+            <div className="flex items-center gap-6"> {/* Removed space-y-3 and kept flex with gap */}
               {['drafts', 'upload_now', 'schedule_for_later'].map((status) => (
-                <div key={status} className="flex items-center">
-                  <div className={`w-4 h-4 rounded-full border border-[#9966CC] mr-2 flex items-center justify-center transition-colors
+                <div key={status} className="flex items-center gap-2"> {/* Added gap between radio and label */}
+                  <div className={`w-4 h-4 rounded-full border border-[#9966CC] flex items-center justify-center transition-colors
                     ${uploadStatus === status ? 'bg-[#9966CC]' : 'bg-transparent'}`}>
                     {uploadStatus === status && <div className="w-2 h-2 rounded-full bg-white transition-all"></div>}
                   </div>
@@ -506,7 +716,7 @@ function UploadTestimonies() {
                     className="text-sm cursor-pointer select-none"
                   >
                     {status === 'upload_now' ? 'Upload Now' : 
-                     status === 'schedule_for_later' ? 'Schedule For Later' : 'Save Draft'}
+                    status === 'schedule_for_later' ? 'Schedule For Later' : 'Save Draft'}
                   </label>
                 </div>
               ))}
