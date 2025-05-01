@@ -26,14 +26,14 @@ import Reviews from "./pages/Reviews";
 import Login from "./component/Login";
 import ForgotPassword from "./component/ForgotPassword";
 import ScriptureForDay from "./pages/ScriptureForDay";
-import ScriptureContext from "./context/ScriptureContext";
+import ScriptureContextProvider from "./context/ScriptureContext";
 import UploadScriptures from "./pages/UploadScriptures";
 import HomeManagement from "./pages/HomeManagement";
 
 function App() {
   return (
     <div>
-      <ScriptureContext>
+      <ScriptureContextProvider>
         <NotificationContext>
           <DonationContext>
             <DarkModeContextProvider>
@@ -111,7 +111,7 @@ function App() {
             </DarkModeContextProvider>
           </DonationContext>
         </NotificationContext>
-      </ScriptureContext>
+      </ScriptureContextProvider>
     </div>
   );
 }

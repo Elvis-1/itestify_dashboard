@@ -12,19 +12,16 @@ import usePagination from "../../hooks/usePagination.jsx";
 import Pagination from "../Pagination.jsx";
 import SuccessModal from "../Popups/SuccessModal.jsx";
 import NoDataComponent from "../NoDataComponent.jsx";
+import LoadingState from "../LoadingState.jsx";
+
 const DelUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
-  const [deletedUsers, setDeletedUsers] = useState(
-    // () => {
-    // const storedData = localStorage.getItem("planData");
-    // return storedData ? JSON.parse(storedData) :
-    DeletedUsers
-    // }
-  );
+  const [deletedUsers, setDeletedUsers] = useState([]);
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
   const [deleteRecordModal, setDeleteRecordModal] = useState(false);
   const [isSuccessModal, setIsSuccessModal] = useState(false);
   const [searchItem, setSearchItem] = useState("");
+  const [isLoading, setIsLoading] = useState(true);
   const tableHeaders = [
     {
       key: "serialno",
@@ -54,6 +51,36 @@ const DelUsers = () => {
   const toggleOptions = (index) => {
     setIsOpenOptions(isOpenOptions === index ? -1 : index);
   };
+
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const response = await fetch(
+          "https://itestify-backend-nxel.onrender.com/users/deleted/",
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization:
+                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc2NTI5NjAxLCJpYXQiOjE3NDQ5OTM2MDEsImp0aSI6IjQxOWRhZGI3MTQyYzQ3MjRhZWExYjIxMjZmYWM3N2RjIiwidXNlcl9pZCI6IjM0YjM0NTU3LTU4YmMtNDllYi04M2Q3LTE1MzM0YWM3YWI0OSJ9.Z9WEhCFG2VaKCt8REzD8cjGHhEaHfZWCYHA2a_3Sk4M",
+            },
+          }
+        );
+        if (!response.ok) {
+          throw new Error(`HTTP error! Status: ${response.status}`);
+        }
+        const data = await response.json();
+        setDeletedUsers(data.data);
+        setIsLoading(false);
+        console.log(data);
+      } catch (error) {
+        console.error("Error fetching deleted users:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
+
   const delUsersIndex = useMemo(() => {
     const searchTerm = searchItem.toLowerCase().trim();
     return deletedUsers.filter(
@@ -99,9 +126,35 @@ const DelUsers = () => {
     setSelectedUsers(!selectAll ? allUserIds : []);
   };
 
-  // Handle Deleting Selected Records
-  const handleDeleteSelected = () => {
-    if (selectedUsers.length > 0) {
+  const handleDeleteSelected = async () => {
+    try {
+      // Ensure selectedUsers is not empty
+      if (selectedUsers.length === 0) {
+        setError("No users selected for deletion");
+        return;
+      }
+  
+      // Send DELETE requests for each selected user
+      const deletePromises = selectedUsers.map(async (userId) => {
+        const response = await fetch(`https://itestify-backend-nxel.onrender.com/users/${userId}`, {
+          method: "DELETE",
+        });
+        if (!response.ok) {
+          const errText = await response.text();
+          throw new Error(`HTTP error! Status: ${response.status} - ${errText}`);
+        }
+        // Handle 204 No Content
+        if (response.status !== 204) {
+          return response.json();
+        }
+        return null;
+      });
+  
+      // Wait for all DELETE requests to complete
+      await Promise.all(deletePromises);
+      console.log("Selected users deleted successfully");
+  
+      // Update state
       setDeletedUsers((prev) =>
         prev.filter((user) => !selectedUsers.includes(user.id))
       );
@@ -109,15 +162,34 @@ const DelUsers = () => {
       setSelectAll(false);
       setDeleteRecordModal(false);
       setIsSuccessModal(true);
+    } catch (error) {
+      console.error("Error deleting users:", error.message);
+      setError(error.message);
     }
   };
-
-  const handleDeleteById = (userId) => {
-    setDeletedUsers((prev) => prev.filter((user) => user.id !== userId));
+  //Handle Delete Individually
+  const handleDeleteById = async (userId) => {
+    try {
+      const response = await fetch(
+        `https://itestify-backend-nxel.onrender.com/users/${userId}/`,
+        {
+          method: "DELETE",
+        }
+      );
+      if (!response.ok) {
+        alert("Error deleting user:", response.statusText);
+        throw new Error(`HTTP error! Status: ${response.status}`);
+      }
+      const data = await response.json();
+      console.log("User deleted successfully:", data);
+      setDeletedUsers((prev) => prev.filter((user) => user.id !== userId));
+    } catch (error) {
+      console.error("Error deleting user:", error);
+    }
     setIsOpenOptions(-1);
     setIsSuccessModal(true);
-
   };
+
   useEffect(() => {
     if (isSuccessModal) {
       const timeout = setTimeout(() => {
@@ -127,12 +199,15 @@ const DelUsers = () => {
     }
   }, [isSuccessModal]);
 
- const { sort, sortHeader,sortedData } = useSort(delUsersIndex);
+  const { sort, sortHeader, sortedData } = useSort(delUsersIndex);
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
     usePagination(sortedData);
 
+  // const API_URL = "/auth/get_users";
+
   return (
     <div className="relative">
+      {isLoading && <LoadingState />}
       {/* <---------------delete modal----------------> */}
       {deleteRecordModal && (
         <DeleteRecordsModal
@@ -266,7 +341,7 @@ const DelUsers = () => {
             </tr>
           </thead>
           {delUsersIndex.length > 0 ? (
-            users.map((data) => (
+            users.map((data, index) => (
               <tbody className="relative" key={data.id}>
                 <tr
                   className={` ${
@@ -286,11 +361,11 @@ const DelUsers = () => {
                       checked={selectedUsers.includes(data.id)}
                     />
                   </td>
-                  <td>{data.id}</td>
-                  <td>{data.userId}</td>
-                  <td>{data.name}</td>
+                  <td>{index + 1}</td>
+                  <td>{data.id.slice(0, 6)}</td>
+                  <td>{data.full_name}</td>
                   <td>{data.email}</td>
-                  <td>{data.deletionDate}</td>
+                  <td>{new Date(data.updated_at).toLocaleDateString()}</td>
                   <td>{data.reason}</td>
                   <td className="">
                     <i

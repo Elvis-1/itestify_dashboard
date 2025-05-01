@@ -1,45 +1,40 @@
-import React, { useContext, useState, useMemo } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { IoAdd } from "react-icons/io5";
-import { RiFilter3Line } from "react-icons/ri";
-import { SearchOutlined } from "@ant-design/icons";
 import { DarkModeContext } from "../context/DarkModeContext";
 import AllScriptures from "../component/scriptureStatus/AllScriptures";
 import UploadedScriptures from "../component/scriptureStatus/UploadedScriptures";
 import ScheduledScriptures from "../component/scriptureStatus/ScheduledScriptures";
-import DraftScriptures from "../component/scriptureStatus/DraftScriptures";
-import { ScriptureProvider } from "../context/ScriptureContext";
+import { ScriptureContext } from "../context/ScriptureContext";
 import { Link } from "react-router-dom";
+import SuccessModal from "../component/DailyScripturePopups/SuccessModal";
 
 const ScriptureForDay = () => {
   const { isDarkMode } = useContext(DarkModeContext);
-  const { scriptures } = useContext(ScriptureProvider);
+  const { scriptureUploadedDetails, setScriptureUploadedDetails } =
+    useContext(ScriptureContext);
   const [Status, setStatus] = useState("All");
-  const [searchItem, setSearchItem] = useState("");
+  const [editModal, setEditModal] = useState(false);
   const scriptureStatus = [
     { status: "All" },
     { status: "Uploaded" },
     { status: "Scheduled" },
-    { status: "Draft" },
   ];
 
-  const allScriptures = useMemo(() => {
-    return scriptures.filter(
-      (item) =>
-        searchItem === "" ||
-        item.bibleVersion?.toLowerCase().includes(searchItem.toLowerCase()) ||
-        item.scripture?.toLowerCase().includes(searchItem.toLowerCase()) ||
-        item.prayer?.toLowerCase().includes(searchItem.toLowerCase()) ||
-        item.bibleText?.toLowerCase().includes(searchItem.toLowerCase())
-    );
-  }, [searchItem, scriptures]);
-  const handleSearch = (e) => {
-    const searchValue = e.target.value;
-    setSearchItem(searchValue);
-    console.log(allScriptures);
-  };
+  const [isSuccessModal, setIsSuccessModal] = useState(false);
+  useEffect(() => {
+    if (isSuccessModal) {
+      const timeout = setTimeout(() => {
+        setIsSuccessModal(false);
+      }, 2000);
 
+      return () => clearTimeout(timeout);
+    }
+  }, [isSuccessModal]);
   return (
     <div className={`${isDarkMode ? `bg-black` : `bg-off-white`}`}>
+      {isSuccessModal && (
+        <SuccessModal successMessage="Scripture deleted Successfully!" />
+      )}
       <div className={`p-5 ${isDarkMode ? `bg-black` : `bg-off-white`}`}>
         <button className=" flex justify-end ml-auto p-2 rounded-md bg-primary cursor-pointer">
           <Link
@@ -64,8 +59,12 @@ const ScriptureForDay = () => {
                     onClick={() => setStatus(status.status)}
                     className={`cursor-pointer border-b-[2px] pb-1 text-sm ${
                       Status === status.status
-                        ? "border-b-primary text-white"
-                        : "border-b-transparent text-off-white"
+                        ? `border-b-primary ${
+                            isDarkMode ? `text-white` : `text-black`
+                          }`
+                        : `border-b-transparent ${
+                            isDarkMode ? `text-off-white` : `text-off-black`
+                          }`
                     } hover:border-b-primary`}
                   >
                     {status.status}
@@ -73,51 +72,31 @@ const ScriptureForDay = () => {
                 </div>
               ))}
             </div>
-            <div className="flex items-center gap-4">
-              {/*---------------------------------------- Search Bar  ---------------------------------*/}
-              <div
-                className={`flex justify-left items-center gap-2 p-3 rounded-lg w-[300px] ${
-                  isDarkMode ? `bg-off-black` : `bg-off-white`
-                }`}
-              >
-                <SearchOutlined
-                  style={{
-                    fill: isDarkMode ? "white" : "black",
-                    fontSize: "16px",
-                  }}
-                />
-                <input
-                  className="border-none outline-none bg-transparent w-[200px] text-xs placeholder:text-xs"
-                  type="text"
-                  name="search"
-                  id="search-user"
-                  placeholder="Search by version, scripture, prayer..."
-                  value={searchItem}
-                  onChange={handleSearch}
-                />
-              </div>
-              <div
-                //   onClick={showFilterModal}
-                className="flex justify-center items-center gap-1 p-2 rounded-md border-2 border-primary cursor-pointer "
-              >
-                <i>
-                  <RiFilter3Line fill="#9966cc" />
-                </i>
-                <p className=" text-primary text-sm">Filter</p>
-              </div>
-            </div>
           </div>
           {Status === "All" && (
             <AllScriptures
-              scriptures={scriptures}
-              allScriptures={allScriptures}
+              scriptures={scriptureUploadedDetails}
+              setScriptures={setScriptureUploadedDetails}
             />
           )}
           {Status === "Uploaded" && (
-            <UploadedScriptures scriptures={scriptures} />
+            <UploadedScriptures
+              scriptures={scriptureUploadedDetails}
+              isSuccessModal={isSuccessModal}
+              setIsSuccessModal={setIsSuccessModal}
+              editModal={editModal}
+              setEditModal={setEditModal}
+            />
           )}
-          {Status === "Scheduled" && <ScheduledScriptures />}
-          {Status === "Draft" && <DraftScriptures />}
+          {Status === "Scheduled" && (
+            <ScheduledScriptures
+              scriptures={scriptureUploadedDetails}
+              isSuccessModal={isSuccessModal}
+              setIsSuccessModal={setIsSuccessModal}
+              editModal={editModal}
+              setEditModal={setEditModal}
+            />
+          )}
         </div>
       </div>
     </div>
