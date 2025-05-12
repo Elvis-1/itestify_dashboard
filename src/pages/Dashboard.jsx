@@ -249,7 +249,7 @@ function Dashboard() {
             <div
               className={`font-sans flex items-center gap-1 p-3 text-[13px] ${
                 location.pathname === "/dashboard/daily-scripture" ||
-                location.pathname === "/dashboard/upload-scripture"
+                location.pathname === "/dashboard/schedule-scripture"
                   ? `bg-primary text-white`
                   : `bg-transparent`
               }`}
@@ -277,10 +277,10 @@ function Dashboard() {
                     className=" border-none outline-none p-2 bg-transparent cursor-pointer "
                   />
                 </Link>
-                <Link to="upload-scripture">
+                <Link to="schedule-scripture">
                   <input
                     type="button"
-                    value={"Upload Scriptures"}
+                    value={"Schedule Scriptures"}
                     placeholder=""
                     className=" border-none outline-none p-2 bg-transparent cursor-pointer "
                   />

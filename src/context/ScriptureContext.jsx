@@ -14,7 +14,6 @@ const ScriptureContextProvider = ({ children }) => {
           prayer: "",
           bibleText: "",
           bibleVersion: "",
-          selectedOption: "UploadNow",
           selectedDate: "",
           selectedTime: "",
           selectedTimeFormat: "",

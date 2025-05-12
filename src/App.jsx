@@ -27,7 +27,7 @@ import Login from "./component/Login";
 import ForgotPassword from "./component/ForgotPassword";
 import ScriptureForDay from "./pages/ScriptureForDay";
 import ScriptureContextProvider from "./context/ScriptureContext";
-import UploadScriptures from "./pages/UploadScriptures";
+import ScheduleScriptures from "./pages/ScheduleScriptures";
 import HomeManagement from "./pages/HomeManagement";
 
 function App() {
@@ -88,8 +88,8 @@ function App() {
                       />
                       <Route path="daily-scripture" element={<ScriptureForDay />} />
                       <Route
-                        path="upload-scripture"
-                        element={<UploadScriptures />}
+                        path="schedule-scripture"
+                        element={<ScheduleScriptures />}
                       />
                       <Route
                         path="general-settings"
