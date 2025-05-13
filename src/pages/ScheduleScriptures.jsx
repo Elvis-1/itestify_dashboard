@@ -3,10 +3,8 @@ import { useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../context/DarkModeContext";
 import SuccessModal from "../component/DailyScripturePopups/SuccessModal";
 import { ScriptureContext } from "../context/ScriptureContext";
-import WarningModal from "../component/DailyScripturePopups/WarningModal";
 import { MdClose } from "react-icons/md";
-import { RiDropdownList } from "react-icons/ri";
-import { IoIosArrowDropdown, IoMdArrowDropdown } from "react-icons/io";
+import { IoMdArrowDropdown } from "react-icons/io";
 import { LuPlus } from "react-icons/lu";
 
 const ScheduleScriptures = () => {
@@ -17,13 +15,21 @@ const ScheduleScriptures = () => {
     scriptureUploadedDetails,
     setScriptureUploadedDetails,
   } = useContext(ScriptureContext);
-  const radioButtons = [
-    { id: 1, label: "Upload now", value: "UploadNow" },
-    { id: 2, label: "Schedule for later", value: "ScheduleForLater" },
-  ];
   const [isSuccessModal, setIsSuccessModal] = useState(false);
   const [openScriptureSection, setOpenScriptureSection] = useState(false);
+  const [scriptureInputs, setScriptureInputs] = useState([
+    { bibleVerse: "", bibleVersion: "", prayer: "" },
+  ]);
+
+  const [bibleVerses, setBibleVerses] = useState([]);
+  const [bibleVersions, setBibleVersions] = useState([]);
   const navigate = useNavigate();
+
+  const handleInputChange = (index, event) => {
+    const updatedInputs = [...scriptureInputs];
+    updatedInputs[index][event.target.name] = event.target.value;
+    setScriptureInputs(updatedInputs);
+  };
 
   useEffect(() => {
     if (isSuccessModal) {
@@ -36,45 +42,51 @@ const ScheduleScriptures = () => {
   }, [isSuccessModal, navigate]);
 
   const resetForm = () => {
-    setScriptureUpload({
-      scripture: "",
-      prayer: "",
-      bibleText: "",
-      bibleVersion: "",
-      selectedDate: "",
-      selectedTime: "",
-      selectedTimeFormat: "",
-    });
+    setScriptureInputs([{ bibleText: "", bibleVersion: "", prayer: "" }]);
   };
-
+  
   const submitScripture = () => {
-    const newScripture = {
-      id: scriptureUploadedDetails.length + 1,
+    const newEntries = scriptureInputs.map((entry, index) => ({
+      id: scriptureUploadedDetails.length + index + 1,
       dateUploaded: new Date().toLocaleDateString(),
       selectedDate: scriptureUpload.selectedDate,
       selectedTime: scriptureUpload.selectedTime,
       selectedTimeFormat: scriptureUpload.selectedTimeFormat,
-      bibleText: scriptureUpload.bibleText,
-      scripture: scriptureUpload.scripture,
-      bibleVersion: scriptureUpload.bibleVersion,
-      prayer: scriptureUpload.prayer,
+      bibleVerse: entry.bibleVerse,
+      bibleVersion: entry.bibleVersion,
+      prayer: entry.prayer,
       status: "scheduled",
-    };
-    // Add new scripture
-    setScriptureUploadedDetails((prev) => [...prev, newScripture]);
+    }));
 
+    setScriptureUploadedDetails((prev) => [...prev, ...newEntries]);
     setIsSuccessModal(true);
+  };
+
+  const addNewScriptureField = () => {
+    if (scriptureInputs.length < 20) {
+      setScriptureInputs((prev) => [
+        ...prev,
+        { bibleVerse: "", bibleVersion: "", prayer: "" },
+      ]);
+    }
+  };
+
+  const removeScriptureField = (index) => {
+    if (scriptureInputs.length > 0) {
+      const updatedInputs = [...scriptureInputs];
+      updatedInputs.splice(index, 1);
+      setScriptureInputs(updatedInputs);
+    }
   };
 
   const handleSubmit = () => {
     submitScripture();
     resetForm();
   };
-  const isButtonDisabled =
-    !scriptureUpload.bibleText ||
-    !scriptureUpload.bibleVersion ||
-    !scriptureUpload.prayer;
-
+  const isButtonDisabled = scriptureInputs.some(
+    (input) => !input.bibleVerse || !input.bibleVersion || !input.prayer
+  );
+  
   return (
     <div className={`${isDarkMode ? "bg-black" : "bg-off-white"}`}>
       {isSuccessModal && (
@@ -90,7 +102,7 @@ const ScheduleScriptures = () => {
               isButtonDisabled
                 ? "bg-gray-500 cursor-not-allowed"
                 : "bg-primary cursor-pointer"
-            }`}
+            } ${isDarkMode ? `` : `text-white`}`}
             onClick={handleSubmit}
           >
             Save
@@ -101,110 +113,121 @@ const ScheduleScriptures = () => {
             isDarkMode ? "bg-near-black" : "bg-off-white"
           } mt-6 pb-6`}
         >
-          <div className="bg-grayBlack rounded-2xl p-4 pb-6">
-            <div className="flex items-center gap-1 text-xs bg-off-black rounded-lg p-2 ml-auto text-right justify-end w-fit mt-2">
-              <p>0 Added</p>
-              <div className="w-2 h-2 rounded-full bg-white"></div>
+          <div
+            className={`${
+              isDarkMode ? `bg-grayBlack` : `bg-white`
+            } rounded-2xl p-4 pb-6`}
+          >
+            <div
+              className={`flex items-center gap-1 text-xs ${
+                isDarkMode ? `bg-off-black` : `bg-off-white`
+              } rounded-lg p-2 ml-auto text-right justify-end w-fit mt-2`}
+            >
+              <p>{scriptureInputs.length} Added</p>
+              <div
+                className={`w-2 h-2 rounded-full ${
+                  isDarkMode ? `bg-white` : `bg-black`
+                }`}
+              ></div>
               <p>maximum 20 scriptures at a time</p>
             </div>
-            <div className=" border border-borderColor rounded-lg mt-6 pb-4">
+            {scriptureInputs.map((input, index) => (
               <div
-                className={`flex items-center w-full justify-between border-b ${
-                  openScriptureSection
-                    ? `border-b-borderColor`
-                    : `border-none pb-0`
-                }  p-3`}
+                className=" border border-borderColor rounded-lg mt-6 pb-4"
+                key={index}
               >
-                <p>Scripture 1</p>
-                <div className="flex gap-3">
-                  <i>
-                    <MdClose
-                      className="border border-border-gray rounded-md p-1 w-6 h-6 cursor-pointer "
-                      fontSize={20}
-                    />
-                  </i>
-                  <i>
-                    <IoMdArrowDropdown
-                      className="border border-border-borderColor rounded-md  cursor-pointer p-1 w-6 h-6"
-                      fontSize={20}
-                      onClick={() =>
-                        setOpenScriptureSection(!openScriptureSection)
-                      }
-                    />
-                  </i>
+                {/* Bible Verse and Bible Version Section */}
+                <div
+                  className={`flex items-center w-full justify-between border-b ${
+                    openScriptureSection
+                      ? `border-b-borderColor`
+                      : `border-none pb-0`
+                  }  p-3`}
+                >
+                  <p>Scripture {index + 1}</p>
+                  <div className="flex gap-3">
+                    <i>
+                      <MdClose
+                        className="border border-border-gray rounded-md p-1 w-6 h-6 cursor-pointer "
+                        fontSize={20}
+                        onClick={() => removeScriptureField(index)}
+                      />
+                    </i>
+                    <i>
+                      <IoMdArrowDropdown
+                        className="border border-border-borderColor rounded-md  cursor-pointer p-1 w-6 h-6"
+                        fontSize={20}
+                        onClick={() =>
+                          setOpenScriptureSection(!openScriptureSection)
+                        }
+                      />
+                    </i>
+                  </div>
                 </div>
+                {openScriptureSection && (
+                  <div>
+                    {/* Bible text and bible version input */}
+                    <div className="flex justify-between items-center w-full pt-2 px-3">
+                      <div className="flex flex-col gap-2">
+                        <p>Bible Verse</p>
+                        <input
+                          className={`${
+                            isDarkMode ? "bg-off-black" : "bg-off-white"
+                          } p-2 rounded-md outline-none text-sm placeholder:text-xs md:w-[400px]`}
+                          name="bibleVerse"
+                          id="bibleVerse"
+                          placeholder="Type here..."
+                          value={input.bibleVerse}
+                          onChange={(e) => handleInputChange(index, e)}
+                        />
+                      </div>
+                      <div className="flex flex-col gap-2">
+                        <p>Bible Version</p>
+                        <input
+                          className={`${
+                            isDarkMode ? "bg-off-black" : "bg-off-white"
+                          } p-2 rounded-md outline-none text-sm placeholder:text-xs md:w-[400px]`}
+                          name="bibleVersion"
+                          id="bibleversion"
+                          placeholder="Type here..."
+                          value={input.bibleVersion}
+                          onChange={(e) => handleInputChange(index, e)}
+                        />
+                      </div>
+                    </div>
+                    {/* Prayer Section */}
+                    <div className="flex flex-col gap-2 pt-3 px-3">
+                      <p>Prayer</p>
+                      <textarea
+                        className={`${
+                          isDarkMode ? "bg-off-black" : "bg-off-white"
+                        } p-2 rounded-md outline-none text-sm placeholder:text-xs resize-none h-20`}
+                        name="prayer"
+                        id="prayer"
+                        placeholder="Type here..."
+                        value={input.prayer}
+                        onChange={(e) => handleInputChange(index, e)}
+                      ></textarea>
+                    </div>
+                  </div>
+                )}
               </div>
-              {openScriptureSection && (
-                <div>
-                  {/* Bible text and bible version input */}
-                  <div className="flex justify-between items-center w-full pt-2 px-3">
-                    <div className="flex flex-col gap-2">
-                      <p>Bible Text</p>
-                      <input
-                        className={`${
-                          isDarkMode ? "bg-off-black" : "bg-off-white"
-                        } p-2 rounded-md outline-none text-sm placeholder:text-xs md:w-[400px]`}
-                        name="bibleText"
-                        id="bibleText"
-                        placeholder="Type here..."
-                        value={scriptureUpload.bibleText}
-                        onChange={(e) =>
-                          setScriptureUpload((prev) => ({
-                            ...prev,
-                            bibleText: e.target.value,
-                          }))
-                        }
-                      />
-                    </div>
-                    <div className="flex flex-col gap-2">
-                      <p>Bible Version</p>
-                      <input
-                        className={`${
-                          isDarkMode ? "bg-off-black" : "bg-off-white"
-                        } p-2 rounded-md outline-none text-sm placeholder:text-xs md:w-[400px]`}
-                        name="bibleversion"
-                        id="bibleversion"
-                        placeholder="Type here..."
-                        value={scriptureUpload.bibleVersion}
-                        onChange={(e) =>
-                          setScriptureUpload((prev) => ({
-                            ...prev,
-                            bibleVersion: e.target.value,
-                          }))
-                        }
-                      />
-                    </div>
-                  </div>
-                  {/* Prayer Section */}
-                  <div className="flex flex-col gap-2 pt-3 px-3">
-                    <p>Prayer</p>
-                    <textarea
-                      className={`${
-                        isDarkMode ? "bg-off-black" : "bg-off-white"
-                      } p-2 rounded-md outline-none text-sm placeholder:text-xs resize-none h-20`}
-                      name="prayer"
-                      id="prayer"
-                      placeholder="Type here..."
-                      value={scriptureUpload.prayer}
-                      onChange={(e) =>
-                        setScriptureUpload((prev) => ({
-                          ...prev,
-                          prayer: e.target.value,
-                        }))
-                      }
-                    ></textarea>
-                  </div>
-                </div>
-              )}
-            </div>
-            <button className="flex items-center gap-1 border border-primary rounded-lg text-primary p-2 text-xs mt-4">
+            ))}
+            <button
+              className="flex items-center gap-1 border border-primary rounded-lg text-primary p-2 text-xs mt-4"
+              onClick={addNewScriptureField}
+            >
               <LuPlus />
               Add New
             </button>
           </div>
 
           {/* Scheduling date and Time Settings */}
-          <div className="bg-grayBlack rounded-2xl mt-6 px-4 pb-12 pt-3">
+          <div
+            className={` ${
+              isDarkMode ? `bg-grayBlack` : `bg-white`
+            } rounded-2xl mt-6 px-4 pb-12 pt-3`}
+          >
             <h1 className="py-3">Schedule Settings</h1>
             <div className="flex justify-between items-start align-top gap-6 w-full pt-4">
               <div className="flex flex-col gap-2 w-full">

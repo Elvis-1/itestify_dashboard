@@ -35,8 +35,8 @@ const ViewScriptureDetails = ({ setIsScriptureDetails, scriptures }) => {
             <p className="text-xs">{scriptures?.prayer || "---"}</p>
           </div>
           <div className="p-3 flex flex-col gap-3 border-b border-b-[#787878]">
-            <h4 className="text-sm">Bible Text</h4>
-            <p className="text-xs">{scriptures?.bibleText || "---"}</p>
+            <h4 className="text-sm">Bible Verse</h4>
+            <p className="text-xs">{scriptures?.bibleVerse || "---"}</p>
           </div>
           <div className="p-3 flex flex-col gap-3 border-b border-b-[#787878]">
             <h4 className="text-sm">Bible Version</h4>

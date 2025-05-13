@@ -10,10 +10,6 @@ const ScriptureContextProvider = ({ children }) => {
     return storedScriptures
       ? JSON.parse(storedScriptures)
       : {
-          scripture: "",
-          prayer: "",
-          bibleText: "",
-          bibleVersion: "",
           selectedDate: "",
           selectedTime: "",
           selectedTimeFormat: "",
@@ -44,7 +40,7 @@ const ScriptureContextProvider = ({ children }) => {
         scripture.id === id ? { ...scripture, ...updatedScripture } : scripture
       )
     );
-  }
+  };
 
   const viewScriptureModal = (id, scriptureStatus) => {
     const scriptureDetailsMatch = scriptureStatus.find((s) => s.id === id);
@@ -73,7 +69,7 @@ const ScriptureContextProvider = ({ children }) => {
         viewScriptureModal,
         eachScripture,
         setEachScripture,
-        uploadScheduledScripture
+        uploadScheduledScripture,
       }}
     >
       {children}

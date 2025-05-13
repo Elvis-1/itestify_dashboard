@@ -22,7 +22,7 @@ const EditScripture = ({ setEditModal, scriptureId, setSuccessEditModal }) => {
   const [formData, setFormData] = useState({
     scripture: initialScripture.scripture || "",
     prayer: initialScripture.prayer || "",
-    bibleText: initialScripture.bibleText || "",
+    bibleVerse: initialScripture.bibleVerse || "",
     bibleVersion: initialScripture.bibleVersion || "",
     selectedDate: initialScripture.selectedDate || "",
     selectedTime: initialScripture.selectedTime || "",
@@ -104,13 +104,13 @@ const EditScripture = ({ setEditModal, scriptureId, setSuccessEditModal }) => {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium" htmlFor="bibleText">
-                  Bible Text
+                <label className="text-sm font-medium" htmlFor="bibleVerse">
+                  Bible Verse
                 </label>
                 <input
                   type="text"
-                  name="bibleText"
-                  value={formData.bibleText}
+                  name="bibleVerse"
+                  value={formData.bibleVerse}
                   onChange={handleChange}
                   className={`${
                     isDarkMode ? `bg-off-black` : `bg-off-white`
@@ -118,7 +118,7 @@ const EditScripture = ({ setEditModal, scriptureId, setSuccessEditModal }) => {
                 />
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-sm font-medium" htmlFor="bibleText">
+                <label className="text-sm font-medium" htmlFor="BibleVersion">
                   Bible Version
                 </label>
                 <input
