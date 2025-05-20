@@ -4,12 +4,14 @@ import { LockOutlined } from '@ant-design/icons';
 import { useNavigate } from 'react-router-dom';
 
 import { CheckOutlined } from "@ant-design/icons";
+import axios from 'axios'
 
 function CreatePassword() {
   const navigate = useNavigate()
 
   const [password1, setPassword1] = useState('')
   const [password2, setPassword2] = useState('')
+  const [loading, setLoading] = useState(false);
 
 
   const validations = {
@@ -21,25 +23,59 @@ function CreatePassword() {
     match: password1 === password2 && password2 !== "",
   };
   
+  const onFinish = async () => {
+    
+    if (password1 !== password2) {
+      message.error("Passwords do not match");
+      return;
+    }
+  
+    
+    let regEx = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d).{8,}$/;
+    if (!regEx.test(password1)) {
+      message.error("Invalid credentials");
+      return;
+    }
+  
+    setLoading(true);
+    try {
+      const token = localStorage.getItem("token");
+      console.log("Token:", token); // Log the token
+      console.log("Payload:", {
+        password: password1,
+        confirm_password: password2, // Log the payload
+      });
+  
+      const response = await axios.post(
+        "https://itestify-backend-nxel.onrender.com/dashboard/create_password/",
+        {
+          password: password1,
+          confirm_password: password2,
+        },
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+  
+      const user = JSON.parse(localStorage.getItem("user"));
+      user.created_password = true;
+      localStorage.setItem("user", JSON.stringify(user));
+  
+      navigate("/dashboard");
+      message.success("Password created successfully!");
 
-  const onFinish = (values) => {
-
-    // create password validations
-     let regEx = /^(?=.*[A-Z])(?=.*[a-z])(?=.*[!@#$%^&*(),.?":{}|<>])(?=.*\d).{8}$/;
-     if(!validations.length 
-      || !validations.lowercase 
-      || !validations.match || !validations.number 
-      || !validations.specialChar || !validations.uppercase){
-        message.error("Invalid credentials")
-      }else{
-        navigate('/dashboard')
-      }
-     
-     
-  }
+    } catch (error) {
+      // console.error("Failed to update password:", error.response ? error.response.data : error.message);
+      message.error("Failed to update password. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
   return (
-    <div className='flex justify-center items-center min-h-screen bg-slate-800'>
-        <div className='w-[300px]  h-[430px] rounded-xl bg-black'>
+    <div className='flex justify-center items-center min-h-screen bg-black'>
+        <div className='w-[500px]  h-[430px] rounded-xl shadow-sm shadow-slate-500'>
           <div className='text-white w-[80%] m-[auto] mt-6'>
               <h1 className='font-sans text-white text-center'>Create New Password</h1>
               <p className='text-[10px] font-sans text-center opacity-[0.6]'>For security reasons please change your password</p>
@@ -54,7 +90,7 @@ function CreatePassword() {
                   value={password1}
                   onChange={(e) => setPassword1(e.target.value)}
                   className='border-none outline-none'
-                  placeholder='Enter code'
+                  placeholder='Enter Password'
                   prefix={<LockOutlined className='text-white'/>}
                   style={{backgroundColor:'#313131', color: 'white'}} 
                   />
@@ -67,7 +103,7 @@ function CreatePassword() {
                   value={password2}
                   onChange={(e) => setPassword2(e.target.value)}
                   className='border-none outline-none'
-                  placeholder='Enter code'
+                  placeholder='Enter Password'
                   prefix={<LockOutlined className='text-white'/>}
                   style={{backgroundColor:'#313131', color: 'white'}} 
                   />
@@ -111,7 +147,7 @@ function CreatePassword() {
                     }
                   </li>
                   <li>
-                    password match
+                    Password match
                     {
                       validations.match ?
                       <CheckOutlined style={{ fontSize: '15px', color: 'green' }} />: ""
@@ -121,7 +157,13 @@ function CreatePassword() {
               </div>
 
               <Form.Item style={{marginTop: '30px'}}>
-                <Button  block htmlType='submit' className='bg-[#9966CC] font-sans text-white text-[13px] outline-none border-none'>Update Password</Button>
+                <Button  block htmlType='submit' 
+                className="bg-primary text-white text-[13px] outline-none border-none
+                hover:!bg-primary-light-mode hover:!text-white 
+                transition-colors duration-200 ease-in-out"
+                loading={loading}>
+                  Update Password
+                </Button>
               </Form.Item>
             </div>
           </Form>

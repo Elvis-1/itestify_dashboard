@@ -1,8 +1,8 @@
 import React, {useContext, useState} from 'react'
-import userData from '../data/userdata'
+import userData from '../../data/userdata'
 import { Table } from 'antd'
 
-import { DarkModeContext } from '../context/DarkModeContext';
+import { DarkModeContext } from '../../context/DarkModeContext';
 
 function Overview() {
   const {isDarkMode} = useContext(DarkModeContext)
@@ -42,7 +42,7 @@ function Overview() {
                   </tr>
                 </thead>
                 {userData.map((data) => (
-                    <tbody>
+                    <tbody key={data.id}>
                       <tr>
                         <td>{data.id}</td>
                         <td>{data.category}</td>

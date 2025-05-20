@@ -1,7 +1,7 @@
 let userData = [
     {
         id: 1,
-        category:'deliverance',
+        category:'Deliverance',
         type: 'video',
         likes: 23,
         shares: 36,
@@ -10,7 +10,7 @@ let userData = [
     },
     {
         id: 2,
-        category:'healing',
+        category:'Healing',
         type: 'video',
         likes: 23,
         shares: 36,
@@ -19,7 +19,7 @@ let userData = [
     },
     {
         id: 3,
-        category:'salvation',
+        category:'Salvation',
         type: 'video',
         likes: 23,
         shares: 36,
@@ -28,7 +28,7 @@ let userData = [
     },
     {
         id: 4,
-        category:'child birth',
+        category:'Child birth',
         type: 'video',
         likes: 23,
         shares: 36,
@@ -37,7 +37,7 @@ let userData = [
     },
     {
         id: 5,
-        category:'financial miracle',
+        category:'Financial miracle',
         type: 'video',
         likes: 23,
         shares: 36,
