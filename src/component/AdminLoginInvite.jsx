@@ -13,7 +13,7 @@ import logo from "../assets/Logo.png";
 const AdminLoginInvite = () => {
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
-  const [email, setEmail] = useState("");
+  const [email, setEmail] = useState('');
   const [passwordValidation, setPasswordValidation] = useState({
     length: false,
     uppercase: false,
