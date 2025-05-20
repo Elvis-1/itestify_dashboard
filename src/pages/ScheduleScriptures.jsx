@@ -44,7 +44,7 @@ const ScheduleScriptures = () => {
   const resetForm = () => {
     setScriptureInputs([{ bibleText: "", bibleVersion: "", prayer: "" }]);
   };
-  
+
   const submitScripture = () => {
     const newEntries = scriptureInputs.map((entry, index) => ({
       id: scriptureUploadedDetails.length + index + 1,
@@ -86,7 +86,16 @@ const ScheduleScriptures = () => {
   const isButtonDisabled = scriptureInputs.some(
     (input) => !input.bibleVerse || !input.bibleVersion || !input.prayer
   );
-  
+  const fetchScriptures = async () => {
+    try {
+      const scriptureRes = await fetch("/create-or-get-scripture");
+      const data = await response.json();
+      console.log(data)
+    } catch (err) {
+      throw new Error("Error getting scriptures");
+    }
+  };
+
   return (
     <div className={`${isDarkMode ? "bg-black" : "bg-off-white"}`}>
       {isSuccessModal && (

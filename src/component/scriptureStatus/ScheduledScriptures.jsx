@@ -155,9 +155,7 @@ const ScheduledScriptures = ({
       {successEditModal && (
         <SuccessModal successMessage="Changes saved Successfully!" />
       )}
-      {successUploadModal && (
-        <SuccessModal successMessage="Scripture Uploaded Successfully" />
-      )}
+
 
       <div
         className={`h-[22rem] pb-6 rounded-b-lg ${
