@@ -10,7 +10,7 @@ import axios from "axios";
 import { motion } from "framer-motion";
 import logo from "../assets/Logo.png";
 
-const Login = () => {
+const AdminLoginInvite = () => {
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
   const [email, setEmail] = useState("");
@@ -358,4 +358,4 @@ const Login = () => {
   );
 };
 
-export default Login;
+export default AdminLoginInvite;
