@@ -9,6 +9,7 @@ import usePagination from "../../hooks/usePagination";
 import Pagination from "../Pagination";
 import NoDataComponent from "../NoDataComponent";
 import LoadingState from "../LoadingState.jsx";
+import axios from "axios";
 
 const RegUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -60,6 +61,28 @@ const RegUsers = () => {
       console.error("User not found");
     }
   };
+  
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        const response = await axios.get(
+          "https://itestify-backend-nxel.onrender.com/auths/users/all/?status=registered",
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setRegisteredUsers(response.data.data.data);
+        setIsLoading(false);
+      } catch (error) {
+        console.error("Error fetching registered users:", error);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const regUsersIndex = useMemo(() => {
     const searchTerm = searchItem.toLowerCase().trim();
@@ -75,34 +98,6 @@ const RegUsers = () => {
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
     usePagination(sortedData);
 
-  useEffect(() => {
-    const fetchData = async () => {
-      try {
-        const response = await fetch(
-          "https://itestify-backend-nxel.onrender.com/users/registered/",
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-              Authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc2NTI5NjAxLCJpYXQiOjE3NDQ5OTM2MDEsImp0aSI6IjQxOWRhZGI3MTQyYzQ3MjRhZWExYjIxMjZmYWM3N2RjIiwidXNlcl9pZCI6IjM0YjM0NTU3LTU4YmMtNDllYi04M2Q3LTE1MzM0YWM3YWI0OSJ9.Z9WEhCFG2VaKCt8REzD8cjGHhEaHfZWCYHA2a_3Sk4M",
-            },
-          }
-        );
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        setRegisteredUsers(data.data);
-        setIsLoading(false);
-        console.log(data);
-      } catch (error) {
-        console.error("Error fetching deleted users:", error);
-      }
-    };
-
-    fetchData();
-  }, []);
 
   return (
     <div className="relative">

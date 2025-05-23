@@ -24,7 +24,7 @@ import { Link, Outlet, useNavigate } from "react-router-dom";
 import { DarkModeContext } from "../context/DarkModeContext";
 import NotificationModal from "../component/Popups/NotificationModal";
 import { NotificationContextProvider } from "../context/NotificationContext";
-import { useLocation} from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import { Modal } from "antd";
 
 function Dashboard() {
@@ -35,8 +35,8 @@ function Dashboard() {
   const [showAllTestimonies, setShowAllTestimonies] = useState(true);
   const [logoutModal, setLogoutModal] = useState(false);
   const [isNotifModal, setIsNotifModal] = useState(false);
-  const [userFullname, setUserFullName] = useState('')
-  const [userRole, setUserRole] = useState('')
+  const [userFullname, setUserFullName] = useState("");
+  const [userRole, setUserRole] = useState("");
 
   const { isDarkMode, toggleTheme } = useContext(DarkModeContext);
 
@@ -44,14 +44,26 @@ function Dashboard() {
     NotificationContextProvider
   );
 
-  let user = localStorage.getItem('user')
+  let user = localStorage.getItem("user");
 
   useEffect(() => {
-    const userString = localStorage.getItem('user'); // Get the stored string
-    const user = userString ? JSON.parse(userString) : null; // Parse safely
-  
-    setUserFullName(user?.full_name)
-    setUserRole(user?.role)
+    const userString = localStorage.getItem("user"); // Get the stored string
+    const storedUser = localStorage.getItem("user");
+
+    let user = null;
+    try {
+      user =
+        storedUser && storedUser !== "undefined"
+          ? JSON.parse(storedUser)
+          : null;
+    } catch (err) {
+      console.error("Error parsing user from localStorage", err);
+      user = null;
+    }
+    // Parse safely
+
+    setUserFullName(user?.full_name);
+    setUserRole(user?.role);
   }, []);
 
   const navigate = useNavigate();
@@ -74,11 +86,11 @@ function Dashboard() {
     // Clear token and user data from localStorage
     localStorage.removeItem("token");
     // localStorage.removeItem("user");
-  
+
     // Redirect to the login page
     navigate("/login");
     message.success("Logged out successfully!");
-  }
+  };
 
   return (
     <div className="relative">
@@ -126,8 +138,8 @@ function Dashboard() {
                 <Link to="/login">
                   <button
                     onClick={() => {
-                      handleLogout()
-                      handleCloseModal()
+                      handleLogout();
+                      handleCloseModal();
                     }}
                     className="rounded bg-primary px-5 text-sm py-2"
                   >

@@ -96,20 +96,23 @@ const Login = () => {
       setLoading(true)
       
       const response = await axios.post(
-        "https://itestify-backend-nxel.onrender.com/login/password/",
+        "https://itestify-backend-nxel.onrender.com/auths/login/password/",
         {
           email: values.email,
           password: values.password,
         }
       );
 
-      const { token, user } = response.data;
+      const { token, user } = response.data.data;
 
-      localStorage.setItem("token", token);
+      localStorage.setItem("token", token.access);
       localStorage.setItem("user", JSON.stringify(user));
 
       navigate("/dashboard");
       message.success("Login successful!");
+      console.log(response);
+      console.log(token)
+      console.log(user)
 
     } catch (error) {
       console.error("Login failed:", error.response ? error.response.data : error.message);

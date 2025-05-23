@@ -13,6 +13,7 @@ import Pagination from "../Pagination.jsx";
 import SuccessModal from "../Popups/SuccessModal.jsx";
 import NoDataComponent from "../NoDataComponent.jsx";
 import LoadingState from "../LoadingState.jsx";
+import axios from "axios";
 
 const DelUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -22,6 +23,8 @@ const DelUsers = () => {
   const [isSuccessModal, setIsSuccessModal] = useState(false);
   const [searchItem, setSearchItem] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const token = localStorage.getItem("token");
+
   const tableHeaders = [
     {
       key: "serialno",
@@ -54,25 +57,18 @@ const DelUsers = () => {
 
   useEffect(() => {
     const fetchData = async () => {
+      const token = localStorage.getItem("token");
       try {
-        const response = await fetch(
-          "https://itestify-backend-nxel.onrender.com/users/deleted/",
+        const response = await axios.get(
+          "https://itestify-backend-nxel.onrender.com/auths/users/all/?status=deleted",
           {
-            method: "GET",
             headers: {
-              "Content-Type": "application/json",
-              Authorization:
-                "Bearer eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJ0b2tlbl90eXBlIjoiYWNjZXNzIiwiZXhwIjoxNzc2NTI5NjAxLCJpYXQiOjE3NDQ5OTM2MDEsImp0aSI6IjQxOWRhZGI3MTQyYzQ3MjRhZWExYjIxMjZmYWM3N2RjIiwidXNlcl9pZCI6IjM0YjM0NTU3LTU4YmMtNDllYi04M2Q3LTE1MzM0YWM3YWI0OSJ9.Z9WEhCFG2VaKCt8REzD8cjGHhEaHfZWCYHA2a_3Sk4M",
+              Authorization: `Bearer ${token}`,
             },
           }
         );
-        if (!response.ok) {
-          throw new Error(`HTTP error! Status: ${response.status}`);
-        }
-        const data = await response.json();
-        setDeletedUsers(data.data);
+        setDeletedUsers(response.data.data.data);
         setIsLoading(false);
-        console.log(data);
       } catch (error) {
         console.error("Error fetching deleted users:", error);
       }
@@ -133,27 +129,25 @@ const DelUsers = () => {
         setError("No users selected for deletion");
         return;
       }
-  
-      // Send DELETE requests for each selected user
       const deletePromises = selectedUsers.map(async (userId) => {
-        const response = await fetch(`https://itestify-backend-nxel.onrender.com/users/${userId}`, {
-          method: "DELETE",
-        });
-        if (!response.ok) {
-          const errText = await response.text();
-          throw new Error(`HTTP error! Status: ${response.status} - ${errText}`);
+        try {
+          await axios.delete(
+            `https://itestify-backend-nxel.onrender.com/auths/users/${userId}`,
+            {
+              headers: {
+                Authorization: `Bearer ${token}`,
+              },
+            }
+          );
+        } catch (err) {
+          console.log("Error deleting user", err);
         }
-        // Handle 204 No Content
-        if (response.status !== 204) {
-          return response.json();
-        }
-        return null;
       });
-  
+
       // Wait for all DELETE requests to complete
       await Promise.all(deletePromises);
       console.log("Selected users deleted successfully");
-  
+
       // Update state
       setDeletedUsers((prev) =>
         prev.filter((user) => !selectedUsers.includes(user.id))
@@ -167,21 +161,18 @@ const DelUsers = () => {
       setError(error.message);
     }
   };
+
   //Handle Delete Individually
   const handleDeleteById = async (userId) => {
     try {
-      const response = await fetch(
-        `https://itestify-backend-nxel.onrender.com/users/${userId}/`,
+      await axios.delete(
+        `https://itestify-backend-nxel.onrender.com/auths/users/${userId}/`,
         {
-          method: "DELETE",
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
         }
       );
-      if (!response.ok) {
-        alert("Error deleting user:", response.statusText);
-        throw new Error(`HTTP error! Status: ${response.status}`);
-      }
-      const data = await response.json();
-      console.log("User deleted successfully:", data);
       setDeletedUsers((prev) => prev.filter((user) => user.id !== userId));
     } catch (error) {
       console.error("Error deleting user:", error);
