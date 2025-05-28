@@ -479,7 +479,7 @@ function Reviews() {
               />
             </div>
           </div>
-          <div className="mx-4 mb-6 shadow rounded-lg p-4 bg bg-[#171717]">
+          <div className="mx-4 mb-6 rounded-lg p-4 bg">
             {/* Email Address Section */}
             <div className="mb-4">
               <p className="text-gray-400 text-xs mb-1">Email Address</p>
