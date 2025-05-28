@@ -422,63 +422,106 @@ function Reviews() {
         closable={true}
         closeIcon={
           <span
-            style={{ color: "white", fontSize: "12px", marginTop: "-30px" }}
+            style={{
+              color: "white",
+              fontSize: "18px",
+              fontWeight: "300",
+              position: "absolute",
+              top: "15px",
+              right: "15px",
+            }}
           >
-            X
+            ✕
           </span>
         }
         styles={{
           content: {
-            backgroundColor: "black",
-            width: "340px",
+            backgroundColor: "#2a2a2a",
+            width: "380px",
             height: "auto",
             color: "white",
             margin: "0 auto",
-            borderRadius: "8px",
+            borderRadius: "20px",
+            padding: "0",
           },
           body: {
-            backgroundColor: "#1717171",
+            backgroundColor: "#2a2a2a",
             color: "white",
+            padding: "0",
+            borderRadius: "20px",
           },
         }}
       >
-        <div>
+        <div style={{ padding: "0", position: "relative" }}>
           <div
-            className="bg-[#313131] 
-                    w-[116%] h-[50px] ml-[-24px] mt-[-22px] 
-                    rounded-tl-xl rounded-tr-xl"
+            style={{
+              position: "absolute",
+              top: "60px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "2px",
+              height: "40px",
+              borderLeft: "2px dotted #4A90E2",
+              zIndex: 1,
+            }}
           ></div>
-          <div className="w-[50px] h-[50px] m-[auto] z-[1000]">
-            <img
-              className="w-[50px] h-[50px] m-[auto] mt-[-25px]"
-              src={modalpic}
-              alt=""
-            />
+
+          {/* Profile Picture */}
+          <div className="flex justify-center pt-8 pb-4">
+            <div
+              className="w-[80px] h-[80px] rounded-full border-4 border-white overflow-hidden"
+              style={{ position: "relative", zIndex: 2 }}
+            >
+              <img
+                className="w-full h-full object-cover"
+                src={modalpic}
+                alt="Profile"
+              />
+            </div>
           </div>
-          <div className="flex border rounded-2xl border-gray-900 items-center justify-between w-[110%] h-[50px] m-[auto] ml-[-15px] mt-[20px]">
-            <div className="text-center ml-5 opacity-[0.6] border-r  h-[40px] pr-3 font-sans mt-1">
-              <p className="text-[10px]">Name</p>
-              <p className="text-[11px] w-[70px] ml-[-10px] pt-1">
+          <div className="mx-4 mb-6 shadow rounded-lg p-4 bg bg-[#171717]">
+            {/* Email Address Section */}
+            <div className="mb-4">
+              <p className="text-gray-400 text-xs mb-1">Email Address</p>
+              <p className="text-white text-sm font-medium">John Stone</p>
+            </div>
+
+            {/* Name Section */}
+            <div className="mb-4">
+              <p className="text-gray-400 text-xs mb-1">Name</p>
+              <p className="text-white text-sm font-medium">
                 {reviewDetails.name}
               </p>
             </div>
-            <div className="text-center ml-3 text-[12px] opacity-[0.6] w-[100%] h-[40px] m-[auto] border-r pr-3 font-sans">
-              <p>Date</p>
-              <p className="ml-3">{reviewDetails.date_submitted}</p>
-            </div>
-            <div className="text-center text-[9px] opacity-[0.6] w-[100%] h-[35px] m-[auto] font-sans">
-              <p className="mb-1">Rating</p>
-              <p className="flex items-center justify-center mt-3">
-                {[...Array(reviewDetails.rating)].map((_, i) => (
-                  <AiFillStar key={i} className="text-[#9966CC]" />
-                ))}
+
+            {/* Date Section */}
+            <div className="mb-4">
+              <p className="text-gray-400 text-xs mb-1">Date</p>
+              <p className="text-white text-sm">
+                {reviewDetails.date_submitted}
               </p>
+            </div>
+
+            {/* Rating Section */}
+            <div className="mb-4">
+              <p className="text-gray-400 text-xs mb-2">Rating</p>
+              <div className="flex">
+                {[...Array(reviewDetails.rating)].map((_, i) => (
+                  <AiFillStar
+                    key={i}
+                    className="text-purple-400 text-lg mr-1"
+                  />
+                ))}
+              </div>
             </div>
           </div>
 
-          <div className="mt-3 mb-7">
-            <h3 className="text-white font-sans text-[11px]">Review</h3>
-            <p className="text-[11px] text-white pt-2">
+          {/* Review Section */}
+          <div className="px-4 pb-6">
+            <div className="flex items-center mb-3">
+              <h3 className="text-white font-medium text-sm mr-3">Review</h3>
+            </div>
+            <p className="text-white text-sm leading-relaxed">
               {reviewDetails.review}
             </p>
           </div>
