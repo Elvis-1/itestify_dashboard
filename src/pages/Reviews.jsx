@@ -198,6 +198,7 @@ function Reviews() {
         }
       );
       setReviewData(reviewRes.data.results);
+      console.log(reviewRes.status)
     } catch (error) {
       console.log("Cannot fetch reviews", error);
     }
