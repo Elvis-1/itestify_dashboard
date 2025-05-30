@@ -1,14 +1,34 @@
 import React from "react";
-import { Form, Input, Button } from "antd";
+import { Form, Input, Button, message } from "antd";
 import logo from "../assets/icons/Logo.png";
 import { MailOutlined, LockOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import axios from "axios";
+import { useState } from "react";
 
 const ForgotPassword = () => {
   const navigate = useNavigate();
-  const onFinish = (values) => {
-    console.log({ values });
-    navigate("/login/");
+  const [isLoading, setIsLoading] = useState(false);
+  const onFinish = async (values) => {
+    try {
+      setIsLoading(true);
+      const email = values.email;
+      const response = await axios.post(
+        "https://itestify-backend-nxel.onrender.com/auths/forgot-password/",
+        {
+          email: email,
+        }
+      );
+      message.success(response.data.message);
+      navigate("/check-email/");
+    } catch (error) {
+      message.error(
+        error?.response?.data?.message,
+        "Failed to send password reset link. Please try again."
+      );
+    } finally {
+      setIsLoading(false);
+    }
   };
   return (
     <div className="flex justify-center items-center min-h-screen bg-[#0B0B0B]">
@@ -46,6 +66,7 @@ const ForgotPassword = () => {
                 block
                 htmlType="submit"
                 className="bg-primary text-white text-[13px] outline-none border-none py-4 mt-4"
+                loading={isLoading}
               >
                 Send Password Reset Link
               </Button>
