@@ -38,7 +38,7 @@ const ScriptureForDay = () => {
       <div className={`p-5 ${isDarkMode ? `bg-black` : `bg-off-white`}`}>
         <button className=" flex justify-end ml-auto p-2 rounded-md bg-primary cursor-pointer">
           <Link
-            to="/dashboard/upload-scripture"
+            to="/dashboard/schedule-scripture"
             className="flex justify-end gap-1 ml-auto"
           >
             <IoAdd fill="#ffffff" />

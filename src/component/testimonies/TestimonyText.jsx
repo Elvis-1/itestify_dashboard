@@ -81,9 +81,8 @@ function TestimonyText() {
                             Authorization: `Bearer ${token}`,
                         },
                     }
-                );
-        
-                const testimoniesWithDefaults = response.data.data.map((item) => ({
+                );           
+                const testimoniesWithDefaults = response.data.data.data.map((item) => ({
                     ...item,
                     full_name: item.full_name ?? "Unknown",
                     category: item.category ?? "Uncategorized",

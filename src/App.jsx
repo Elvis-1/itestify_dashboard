@@ -27,8 +27,10 @@ import Login from "./component/Login";
 import ForgotPassword from "./component/ForgotPassword";
 import ScriptureForDay from "./pages/ScriptureForDay";
 import ScriptureContextProvider from "./context/ScriptureContext";
-import UploadScriptures from "./pages/UploadScriptures";
+import ScheduleScriptures from "./pages/ScheduleScriptures";
 import HomeManagement from "./pages/HomeManagement";
+import CheckMail from "./pages/CheckMail";
+import ResetPassword from "./pages/ResetPassword";
 
 function App() {
   return (
@@ -42,11 +44,19 @@ function App() {
                   <Route path="/" element={<Home />} />
                   <Route path="/create-password" element={<CreatePassword />} />
                   <Route path="/login" element={<Login />} />
-                  <Route path="forgot-password" element={<ForgotPassword />} />
+                  <Route path="/forgot-password" element={<ForgotPassword />} />
+                  <Route
+                    path="/reset-password/:id/:token"
+                    element={<ResetPassword />}
+                  />
+                  <Route path="/check-email" element={<CheckMail />} />
                   <Route element={<ProtectedRoute />}>
                     <Route path="/dashboard" element={<Dashboard />}>
                       <Route path="" element={<Overview />} />
-                      <Route path="home-management" element={<HomeManagement />} />
+                      <Route
+                        path="home-management"
+                        element={<HomeManagement />}
+                      />
 
                       <Route
                         path="all-testimonies"
@@ -86,10 +96,13 @@ function App() {
                         path="testimonies-analytics"
                         element={<TestimonyAnalytics />}
                       />
-                      <Route path="daily-scripture" element={<ScriptureForDay />} />
                       <Route
-                        path="upload-scripture"
-                        element={<UploadScriptures />}
+                        path="daily-scripture"
+                        element={<ScriptureForDay />}
+                      />
+                      <Route
+                        path="schedule-scripture"
+                        element={<ScheduleScriptures />}
                       />
                       <Route
                         path="general-settings"

@@ -78,8 +78,6 @@
 
 // export default Login;
 
-
-
 import React, { useState } from "react";
 import { Form, Input, Button, message } from "antd";
 import logo from "../assets/icons/Logo.png";
@@ -88,34 +86,39 @@ import { Link, useNavigate } from "react-router-dom";
 import axios from "axios";
 
 const Login = () => {
-  const [loading, setLoading] = useState(false)
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
   const onFinish = async (values) => {
     try {
-      setLoading(true)
-      
+      setLoading(true);
+
       const response = await axios.post(
-        "https://itestify-backend-nxel.onrender.com/login/password/",
+        "https://itestify-backend-nxel.onrender.com/auths/login/password/",
         {
           email: values.email,
           password: values.password,
         }
       );
 
-      const { token, user } = response.data;
+      const { token, user } = response.data.data;
 
-      localStorage.setItem("token", token);
+      localStorage.setItem("token", token.access);
       localStorage.setItem("user", JSON.stringify(user));
 
       navigate("/dashboard");
       message.success("Login successful!");
-
+      console.log(response);
+      console.log(token);
+      console.log(user);
     } catch (error) {
-      console.error("Login failed:", error.response ? error.response.data : error.message);
+      console.error(
+        "Login failed:",
+        error.response ? error.response.data : error.message
+      );
       message.error("Login failed. Please check your credentials.");
-    }finally{
-      setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 

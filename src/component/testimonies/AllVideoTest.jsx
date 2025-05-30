@@ -171,7 +171,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
             setLoading(true); // Set loading state
             
             const response = await axios.get(
-                `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
+                `https://itestify-backend-nxel.onrender.com/testimonies/videos/:${id}/`,
                 { 
                     headers: { 
                         'Authorization': `Bearer ${token}`,
@@ -308,7 +308,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
       
           // API call
           const response = await axios.put(
-            `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
+            `https://itestify-backend-nxel.onrender.com/testimonies/videos/:${id}/`,
             requestData,
             {
               headers: {
@@ -390,7 +390,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
             };
 
             const response = await axios.put(
-                `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
+                `https://itestify-backend-nxel.onrender.com/testimonies/videos/:${id}/`,
                 requestData,
                 {
                     headers: {
@@ -438,7 +438,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
         
         try {
             const response = await axios.delete(
-                `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
+                `https://itestify-backend-nxel.onrender.com/testimonies/videos/:${id}/`,
                 {
                     headers: {
                         "Authorization": `Bearer ${token}`,

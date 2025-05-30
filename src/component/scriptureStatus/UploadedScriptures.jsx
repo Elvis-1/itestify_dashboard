@@ -60,8 +60,8 @@ const UploadedScriptures = ({
       Label: "Date Uploaded",
     },
     {
-      key: "bibleText",
-      Label: "Bible Text",
+      key: "bibleVerse",
+      Label: "Bible verse",
     },
     {
       key: "scripture",
@@ -85,9 +85,9 @@ const UploadedScriptures = ({
       (item) =>
         searchItem === "" ||
         item.bibleVersion?.toLowerCase().includes(searchItem.toLowerCase()) ||
-        item.scripture?.toLowerCase().includes(searchItem.toLowerCase()) ||
+        item.bibleVerse?.toLowerCase().includes(searchItem.toLowerCase()) ||
         item.prayer?.toLowerCase().includes(searchItem.toLowerCase()) ||
-        item.bibleText?.toLowerCase().includes(searchItem.toLowerCase())
+        item.bibleVerse?.toLowerCase().includes(searchItem.toLowerCase())
     );
   }, [searchItem, uploadedScriptures]);
   const { sort, sortHeader, sortedData } = useSort(filteredScriptures);
@@ -250,8 +250,8 @@ const UploadedScriptures = ({
                 >
                   <td>{data.id}</td>
                   <td>{data.dateUploaded}</td>
-                  <td>{data.bibleText}</td>
-                  <td>{data.scripture.substr(0, 20)}...</td>
+                  <td>{data.bibleVerse}</td>
+                  <td>{data.bibleVerse.substr(0, 20)}...</td>
                   <td>{data.bibleVersion}</td>
                   <td>{data.prayer.substr(0, 20)}...</td>
                   <td>

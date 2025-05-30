@@ -34,10 +34,7 @@ const FilterScriptures = ({
         : null;
       const isWithinDateRange =
         (!fromDate || itemDate >= fromDate) && (!toDate || itemDate <= toDate);
-      const matchesStatus =
-        !filters.selectedOption || item.status === filters.selectedOption;
-
-      return isWithinDateRange && matchesStatus;
+      return isWithinDateRange;
     });
 
     setScriptures(getFilterData);

@@ -75,7 +75,7 @@ function CreatePassword() {
   };
   return (
     <div className='flex justify-center items-center min-h-screen bg-black'>
-        <div className='w-[500px]  h-[430px] rounded-xl shadow-sm shadow-slate-500'>
+        <div className='w-[500px]'>
           <div className='text-white w-[80%] m-[auto] mt-6'>
               <h1 className='font-sans text-white text-center'>Create New Password</h1>
               <p className='text-[10px] font-sans text-center opacity-[0.6]'>For security reasons please change your password</p>
