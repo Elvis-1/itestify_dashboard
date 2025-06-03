@@ -69,6 +69,7 @@
   border-bottom: 1px solid #ddd;
 }
 
+<<<<<<< HEAD
 .custom-table tbody td {
   vertical-align: middle;
 }
@@ -375,3 +376,17 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
+=======
+/* Force eye icon in password input to be white */
+.ant-input-password-icon {
+  color: white !important;
+}
+/* Target placeholder inside Ant Design input fields */
+.ant-input::placeholder,
+.ant-input-password input::placeholder {
+  color: white !important;
+  opacity: 1;
+}
+
+  
+>>>>>>> bob
