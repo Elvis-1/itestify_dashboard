@@ -61,7 +61,7 @@ const RegUsers = () => {
       console.error("User not found");
     }
   };
-  
+
   useEffect(() => {
     const fetchData = async () => {
       try {
@@ -97,7 +97,6 @@ const RegUsers = () => {
   const { sort, sortHeader, sortedData } = useSort(regUsersIndex);
   const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
     usePagination(sortedData);
-
 
   return (
     <div className="relative">

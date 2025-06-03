@@ -3,13 +3,12 @@ import { CiSearch } from "react-icons/ci";
 import { IoFilterOutline } from "react-icons/io5";
 
 import { DarkModeContext } from "../context/DarkModeContext";
-import reviews from "../data/reviewsData";
 import { IoIosArrowDown, IoIosArrowUp } from "react-icons/io";
 import { AiFillStar, AiOutlineStar } from "react-icons/ai";
 
 import modalpic from "../assets/images/modalPic.png";
 
-import { Modal } from "antd";
+import { message, Modal } from "antd";
 import { CalendarOutlined } from "@ant-design/icons";
 import { FaCaretDown, FaCaretUp } from "react-icons/fa6";
 
@@ -31,26 +30,28 @@ function Reviews() {
   const [reviewViewModal, setReviewViewModal] = useState(false);
   const [reviewDetails, setReviewDetails] = useState("");
   const [reviewDeleteModal, setReviewDeleteModal] = useState(false);
+  const [reviewDeleteAllModal, setReviewDeleteAllModal] = useState(false);
 
   const [filterDropDown, setFilterDropDown] = useState(false);
   const [filterDate1, setFilterDate1] = useState("");
   const [filterDate2, setFilterDate2] = useState("");
   const [ratingType, setRatingType] = useState("Select");
   const token = localStorage.getItem("token");
-
   const itemsPerPage = 3;
 
   const startIndex = (page - 1) * itemsPerPage;
   reviewData.slice(startIndex, startIndex + itemsPerPage);
   const totalPages = Math.ceil(reviewData.length / itemsPerPage);
 
-  const allChecked =
-    Object.keys(checkedItems).length === reviewData.length &&
-    Object.values(checkedItems).every(Boolean);
+  const hasCheckedItems =
+    Object.values(checkedItems).filter(Boolean).length > 0;
 
   const singleChecked =
     Object.values(checkedItems).filter(Boolean).length === 1;
 
+  const allChecked =
+    Object.keys(checkedItems).length === reviewData.length &&
+    Object.values(checkedItems).every(Boolean);
   const sortData = (key) => {
     let direction = "ascending";
     if (
@@ -71,13 +72,13 @@ function Reviews() {
     if (searchQuery.trim() !== "") {
       const filteredData = dataToSearch.filter((item) => {
         const lowerCaseQuery = searchQuery.toLowerCase();
-        return item.user_email .toLowerCase().includes(lowerCaseQuery);
+        return item.user_full_name.toLowerCase().includes(lowerCaseQuery);
       });
       return filteredData;
     }
 
     return dataToSearch;
-  }, [getFilteredData, reviewData, searchQuery]);
+  }, [getFilteredData, searchQuery]);
 
   const sortedData = React.useMemo(() => {
     const dataToSort = searchedData;
@@ -121,6 +122,7 @@ function Reviews() {
     setReviewActionModal(false);
     setReviewViewModal(false);
     setReviewDeleteModal(false);
+    setReviewDeleteAllModal(false);
     setReviewFilterModal(false);
   }
 
@@ -158,7 +160,7 @@ function Reviews() {
   //function handling the filtering logic
   function handleFiltering() {
     const getFilterData = reviewData.filter((item) => {
-      const itemDate = new Date(item.date_submitted);
+      const itemDate = new Date(item.created_at);
 
       if (filterDate1 !== "" && filterDate2 !== "" && ratingType !== "") {
         const isWithinDateRange =
@@ -170,15 +172,15 @@ function Reviews() {
         return isWithinDateRange && matchesCategory;
       } else {
         return (
-          item.date_submitted === filterDate1 ||
-          item.date_submitted === filterDate2 ||
+          item.created_at === filterDate1 ||
+          item.created_at === filterDate2 ||
           item.rating === ratingType
         );
       }
     });
 
     setGetFilterData(getFilterData); // Update filtered data
-    setFilterModal(false); // Close filter modal
+    setReviewFilterModal(false); // Close filter modal
   }
   // function for filtering fields reset
   function handleReset() {
@@ -187,28 +189,77 @@ function Reviews() {
     setFilterDate2("");
   }
 
-  const fetchReviews = async () => {
+  useEffect(() => {
+    const fetchReviewData = async () => {
+      try {
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/review/admin/reviews/`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setReviewData(response.data.results);
+      } catch (error) {
+        console.error("Error fetching review data:", error);
+        message.error(
+          error?.response?.data?.message || "Failed to fetch reviews"
+        );
+      }
+    };
+
+    fetchReviewData();
+  }, []);
+
+  const DeleteReview = async (id) => {
     try {
-      const reviewRes = await axios.get(
-        "https://itestify-backend-nxel.onrender.com/review/admin/reviews/",
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/review/admin/reviews/${id}/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
           },
         }
       );
-      setReviewData(reviewRes.data.results);
-      console.log(reviewRes.status)
+      setReviewData((prevData) =>
+        prevData.filter((review) => review.id !== id)
+      );
+      setReviewDeleteModal(false);
+      setReviewActionModal(false);
+      message.success("Review deleted successfully");
     } catch (error) {
-      console.log("Cannot fetch reviews", error);
+      console.error("Error deleting review:", error);
     }
   };
-  useEffect(() => {
-    fetchReviews();
-  }, []);
+
+  const DeleteAllReviews = async () => {
+    try {
+      await axios.delete(
+        `${import.meta.env.VITE_API_URL}/review/admin/reviews/delete_all/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
+      setReviewData([]);
+      setReviewDeleteAllModal(false);
+      message.success("All reviews deleted successfully");
+    } catch (error) {
+      console.error("Error deleting all reviews:", error);
+      message.error("Failed to delete all reviews");
+    }
+  };
 
   return (
-    <div className={`w-[98%] h-[420px] m-[auto] mt-8 bg-[#171717] rounded-xl`}>
+    <div
+      className={`w-[98%] ${
+        sortData
+          ? " h-[350px]"
+          : "flex flex-col h-[calc(100vh-120px)] justify-between"
+      }  m-[auto] mt-8 ${isDarkMode ? "bg-[#171717]" : "bg-white"} rounded-xl`}
+    >
       {/* filter modal */}
       <Modal
         open={reviewFilterModal}
@@ -386,10 +437,10 @@ function Reviews() {
         closeIcon={null}
         styles={{
           content: {
-            backgroundColor: "#0B0B0B",
+            backgroundColor: isDarkMode ? "#171717" : "white",
             width: "120px",
             height: "auto",
-            color: "white",
+            color: isDarkMode ? "white" : "black",
             margin: "0 auto",
             borderRadius: "8px",
             marginLeft: "125%",
@@ -397,11 +448,14 @@ function Reviews() {
           },
           body: {
             backgroundColor: "#1717171",
-            color: "white",
           },
         }}
       >
-        <div className="flex flex-col">
+        <div
+          className={`flex flex-col ${
+            isDarkMode ? "bg-[#171717]" : "bg-white"
+          }`}
+        >
           <div className="border-b w-[170%] ml-[-25px] opacity-[0.6]">
             <button
               onClick={() => {
@@ -437,65 +491,133 @@ function Reviews() {
         closable={true}
         closeIcon={
           <span
-            style={{ color: "white", fontSize: "12px", marginTop: "-30px" }}
+            style={{
+              color: isDarkMode ? "white" : "black",
+              fontSize: "18px",
+              fontWeight: "300",
+              position: "absolute",
+              top: "15px",
+              right: "15px",
+            }}
           >
-            X
+            ✕
           </span>
         }
         styles={{
           content: {
-            backgroundColor: "black",
-            width: "340px",
+            backgroundColor: "#2a2a2a",
+            width: "380px",
             height: "auto",
-            color: "white",
+            // color: "white",
             margin: "0 auto",
-            borderRadius: "8px",
+            borderRadius: "20px",
+            padding: "0",
           },
           body: {
-            backgroundColor: "#1717171",
-            color: "white",
+            backgroundColor: "#2a2a2a",
+            // color: "white",
+            padding: "0",
+            borderRadius: "20px",
           },
         }}
       >
-        <div>
+        <div
+          style={{ padding: "0", position: "relative" }}
+          className={`${isDarkMode ? "bg-[#171717]" : "bg-white text-black"}`}
+        >
           <div
-            className="bg-[#313131] 
-                    w-[116%] h-[50px] ml-[-24px] mt-[-22px] 
-                    rounded-tl-xl rounded-tr-xl"
+            style={{
+              position: "absolute",
+              top: "60px",
+              left: "50%",
+              transform: "translateX(-50%)",
+              width: "2px",
+              height: "40px",
+              borderLeft: "2px dotted #4A90E2",
+              zIndex: 1,
+            }}
           ></div>
-          <div lassName="w-[50px] h-[50px] m-[auto] z-[1000]">
-            <img
-              className="w-[50px] h-[50px] m-[auto] mt-[-25px]"
-              src={modalpic}
-              alt=""
-            />
+
+          {/* Profile Picture */}
+          <div className="flex justify-center pt-8 pb-4">
+            <div
+              className="w-[80px] h-[80px] rounded-full border-4 border-white overflow-hidden"
+              style={{ position: "relative", zIndex: 2 }}
+            >
+              <img
+                className="w-full h-full object-cover"
+                src={modalpic}
+                alt="Profile"
+              />
+            </div>
           </div>
-          <div className="flex border rounded-2xl border-gray-900 items-center justify-between w-[110%] h-[50px] m-[auto] ml-[-15px] mt-[20px]">
-            <div className="text-center ml-5 opacity-[0.6] border-r  h-[40px] pr-3 font-sans mt-1">
-              <p className="text-[10px]">Name</p>
-              <p className="text-[11px] w-[70px] ml-[-10px] pt-1">
+          <div className="mx-4 mb-6 rounded-lg p-4 bg">
+            {/* Email Address Section */}
+            <div className="mb-4">
+              <p className="text-gray-400 text-xs mb-1">Email Address</p>
+              <p
+                className={`${
+                  isDarkMode ? `text-white` : `text-black`
+                } text-sm font-medium`}
+              >
                 {reviewDetails.user_email}
               </p>
             </div>
-            <div className="text-center ml-3 text-[12px] opacity-[0.6] w-[100%] h-[40px] m-[auto] border-r pr-3 font-sans">
-              <p>Date</p>
-              <p className="ml-3">
+
+            {/* Name Section */}
+            <div className="mb-4">
+              <p className="text-gray-400 text-xs mb-1">Name</p>
+              <p
+                className={`${
+                  isDarkMode ? `text-white` : `text-black`
+                } text-sm font-medium`}
+              >
+                {reviewDetails.user_full_name}
+              </p>
+            </div>
+
+            {/* Date Section */}
+            <div className="mb-4">
+              <p className="text-gray-400 text-xs mb-1">Date</p>
+              <p
+                className={`${
+                  isDarkMode ? `text-white` : `text-black`
+                } text-sm`}
+              >
                 {new Date(reviewDetails.created_at).toLocaleDateString()}
               </p>
             </div>
-            <div className="text-center text-[9px] opacity-[0.6] w-[100%] h-[35px] m-[auto] font-sans">
-              <p className="mb-1">Rating</p>
-              <p className="flex items-center justify-center mt-3">
+
+            {/* Rating Section */}
+            <div className="mb-4">
+              <p className="text-gray-400 text-xs mb-2">Rating</p>
+              <div className="flex">
                 {[...Array(reviewDetails.rating)].map((_, i) => (
-                  <AiFillStar className="text-[#9966CC]" />
+                  <AiFillStar
+                    key={i}
+                    className="text-purple-400 text-lg mr-1"
+                  />
                 ))}
-              </p>
+              </div>
             </div>
           </div>
 
-          <div className="mt-3 mb-7">
-            <h3 className="text-white font-sans text-[11px]">Review</h3>
-            <p className="text-[11px] text-white pt-2">
+          {/* Review Section */}
+          <div className="px-4 pb-6">
+            <div className="flex items-center mb-3">
+              <h3
+                className={`${
+                  isDarkMode ? `text-white` : `text-black`
+                } font-medium text-sm mr-3`}
+              >
+                Review
+              </h3>
+            </div>
+            <p
+              className={`${
+                isDarkMode ? `text-white` : `text-black`
+              } text-sm leading-relaxed`}
+            >
               {reviewDetails.message}
             </p>
           </div>
@@ -506,6 +628,75 @@ function Reviews() {
       {/* delete alert modal */}
       <Modal
         open={reviewDeleteModal}
+        onCancel={handleCloseModal}
+        closeIcon={
+          <span
+            style={{ color: isDarkMode?"white":"black", fontSize: "12px", marginTop: "-30px" }}
+          >
+            X
+          </span>
+        }
+        footer={null}
+        styles={{
+          content: {
+            backgroundColor: isDarkMode ? "black" : "white",
+            width: "350px",
+            height: "auto",
+            color: isDarkMode ? "white" : "black",
+            margin: "0 auto",
+            borderRadius: "8px",
+            marginTop: "50px",
+          },
+          body: {
+            backgroundColor: "#1717171",
+            color: isDarkMode ? "white" : "black",
+          },
+        }}
+      >
+        {!singleChecked ? (
+          <div className="flex flex-col w-[128%] ml-[-20px] mt-5 items-center justify-center">
+            <div className="w-[80%] ml-[-45px]">
+              <p className="text-[20px] text-center pt-1">Delete Review?</p>
+              <p className="text-[15px] text-center pt-3">
+                Are you sure you want to delete the selected review? this action
+                cannot be undone, this review will be permanently remove from
+                the system
+              </p>
+            </div>
+          </div>
+        ) : (
+          <div className="flex flex-col w-[128%] ml-[-20px] mt-5 items-center justify-center">
+            <div>
+              <p className="text-[20px] text-center pt-1">Delete Review?</p>
+              <p className="text-[12px] opacity-[0.6] mt-2 text-center w-[300px] ml-[-45px]">
+                Are you sure you want to delete this review? This action cannot
+                be undone
+              </p>
+            </div>
+          </div>
+        )}
+
+        <div className="w-[335px] mt-5 flex items-center justify-end pr-3">
+          <button
+            onClick={handleCloseModal}
+            className="border border-[#9966CC] outline-none 
+            text-[#9966CC] w-[100px] p-1 rounded ml-[-20px] mr-2"
+          >
+            Cancel
+          </button>
+          <button
+            onClick={() => DeleteReview(reviewDetails.id)}
+            className="border-none outline-none
+                bg-red w-[100px] rounded p-1 mr-2 pl-3"
+          >
+            Yes delete
+          </button>
+        </div>
+      </Modal>
+
+      {/* delete all alert modal */}
+      <Modal
+        open={reviewDeleteAllModal}
         onCancel={handleCloseModal}
         closeIcon={
           <span
@@ -547,10 +738,10 @@ function Reviews() {
         ) : (
           <div className="flex flex-col w-[128%] ml-[-20px] mt-5 items-center justify-center">
             <div>
-              <p className="text-[20px] text-center pt-1">Delete Review?</p>
+              <p className="text-[20px] text-center pt-1">Delete Reviews?</p>
               <p className="text-[12px] opacity-[0.6] mt-2 text-center w-[300px] ml-[-45px]">
-                Are you sure you want to delete this review? This action cannot
-                be undone
+                Are you sure you want to delete all the selected reviews? This
+                action cannot be undone
               </p>
             </div>
           </div>
@@ -565,6 +756,7 @@ function Reviews() {
             Cancel
           </button>
           <button
+            onClick={DeleteAllReviews}
             className="border-none outline-none
                 bg-red w-[100px] rounded p-1 mr-2 pl-3"
           >
@@ -574,7 +766,7 @@ function Reviews() {
       </Modal>
 
       <div
-        className={`flex items-center justify-between p-5
+        className={`flex items-center justify-between p-3
         ${
           isDarkMode
             ? "text-white"
@@ -585,10 +777,10 @@ function Reviews() {
           <h3>Reviews</h3>
         </div>
         <div className="flex gap-2">
-          {allChecked && (
+          {hasCheckedItems && (
             <button
               onClick={() => {
-                setReviewDeleteModal(true);
+                setReviewDeleteAllModal(true);
               }}
               className="p-2 text-[12px] rounded-xl w-[110px] cursor-pointer bg-red text-white"
             >
@@ -608,7 +800,7 @@ function Reviews() {
               onChange={(e) => setSearchQuery(e.target.value)}
               value={searchQuery}
               type="search"
-              placeholder="Search by name"
+              placeholder="Search by name, Email Address"
               className={` w-[187px] bg-transparent pl-[10px] p-1 outline-none border-none
                     ${isDarkMode ? "text-white" : " text-black"}`}
             />
@@ -629,10 +821,14 @@ function Reviews() {
       </div>
 
       <div>
-        <div className="w-[100%] h-[240px] m-[auto]">
+        <div
+          className={`w-[100%] h-[240px] m-[auto] ${
+            isDarkMode ? "bg-[#171717]" : "bg-white"
+          } overflow-hidden`}
+        >
           {/* table header begins */}
           <div
-            className={` h-10 grid grid-cols-7 text-[11px]
+            className={` h-10 grid grid-cols-8 text-[11px]
                     ${
                       isDarkMode
                         ? "bg-[#313131] text-white"
@@ -648,7 +844,7 @@ function Reviews() {
                   const newCheckedState = allChecked
                     ? {} // Uncheck all
                     : Object.fromEntries(
-                        reviews.map((item) => [item.id, true])
+                        reviewData.map((item) => [item.id, true])
                       ); // Check all
                   setCheckedItems(newCheckedState);
                 }}
@@ -656,15 +852,15 @@ function Reviews() {
             </div>
 
             <div className="p-2 flex items-center">
-              S/N
+              Review ID
               <div className="flex flex-col">
                 <IoIosArrowUp
-                  onClick={() => sortData("id")}
+                  onClick={() => sortData("review")}
                   size={10}
                   className="ml-2 cursor-pointer"
                 />
                 <IoIosArrowDown
-                  onClick={() => sortData("id")}
+                  onClick={() => sortData("review")}
                   size={10}
                   className="ml-2 cursor-pointer"
                 />
@@ -686,6 +882,22 @@ function Reviews() {
               </div>
             </div>
             <div className="p-2 flex items-center">
+              Email Address
+              <div className="flex flex-col">
+                <IoIosArrowUp
+                  onClick={() => sortData("user_email")}
+                  size={10}
+                  className="ml-2 cursor-pointer"
+                />
+                <IoIosArrowDown
+                  onClick={() => sortData("user_email")}
+                  size={10}
+                  className="ml-2 cursor-pointer"
+                />
+              </div>
+            </div>
+
+            <div className="p-2 flex items-center">
               Reviews
               <div className="flex flex-col">
                 <IoIosArrowUp
@@ -700,6 +912,7 @@ function Reviews() {
                 />
               </div>
             </div>
+
             <div className="p-2 flex items-center">
               Ratings
               <div className="flex flex-col">
@@ -719,12 +932,12 @@ function Reviews() {
               Date Submitted
               <div className="flex flex-col">
                 <IoIosArrowUp
-                  onClick={() => sortData("date_submitted")}
+                  onClick={() => sortData("created_at")}
                   size={10}
                   className="ml-2 cursor-pointer"
                 />
                 <IoIosArrowDown
-                  onClick={() => sortData("date_submitted")}
+                  onClick={() => sortData("created_at")}
                   size={10}
                   className="ml-2 cursor-pointer"
                 />
@@ -735,61 +948,76 @@ function Reviews() {
           </div>
 
           {/* Data Rows */}
-          {sortedData
-            .slice(startIndex, startIndex + itemsPerPage)
-            .map((item, index) => (
-              <div
-                onClick={() => {
-                  setReviewDetails(item.id);
-                }}
-                key={item.id}
-                className={`border-b border-white  text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-7
+          {reviewData.length > 0 ? (
+            sortedData
+              .slice(startIndex, startIndex + itemsPerPage)
+              .map((item) => (
+                <div
+                  onClick={() => {
+                    setReviewDetails(item.id);
+                  }}
+                  key={item.id}
+                  className={`border-b border-white  text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-8
                         ${
                           isDarkMode
                             ? "text-white"
                             : "bg-white text-black border-b border-b-slate-200"
                         }`}
-              >
-                <div className="p-2 flex items-center">
-                  <input
-                    className="cursor-pointer"
-                    type="checkbox"
-                    checked={checkedItems[item.id] || false}
-                    onChange={() => handleCheckboxChange(item.id)}
-                  />
-                </div>
-                <div className="p-2 flex items-center">{item.id}</div>
-                <div className="p-2 flex items-center ml-[-10px]">
-                  <p>{item.user_email}</p>
-                </div>
-                <div className="pl-2 flex items-center">{item.message}</div>
-
-                <div className="p-2 flex items-center">
-                  {[...Array(item.rating)].map((_, i) => (
-                    <AiFillStar className="text-[#9966CC]" />
-                  ))}
-                </div>
-                <div className="p-2 flex items-center">
-                  {new Date(item.created_at).toLocaleDateString()}
-                </div>
-                <div
-                  onClick={() => setReviewActionModal(!reviewActionModal)}
-                  className="p-2 flex items-center ml-3"
                 >
-                  <MdOutlineMoreHoriz />
+                  <div className="p-2 flex items-center">
+                    <input
+                      className="cursor-pointer"
+                      type="checkbox"
+                      checked={checkedItems[item.id] || false}
+                      onChange={() => handleCheckboxChange(item.id)}
+                    />
+                  </div>
+                  <div className="p-2 flex items-center">{item.id}</div>
+                  <div className="p-2 flex items-center ml-[-10px]">
+                    <p>{item.user_full_name}</p>
+                  </div>
+                  <div className="pl-2 flex items-center">
+                    {item.user_email}
+                  </div>
+                  <div className="pl-2 flex items-center">{item.message}</div>
+
+                  <div className="p-2 flex items-center">
+                    {[...Array(item.rating)].map((_, i) => (
+                      <AiFillStar key={i} className="text-[#9966CC]" />
+                    ))}
+                  </div>
+                  <div className="p-2 flex items-center">
+                    {new Date(item.created_at).toLocaleDateString()}
+                  </div>
+                  <div
+                    onClick={() => setReviewActionModal(!reviewActionModal)}
+                    className="p-2 flex items-center ml-3"
+                  >
+                    <MdOutlineMoreHoriz />
+                  </div>
                 </div>
+              ))
+          ) : (
+            <div>
+              <div className=" h-[240px] m-[auto] flex items-center justify-center">
+                <div className="p-2 flex items-center">No Data here Yet</div>
               </div>
-            ))}
+            </div>
+          )}
+
           {/* end of Data row */}
         </div>
       </div>
 
       {/* Pagination */}
-
-      <div className="flex justify-between items-center mt-1">
+      <div
+        className={`flex justify-between items-center mt-1 ${
+          isDarkMode ? "bg-[#171717]" : "bg-white"
+        }`}
+      >
         <div
           className={`text-[12px] ml-[10px]
-                ${isDarkMode ? "text-white" : "bg-white text-black"}`}
+               `}
         >
           Showing {startIndex + 1}-
           {Math.min(startIndex + itemsPerPage, reviewData.length)} of{" "}
