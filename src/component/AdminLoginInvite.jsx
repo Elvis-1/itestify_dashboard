@@ -8,7 +8,7 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
-import logo from "../assets/Logo.png";
+import logo from "../assets/icons/Logo.png"
 
 const AdminLoginInvite = () => {
   const [loading, setLoading] = useState(false);

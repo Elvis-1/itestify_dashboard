@@ -218,7 +218,8 @@ const GeneralSettings = () => {
               : `bg-off-white border-b-near-white`
           } border-b-2 pb-3`}
         >
-          <h1>General</h1>
+          <Link to="/invite">Go to invite admin page</Link>
+          <h1 >General</h1>
           <Link to="/dashboard/manage-permissions">
             <button
               //   onClick={() => {

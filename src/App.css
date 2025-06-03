@@ -54,9 +54,6 @@
   border-bottom: 2px solid #333333;
 }
 
-.custom-table tbody tr:nth-child(odd) {
-  /* background-color: #171717; */
-}
 
 .custom-table tbody tr:hover {
   /* background-color: #313131; */
@@ -68,8 +65,6 @@
   padding: 10px 12px;
   border-bottom: 1px solid #ddd;
 }
-
-<<<<<<< HEAD
 .custom-table tbody td {
   vertical-align: middle;
 }
@@ -376,7 +371,7 @@ input::-webkit-inner-spin-button {
   -webkit-appearance: none;
   margin: 0;
 }
-=======
+
 /* Force eye icon in password input to be white */
 .ant-input-password-icon {
   color: white !important;
@@ -388,5 +383,3 @@ input::-webkit-inner-spin-button {
   opacity: 1;
 }
 
-  
->>>>>>> bob
