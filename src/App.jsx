@@ -31,6 +31,7 @@ import ScheduleScriptures from "./pages/ScheduleScriptures";
 import HomeManagement from "./pages/HomeManagement";
 import CheckMail from "./pages/CheckMail";
 import ResetPassword from "./pages/ResetPassword";
+import AdminLoginInvite from "./component/AdminLoginInvite";
 
 function App() {
   return (
@@ -50,6 +51,7 @@ function App() {
                     element={<ResetPassword />}
                   />
                   <Route path="/check-email" element={<CheckMail />} />
+                   <Route path="invite" element={<AdminLoginInvite/>}/>
                   <Route element={<ProtectedRoute />}>
                     <Route path="/dashboard" element={<Dashboard />}>
                       <Route path="" element={<Overview />} />
