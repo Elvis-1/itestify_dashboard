@@ -311,7 +311,7 @@ const GeneralSettings = () => {
                 </div>
               </div>
 
-              {newMember.map((member) => (
+              {(newMember||[]).map((member) => (
                 <div
                   key={member.id}
                   className={`flex justify-between  align items-center w-full text-sm pt-4 pb-6`}
