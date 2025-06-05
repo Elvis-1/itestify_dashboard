@@ -67,7 +67,7 @@ const RegUsers = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          "https://itestify-backend-nxel.onrender.com/auths/users/all/?status=registered",
+          `${import.meta.env.VITE_API_URL}/auths/users/all/?status=registered`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

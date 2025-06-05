@@ -14,7 +14,7 @@ const ForgotPassword = () => {
       setIsLoading(true);
       const email = values.email;
       const response = await axios.post(
-        "https://itestify-backend-nxel.onrender.com/auths/forgot-password/",
+        `${import.meta.env.VITE_API_URL}/forgot-password/`,
         {
           email: email,
         }
