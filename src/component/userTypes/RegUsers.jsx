@@ -67,7 +67,7 @@ const RegUsers = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/auths/users/all/?status=registered`,
+          `${import.meta.env.VITE_API_URL}/auths/users/all/?status=registered&ordering=-created_at`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -200,7 +200,7 @@ const RegUsers = () => {
             </tr>
           </thead>
           {regUsersIndex.length > 0 ? (
-            users.map((data, index) => (
+            (users||[]).map((data, index) => (
               <tbody className="relative" key={data.id}>
                 <tr
                   className={` ${
