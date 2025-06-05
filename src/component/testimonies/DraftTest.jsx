@@ -22,9 +22,11 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
     const [draftActionModal, setDraftActionModal] = useState(false);
     const [draftEditModal, setDraftEditModal] = useState(false);
     const [editSuccessfully, setEditSuccessfully] = useState(false);
+    const [deleteSuccessfully, setDeleteSuccessfully] = useState(false)
     const [draftVideo, setDraftVideo] = useState([]);
     const [draftDetails, setDraftDetails] = useState(null);
-    const [editDetails, setEditDetails] = useState(null);
+    const [deleteDraft, setDeleteDraft] = useState(null)
+    const [editDetails, setEditDetails] = useState('');
     const [draftUploadModal, setDraftUploadModal] = useState(false);
     const [draftDeleteModal, setDraftDeleteModal] = useState(false);
     const [draftFilterModal, setDraftFilterModal] = useState(false);
@@ -56,7 +58,7 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
                     headers: { 'Authorization': `Bearer ${token}` } 
                 }
             );
-            let draftVideos = response.data.data;
+            let draftVideos = response.data.data.data || [] ;
             setDraftVideo(draftVideos);
         } catch (error) {
             console.error("Error:", error.response?.data || error.message);
@@ -71,10 +73,11 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
         fetchDraftVideo();
     }, []);
 
+   
     useEffect(() => {
         if (editDetails && draftEditModal) {
-            setInputValue(editDetails.title || '');
-            setSelectTestType(editDetails.category || 'Select');
+            setInputValue(editDetails.title);
+            setSelectTestType(editDetails.category || selectTestType);
             setFormData({
                 title: editDetails.title || '',
                 category: editDetails.category || ''
@@ -95,7 +98,8 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
     };
 
     const searchedData = React.useMemo(() => {
-        const dataToSearch = getFilteredData?.length > 0 ? getFilteredData : draftVideo;
+        const dataToSearch = Array.isArray(getFilteredData) && getFilteredData.length > 0 ? getFilteredData : 
+        Array.isArray(draftVideo) ? draftVideo : [];
 
         if (searchQuery.trim() !== "") {
             const filteredData = dataToSearch.filter((item) => {
@@ -165,9 +169,10 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
             );
             
             if (response.data) {
-                const draftDetail = response.data;
-                setDraftDetails(draftDetail);
+                const draftDetail = response.data.data;
                 setEditDetails(draftDetail);
+                setDraftDetails(draftDetail);
+                
             } else {
                 console.error("Unexpected API response format:", response);
                 throw new Error("Unexpected API response format");
@@ -189,7 +194,6 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
     };
 
     const handleUploadEdit = async (id) => {
-        // Use the passed id or fall back to draftDetails.id
         const testimonyId = id || draftDetails?.id;
         
         if (!testimonyId) {
@@ -222,10 +226,6 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
                 title: inputValue,
                 category: selectTestType,
                 upload_status: 'upload_now',
-                ...(editDetails?.upload_status === 'scheduled_for_now' && {
-                    scheduled_date: editDate,
-                    scheduled_time: editTime
-                })
             };
 
             const response = await axios.put(
@@ -279,55 +279,93 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
         }
     };
 
-    const handleSaveEdit = async () => {
-        if (!editDetails?.id) {
-            console.error('No testimony ID provided');
-            return;
-        }
 
-        setLoading(true);
-        try {
-            const token = localStorage.getItem('token');
-            if (!token) {
-                throw new Error('No authentication token found');
+    const handleSaveEdit = async (id) => {
+        
+            if (!id) {
+                notification.error({
+                    message: 'Error',
+                    description: 'No testimony ID provided',
+                    placement: 'topRight'
+                });
+                return;
             }
-
-            const requestData = {
-                title: inputValue,
-                category: selectTestType,
-            };
-
-            await axios.put(
-                `https://itestify-backend-nxel.onrender.com/testimonies/videos/${editDetails.id}/`,
-                requestData,
-                {
-                    headers: {
-                        "Authorization": `Bearer ${token}`,
-                        "Content-Type": "application/json"
-                    }
+    
+            setLoading(true);
+            try {
+                const token = localStorage.getItem('token');
+                if (!token) {
+                    throw new Error('No authentication token found');
                 }
-            );
-
-            handleCloseModal();
-            handleEditSuccessful();
-            fetchDraftVideo();
-        } catch (error) {
-            console.error('Update error:', error);
-            let errorMessage = 'Failed to update testimony';
-            if (error.response) {
-                errorMessage = error.response.data.message || 
-                            error.response.data.detail || 
-                            JSON.stringify(error.response.data);
+    
+                const requestData = {
+                    title: inputValue,
+                    category: selectTestType
+                };
+    
+                const response = await axios.put(
+                    `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
+                    requestData,
+                    {
+                        headers: {
+                            "Authorization": `Bearer ${token}`,
+                            "Content-Type": "application/json"
+                        }
+                    }
+                );
+    
+                handleCloseModal();
+                handleEditSuccessful();
+                fetchDraftVideo();
+    
+            } catch (error) {
+                console.error('Update error:', error);
+                
+                let errorMessage = 'Failed to update testimony';
+                if (error.response) {
+                    errorMessage = error.response.data.message || 
+                                 error.response.data.detail || 
+                                 JSON.stringify(error.response.data);
+                }
+    
+                notification.error({
+                    message: 'Error',
+                    description: errorMessage,
+                    placement: 'topRight',
+                    duration: 5
+                });
+            } finally {
+                setLoading(false);
             }
-            notification.error({
-                message: 'Error',
-                description: errorMessage,
-                placement: 'topRight'
-            });
-        } finally {
-            setLoading(false);
-        }
     };
+
+    const handleDeleteDraft = async () => {
+        let token = localStorage.getItem('token')
+        if(!token) return
+
+        try {
+            let response = axios.delete(`https://itestify-backend-nxel.onrender.com/testimonies/videos/${draftDetails.id}/`,
+            {
+                headers:{
+                    'Authorization': `Bearer ${token}`
+                }
+            }
+           
+        )
+        fetchDraftVideo()
+        setDeleteSuccessfully(true)
+
+        setTimeout(()=> {
+            setDeleteSuccessfully(false)
+        }, 1000)
+
+        
+        
+
+        } catch (error) {
+            console.log(error)
+        }  
+    }
 
     const handleEditSuccessful = () => {
         setDraftEditModal(false);
@@ -389,11 +427,11 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
         }
     };
 
-    const handleSelectCategory = (category) => {
-        setSelectTestType(category);
+    const handleSelectCategory = (categories) => {
+        setSelectTestType(categories);
         setFormData(prev => ({ 
             ...prev, 
-            category 
+            categories 
         }));
     };
 
@@ -422,7 +460,8 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
                 <button
                     loading={loading}
                     onClick={() => {
-                        handleSaveEdit();
+                        console.log(editDetails)
+                        handleSaveEdit(editDetails?.id);
                         handleCloseModal();
                     }}
                     className='bg-[#9966CC] ml-2 border-none outline-none rounded p-2 w-[auto] h-[40px]'
@@ -628,6 +667,13 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
                         <button 
                             onClick={() => {
                                 handleDetail(draftDetails?.id);
+                                setEditDetails(draftDetails);
+                                setInputValue(draftDetails.title);
+                                setSelectTestType(draftDetails.category);
+                                setFormData({
+                                    title: draftDetails.title,
+                                    category: draftDetails.category
+                                });
                                 setDraftEditModal(true);
                                 setDraftActionModal(false);
                             }}
@@ -669,7 +715,7 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
             <Modal
                 open={draftEditModal}
                 onCancel={handleCloseModal}
-                footer={<EditDraftModalFooterButton />}
+                footer={<EditDraftModalFooterButton/>}
                 closeIcon={<span style={{ color: 'white', fontSize: '12px' }}>X</span>}
                 styles={{
                     content: {
@@ -722,7 +768,7 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
                             {/* Category Dropdown */}
                             {filterDropDown && (
                                 <div className='mt-1 space-y-1 rounded-lg border border-gray-700 overflow-hidden bg-[#171717]'>
-                                    {['healing', 'deliverance', 'faith', 'salvation'].map((category) => (
+                                    {['healing', 'deliverance', 'faith', 'salvation', 'breakthrough'].map((category) => (
                                         <div
                                             key={category}
                                             onClick={() => {
@@ -862,6 +908,11 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
                                 Cancel
                             </button>
                             <button
+                                onClick={() => {
+                                    handleDeleteDraft()
+                                    setDraftDeleteModal(false)
+                                    console.log('handle delete called')
+                                }}
                                 className='mt-3 rounded bg-[#E53935] p-2 w-[120px] ml-2'
                             >
                                 Yes delete
@@ -897,6 +948,35 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
                     </div>
                     <div>
                         <p className='text-[20px] text-center pt-3'>Changes Save successfully!</p>
+                    </div>
+                </div> 
+            </Modal>
+
+            <Modal
+                open={deleteSuccessfully}
+                closeIcon={null}
+                footer={null}
+                styles={{
+                    content: {
+                        backgroundColor: 'black',
+                        width: '200px',
+                        height: '200px',
+                        color: 'white',
+                        margin: '0 auto',
+                        borderRadius: '8px',
+                        marginTop: '50px'
+                    },
+                    body: {
+                        backgroundColor: '#1717171',
+                        color: 'white',
+                    },
+                }}>
+                <div className='flex flex-col w-[128%] ml-[-20px] mt-5 items-center justify-center'>
+                    <div className='bg-[#9966CC] w-[50px] h-[50px] rounded-full flex items-center justify-center'>
+                        <CheckOutlined style={{color: 'white', fontSize: '30px'}}/>
+                    </div>
+                    <div>
+                        <p className='text-[20px] text-center pt-3'>Data Deleted successfully!</p>
                     </div>
                 </div> 
             </Modal>
@@ -1061,20 +1141,21 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
                 <div>
                     {/* Data Rows */}
                     {sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => (
-                        <div 
-                            key={item.id}
+                        <div key={item.id}
                             className={`text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-6
                                 ${isDarkMode ? "text-white border-b border-b-slate-200" : "bg-white text-black border-b border-b-slate-200"}`}
                         >
                             <div className='p-2 flex items-center'>{startIndex + index + 1}</div>
+                            
                             <div className='p-2 flex items-center ml-[-10px]'>
-                                <img src={item.thumbnail} alt="" className='w-8 h-8 object-cover' />
+                                <img src={item.thumbnail} alt="" className='w-12 rounded h-8 object-cover' />
                             </div>
                             <div className='pl-2 flex items-center'>{item.title}</div>
                             <div className='p-2 flex items-center'>{item.category}</div>
                             <div className='p-2 flex items-center'>{item.source}</div>
                             <div 
                                 onClick={() => {
+                                    setEditDetails(item)
                                     setDraftDetails(item);
                                     setDraftActionModal(true);
                                 }}
@@ -1084,6 +1165,12 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
                             </div>
                         </div>
                     ))}
+
+                     {Array.isArray(sortedData) && sortedData.length === 0 && (
+                        <div className="text-center p-4">
+                            No Draft Videos found
+                        </div>
+                    )}
                     {/* end of Data row */}
                 </div>
                 
@@ -1094,7 +1181,7 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
                 <div className={`text-[12px] ml-[10px]
                     ${isDarkMode ? "text-white" : "bg-white text-black"}`}
                 >
-                    Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, draftVideo.length)} of {draftVideo.length}
+                    Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, (draftVideo.length) || 1)} of {draftVideo.length || 1}
                 </div>
                 <div className='text-[13px] mr-5 flex items-center gap-3'>
                     <button
@@ -1120,6 +1207,7 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
             {/* end of Pagination */}
         </div>
     );
+
 }
 
 export default DraftTest;

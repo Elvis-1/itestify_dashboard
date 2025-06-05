@@ -61,31 +61,41 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
 
 
     async function fetchAllVideos() {
-        const token = localStorage.getItem('token');
-        setLoading(true);
-        setError(null);
+    const token = localStorage.getItem('token');
+    setLoading(true);
+    setError(null);
+
+    try {
+        const types = ['drafts', 'upload_now'];
+        const responses = await Promise.all(
+            types.map(type => 
+                axios.get(
+                    `https://itestify-backend-nxel.onrender.com/testimonies/videos/?type=${type}`,
+                    { 
+                        headers: { 
+                            'Authorization': `Bearer ${token}` 
+                        },
+                        timeout: 10000
+                    }
+                ).catch(e => {
+                    console.error(`Error fetching ${type} videos:`, e);
+                    return { data: { data: { data: [] } } };
+                })
+            )
+        );
         
-        try {
-            const types = ['drafts', 'schedule_for_later', 'upload_now'];
-            const responses = await Promise.all(
-                types.map(type => 
-                    axios.get(
-                        `https://itestify-backend-nxel.onrender.com/testimonies/videos/?type=${type}`,
-                        { headers: { 'Authorization': `Bearer ${token}` } }
-                    )
-                )
-            );
-            
-            // Combine all responses
-            const allVideos = responses.flatMap(res => res.data.data || []);
-            setAllVideo(allVideos);
-        } catch (error) {
-            console.error("Error:", error.response?.data || error.message);
-            setError("Failed to fetch some videos");
-            setAllVideo([]);
-        } finally {
-            setLoading(false);
-        }
+        const allVideos = responses.flatMap(res => 
+            res?.data?.data?.data || []
+        );
+        
+        setAllVideo(allVideos);
+    } catch (error) {
+        console.error("Fetch error:", error);
+        setError("Failed to fetch videos");
+        setAllVideo([]);
+    } finally {
+        setLoading(false);
+    }
     }
     
     useEffect(() => {
@@ -114,7 +124,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
 
     const startIndex = (page - 1) * itemsPerPage;
     AllVideo?.slice(startIndex, startIndex + itemsPerPage) || []
-    const totalPages = Math.ceil((AllVideo?.length || 0) / itemsPerPage);
+    const totalPages = Math.ceil((AllVideo?.length ?? 0) / itemsPerPage);
 
     //sort data logic
     const sortData = (key) => {
@@ -164,14 +174,15 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
         return dataToSort;
     }, [searchedData, sortConfig]);
 
-    //function to handle details
+
     async function handleDetail(id) {
         try {
-            const token = localStorage.getItem('token');
-            setLoading(true); // Set loading state
+            setLoading(true);
+            setVideoViewModal(true);
             
+            const token = localStorage.getItem('token');
             const response = await axios.get(
-                `https://itestify-backend-nxel.onrender.com/testimonies/videos/:${id}/`,
+                `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
                 { 
                     headers: { 
                         'Authorization': `Bearer ${token}`,
@@ -179,34 +190,29 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                     } 
                 }
             );
-            
-            if (response.data) {
-                const videoDetail = response.data;
-                
+            console.log(response)
+            if (response?.data?.data) {
+                const videoDetail = response.data.data;
+                console.log(videoDetail)
                 setDetails(videoDetail);
                 setEditDetails(videoDetail);
                 setGetStatus(videoDetail.upload_status);
-                setDeleteDetails(videoDetail.upload_status);
+                setDeleteDetails(videoDetail);
             } else {
                 console.error("Unexpected API response format:", response);
-                throw new Error("Unexpected API response format");
+                notification.error({
+                    message: 'Error',
+                    description: 'Unexpected data format from server',
+                    placement: 'topRight'
+                });
             }
         } catch (error) {
             console.error("Error fetching video details:", error);
-            // More detailed error logging
-            if (error.response) {
-                // The request was made and the server responded with a status code
-                console.error("Response data:", error.response.data);
-                console.error("Response status:", error.response.status);
-                console.error("Response headers:", error.response.headers);
-            } else if (error.request) {
-                // The request was made but no response was received
-                console.error("No response received:", error.request);
-            } else {
-                console.error("Request setup error:", error.message);
-            }
-            
-            setError("Failed to load video details");
+            notification.error({
+                message: 'Error',
+                description: 'Failed to load video details',
+                placement: 'topRight'
+            });
         } finally {
             setLoading(false);
         }
@@ -267,7 +273,6 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
     };
 
     const handleUploadEdit = async (id) => {
-        // Validate ID
         if (!id) {
           notification.error({
             message: 'Error',
@@ -277,7 +282,6 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
           return;
         }
       
-        // Validate required fields
         if (!inputValue || !selectTestType) {
           notification.error({
             message: 'Error',
@@ -295,20 +299,14 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
             throw new Error('No authentication token found');
           }
       
-          // Prepare request data
           const requestData = {
             title: inputValue,
             category: selectTestType,
             upload_status: 'upload_now',
-            ...(editDetails?.upload_status === 'scheduled_for_now' && {
-              scheduled_date: editDate,
-              scheduled_time: editTime
-            })
           };
       
-          // API call
           const response = await axios.put(
-            `https://itestify-backend-nxel.onrender.com/testimonies/videos/:${id}/`,
+            `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
             requestData,
             {
               headers: {
@@ -390,7 +388,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
             };
 
             const response = await axios.put(
-                `https://itestify-backend-nxel.onrender.com/testimonies/videos/:${id}/`,
+                `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
                 requestData,
                 {
                     headers: {
@@ -425,7 +423,12 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
         }
     };
 
-    const handleDeleteVideoTest = async (id) => {
+    const handleDeleteVideoTest = async (id, e) => {
+         e?.preventDefault();
+         e?.stopPropagation();
+
+         if (!id || isDeleting) return;
+
         setIsDeleting(true)
         if (!id) {
             console.error('No ID provided for deletion');
@@ -433,12 +436,10 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
             return;
         }
         const token = localStorage.getItem('token');
-        console.log('Token:', token); // Verify token exists
-        console.log('Deleting video ID:', id); // Verify ID is correct
         
         try {
             const response = await axios.delete(
-                `https://itestify-backend-nxel.onrender.com/testimonies/videos/:${id}/`,
+                `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
                 {
                     headers: {
                         "Authorization": `Bearer ${token}`,
@@ -446,7 +447,6 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                     }
                 }
             );
-            console.log('Delete response:', response);
             fetchAllVideos()
             handleDeleteSuccessful();
         } catch (error) {
@@ -838,7 +838,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                     </div>
                     
                     {/* Details Sections */}
-                    {details.upload_status === 'upload_now' && (
+                    {details?.upload_status === 'upload_now' && (
                         <div className='w-[110%] ml-[-13px] mt-2 text-[11px] h-[auto] text-white'>
                         <div className='flex items-center justify-between p-2'>
                             <h2 className='opacity-[0.6]'>Title</h2>
@@ -866,12 +866,13 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                         </div>
                         <div className='flex items-center justify-between p-2 pt-1'>
                             <h2 className='opacity-[0.6]'>Uploaded By</h2>
-                            <p>{details.uploaded_by?.full_name || 'N/A'}</p>
+                            <p>{details.uploaded_by?.full_name ?
+                            details.uploaded_by?.full_name : details.uploaded_by?.email || 'N/A'}</p>
                         </div>
                         </div>
                     )}
                     
-                    {details.upload_status === 'schedule_for_later' && (
+                    {/* {details.upload_status === 'schedule_for_later' && (
                         <div className='w-[110%] ml-[-13px] mt-2 text-[11px] h-[200px] text-white'>
                             <div className='flex items-center justify-between p-2'>
                                 <h2 className='opacity-[0.6]'>Title</h2>
@@ -907,9 +908,9 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                                     'border border-yellow-600 text-yellow-600 w-[70px] text-center rounded-xl text-[10px] p-[3px]'}`}>{details.status}</p>
                             </div>
                         </div>
-                    )}
+                    )} */}
                     
-                    {details.upload_status === 'drafts' && (
+                    {details?.upload_status === 'drafts' && (
                         <div className='w-[110%] ml-[-13px] mt-2 text-[11px] h-[175px] text-white'>
                             <div className='flex items-center justify-between p-2'>
                                 <h2 className='opacity-[0.6]'>Title</h2>
@@ -963,7 +964,8 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 <div className='flex flex-col'>
                     <div className='border-b w-[150%] ml-[-25px] pb-2 opacity-[0.6]'>
                         <button onClick={() => {
-                            handleDetail(getDetail)// Pass just the ID here
+                            handleDetail(details)
+                            setVideoActionModal(false)
                             setVideoViewModal(true)
 
                         }}
@@ -983,7 +985,6 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
 
                     <div className='w-[150%] ml-[-25px] pb-2 opacity-[0.6] cursor-pointer'>
                         <button onClick={() => {
-                            
                             setDeleteVideoTest(true)
                             setVideoActionModal(false)
                         }}
@@ -1050,7 +1051,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                             {/* Category Dropdown */}
                             {filterDropDown && (
                                 <div className='mt-1 space-y-1 rounded-lg border border-gray-700 overflow-hidden bg-[#171717]'>
-                                    {['healing', 'deliverance', 'faith', 'salvation'].map((category) => (
+                                    {['financial', 'breakthrough', 'faith', 'salvation'].map((category) => (
                                         <div
                                             key={category}
                                             onClick={() => {
@@ -1125,7 +1126,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 }}>
                 <div className='flex flex-col w-[128%] ml-[-20px] mt-[-5px] items-center justify-center'>
                     <div>
-                        {deleteDetails === 'schedule_for_later' && 
+                        {deleteDetails.upload_status === 'schedule_for_later' && 
                             <>
                             <p className='text-[20px] text-center pt-1'>Delete testimony?</p>
                             <p className='text-[12px] opacity-[0.6] mt-2 text-center w-[300px] ml-[-45px]'>
@@ -1135,7 +1136,10 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                             </p>
                             <button onClick={handleCloseModal} className='border border-[#9966CC] mt-3 rounded text-[#9966CC] p-2 w-[120px]'>Cancel</button>
                             <button 
-                                onClick={() => handleDeleteVideoTest(details?.id)}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleDeleteVideoTest(deleteDetails?.id, e)
+                                }}
                                 disabled={isDeleting}
                                 className={`mt-3 rounded bg-[#E53935] p-2 w-[120px] ml-2 ${isDeleting ? 'opacity-50' : ''}`}
                             >
@@ -1144,7 +1148,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                             </>
                         }
     
-                        {deleteDetails === 'upload_now' && 
+                        {deleteDetails.upload_status === 'upload_now' && 
                             <>
                             <p className='text-[20px] text-center pt-1'>Delete testimony?</p>
                             <p className='text-[12px] opacity-[0.6] mt-2 text-center w-[300px] ml-[-45px]'>
@@ -1154,7 +1158,10 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                             </p>
                             <button onClick={handleCloseModal} className='border border-[#9966CC] mt-3 rounded text-[#9966CC] p-2 w-[120px]'>Cancel</button>
                             <button 
-                                onClick={() => handleDeleteVideoTest(details?.id)}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleDeleteVideoTest(deleteDetails?.id, e)
+                                }}
                                 disabled={isDeleting}
                                 className={`mt-3 rounded bg-[#E53935] p-2 w-[120px] ml-2 ${isDeleting ? 'opacity-50' : ''}`}
                             >
@@ -1163,7 +1170,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                             </>
                         }
     
-                        {deleteDetails === 'drafts' && 
+                        {deleteDetails.upload_status === 'drafts' && 
                             <>
                             <p className='text-[20px] text-center pt-1'>Delete testimony?</p>
                             <p className='text-[12px] opacity-[0.6] mt-2 text-center w-[300px] ml-[-45px]'>
@@ -1172,7 +1179,10 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                             </p>
                             <button onClick={handleCloseModal} className='border border-[#9966CC] mt-3 rounded text-[#9966CC] p-2 w-[120px]'>Cancel</button>
                             <button 
-                                onClick={() => handleDeleteVideoTest(details?.id)}
+                                onClick={(e) => {
+                                    e.stopPropagation()
+                                    handleDeleteVideoTest(deleteDetails?.id, e)
+                                }}
                                 disabled={isDeleting}
                                 className={`mt-3 rounded bg-[#E53935] p-2 w-[120px] ml-2 ${isDeleting ? 'opacity-50' : ''}`}
                             >
@@ -1506,77 +1516,128 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 
     
                  {/* Data Rows */}
-                 {sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => (
-                <div
-                onClick={() => {
-                    // setGetDetail(item.id)
-                    // setEditDetails(item.id)
-                    // setDeleteDetails(item.upload_status)
-                    setGetDetail(item.id)
-                    setEditDetails(item) // Set the entire item object
-                    setDeleteDetails(item.upload_status)
-                    setDetails(item) 
-                }}
-                key={item.id}
-                className={`border-b border-white  text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] flex items-center
-                 ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}
-                >
-                    <div onClick={() => setDeleteDetails(item.upload_status)} className='flex items-center w-[260px]'>
-                        <div className='p-2 flex w-[60px] h-[50px] items-center'>{startIndex + index + 1}</div>
-                        <div className='p-2 flex w-[103px] h-[50px] items-center'>
-                            <img src={item.thumbnail} alt="" />
+               {Array.isArray(sortedData) && sortedData.length > 0 ? (
+                sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => {
+                    if (!item || !item.id) return null;
+                    return (
+                    <div className={`border-b border-white text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] flex items-center ${
+                        isDarkMode
+                            ? "text-white"
+                            : "bg-white text-black border-b border-b-slate-200"}`}>
+                        <div
+                        className="flex items-center w-[260px]"
+                        >
+                        <div className="p-2 flex w-[60px] h-[50px] items-center">
+                            {startIndex + index + 1}
                         </div>
-                        <div className='pl-2 flex w-[150px] h-[50px] items-center'>
-                        {item.title.length > 12 ? `${item.title.slice(0, 12)}...` : item.title}
+
+                        <div className="p-2 flex w-[103px] h-[50px] items-center">
+                            {item.thumbnail ? (
+                            <img
+                                src={item.thumbnail}
+                                alt="thumbnail"
+                                className="max-w-full max-h-full object-contain"
+                            />
+                            ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                                No thumbnail
+                            </div>
+                            )}
                         </div>
-                    </div>
-    
-                    
-                    <div className='flex items-center  w-[263px]'>
-                        <div className='p-2 flex w-[150px] ml-[-15px] h-[50px] items-center'>{item.category}</div>
-                        <div className='p-2 flex  w-[153px] h-[50px] items-center'>{item.source}</div>
-                        <div className='pl-1 flex text-[11px] w-[205px] h-[50px] items-center'>
-                        {new Date(item.created_at).toLocaleDateString('en-US', {
-                            year: 'numeric',
-                            month: 'short',
-                            day: 'numeric'
-                        })}
+                        <div className="pl-2 flex w-[150px] h-[50px] items-center">
+                            {item.title
+                            ? item.title.length > 12
+                                ? `${item.title.slice(0, 12)}...`
+                                : item.title
+                            : "No title"}
                         </div>
-                    </div>
-    
-                    <div className='flex items-center w-[216px]'>
-                        <div className='p-2 ml-[-5px] flex  flex-[2]  w-[50px] h-[50px] items-center'>{item.uploaded_by?.full_name}</div>
-                        <div className='p-2 ml-[5px] flex flex-1  w-[130px] h-[50px] items-center'>{item.views || 0}</div>
-                        <div className='p-2 ml-[5px] flex flex-1 w-[50px] h-[50px] items-center'>{item.likes || 0}</div>
-                    </div>
-    
-                    <div className='flex items-center w-[320px]'>
-                        <div className='p-2 flex  w-[90px] h-[50px] pl-5 items-center'>{item.comments || 0}</div>
-                        <div className='p-2 flex w-[90px] h-[50px] pl-5 items-center'>{item.shares || 0}</div>
-                        <div className={`p-2 flex  w-[120px] h-[30px] pl-2 items-center font-semibold ${item.upload_status === 'upload_now' ?
-                            'border border-green-500 text-green-700 rounded-xl p-1 pl-3 outline-none' :
-                            item.upload_status === 'schedule_for_later' ?  'border w-[120px] border-yellow-500 text-yellow-500 rounded-xl p-1' :
-                            'border border-gray-500 text-gray-500 pl-9 rounded-xl'
-                         }`}>
-                            {item.upload_status.charAt(0).toUpperCase() + item.upload_status.slice(1)}
                         </div>
-                        <div onClick={() => {
-                            setVideoActionModal(true)
-                        }} 
-                        className='p-2 flex w-[90px] h-[50px] pl-10 items-center'>
+
+                        <div className="flex items-center w-[263px]">
+                        <div className="p-2 flex w-[150px] ml-[-15px] h-[50px] items-center">
+                            {item.category || "N/A"}
+                        </div>
+                        <div className="p-2 flex w-[153px] h-[50px] items-center">
+                            {item.source || "N/A"}
+                        </div>
+                        <div className="pl-1 flex text-[11px] w-[205px] h-[50px] items-center">
+                            {item.created_at
+                            ? new Date(item.created_at).toLocaleDateString("en-US", {
+                                year: "numeric",
+                                month: "short",
+                                day: "numeric",
+                                })
+                            : "N/A"}
+                        </div>
+                        </div>
+
+                        <div className="flex items-center w-[216px]">
+                        <div className="p-2 ml-[-5px] flex flex-[2] w-[50px] h-[50px] items-center">
+                            {item.uploaded_by?.full_name ? item.uploaded_by?.full_name?.slice(0,8) + '...' :
+                            item.uploaded_by?.email?.slice(0,11) + '...' ||
+                            "N/A"}
+                        </div>
+                        <div className="p-2 ml-[5px] flex flex-1 w-[130px] h-[50px] items-center">
+                            {item.views ?? 0}
+                        </div>
+                        <div className="p-2 ml-[5px] flex flex-1 w-[50px] h-[50px] items-center">
+                            {item.likes ?? 0}
+                        </div>
+                        </div>
+
+                        <div className="flex items-center w-[320px]">
+                        <div className="p-2 flex w-[90px] h-[50px] pl-5 items-center">
+                            {item.comments ?? 0}
+                        </div>
+                        <div className="p-2 flex w-[90px] h-[50px] pl-5 items-center">
+                            {item.shares ?? 0}
+                        </div>
+                        <div
+                            className={`p-2 flex w-[120px] h-[30px] pl-2 items-center font-semibold ${
+                            item.upload_status === "upload_now"
+                                ? "border border-green-500 text-green-700 rounded-xl p-1 pl-3 outline-none"
+                                : item.upload_status === "schedule_for_later"
+                                ? "border w-[120px] border-yellow-500 text-yellow-500 rounded-xl p-1"
+                                : "border border-gray-500 text-gray-500 pl-9 rounded-xl"
+                            }`}
+                        >
+                            {item.upload_status
+                            ? item.upload_status
+                                .split("_")
+                                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                .join(" ")
+                            : "N/A"}
+                        </div>
+                        <div
+                            onClick={(e) => {
+                            e.stopPropagation();
+                            setDetails(item.id)
+                            setEditDetails(item.id)
+                            setDeleteDetails(item)
+                            setVideoActionModal(true);
+                            }}
+                            className="p-2 flex w-[90px] h-[50px] pl-10 items-center"
+                        >
                             <IoIosMore />
                         </div>
+                        </div>
                     </div>
+                    
+                    
+                    );
+                })
+                ) : (
+                <div className="w-full text-center p-4">
+                    {loading ? "Loading..." : "No data available"}
                 </div>
-                 ))}
+                )}
                 {/* end of Data row */}
             </div>
     
               {/* Pagination */}
               <div className='flex justify-between items-center mt-6'>
-                <div className={`text-[12px] ml-[10px]
-                        ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
-                    Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, AllVideo.length)} of {AllVideo.length}
+                <div className={`text-[12px] ml-[10px] ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
+                    Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, AllVideo?.length ?? 0)} of {AllVideo?.length ?? 0}
                 </div>
                 <div className='text-[13px] mr-5 flex items-center gap-3'>
                     <button

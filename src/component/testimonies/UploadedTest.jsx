@@ -1,7 +1,6 @@
 import React, {useState, useContext, useRef, useEffect} from 'react'
 import { IoIosArrowDown, IoIosArrowUp, IoIosMore } from 'react-icons/io'
 import { IoTrashOutline } from "react-icons/io5";
-import videoData from '../../data/TestimonyVideoData';
 import { Button, Modal } from 'antd';
 import { CalendarOutlined } from '@ant-design/icons';
 import { FaCaretDown, FaCaretUp } from "react-icons/fa6";
@@ -13,17 +12,16 @@ import { CheckOutlined } from "@ant-design/icons";
 
 import '../../App.css'
 import VideoPlayer from './VideoPlayer';
-import vid1 from '../../assets/vid1.mp4'
+
 
 import { DarkModeContext } from '../../context/DarkModeContext';
 import axios from 'axios';
 import { notification } from 'antd';
-import { uploadTestContext } from '../../context/UploadTestimonyContext';
+
 
 
 function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setScheduled, draft, setDraft}) {
     const {isDarkMode} = useContext(DarkModeContext)
-    // const {uploadTestFn, setUploadTestFn} = useContext(uploadTestContext)
 
     const [getDetail, setGetDetail] = useState(false)
     const [sortConfig, setSortConfig] = useState(null);
@@ -61,25 +59,25 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
 
 
     async function fetchAllVideos() {
-        const token = localStorage.getItem('token');
-        setLoading(true);
-        setError(null);
+    const token = localStorage.getItem('token');
+    setLoading(true);
+    setError(null);
+    
+    try {
+        const response = await axios.get(
+            `https://itestify-backend-nxel.onrender.com/testimonies/videos/?type=upload_now`,
+            { headers: { 'Authorization': `Bearer ${token}` } }
+        );
         
-        try {
-            let response = await axios.get('https://itestify-backend-nxel.onrender.com/testimonies/videos/?type=upload_now',
-                { headers: { 'Authorization': `Bearer ${token}` } }
-            )
-            
-            // Combine all responses
-            const allVideos = response.data.data;
-            setAllVideo(allVideos);
-        } catch (error) {
-            console.error("Error:", error.response?.data || error.message);
-            setError("Failed to fetch some videos");
-            setAllVideo([]);
-        } finally {
-            setLoading(false);
-        }
+        const videos = response?.data?.data?.data || [];
+        setAllVideo(videos);
+    } catch (error) {
+        console.error("Fetch error:", error);
+        setError(error.response?.data?.message || error.message || "Failed to fetch videos");
+        setAllVideo([]);
+    } finally {
+        setLoading(false);
+    }
     }
     
     useEffect(() => {
@@ -107,8 +105,10 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
     const itemsPerPage = 3;
 
     const startIndex = (page - 1) * itemsPerPage;
-    AllVideo?.slice(startIndex, startIndex + itemsPerPage) || []
-    const totalPages = Math.ceil((AllVideo?.length || 0) / itemsPerPage);
+    const currentItems = Array.isArray(AllVideo) 
+    ? AllVideo.slice(startIndex, startIndex + itemsPerPage) 
+    : [];
+   const totalPages = Math.ceil((Array.isArray(AllVideo) ? AllVideo.length : 0) / itemsPerPage);
 
     //sort data logic
     const sortData = (key) => {
@@ -119,22 +119,22 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
         setSortConfig({ key, direction });
     };
 
-    // search Data logic
+
     const searchedData = React.useMemo(() => {
-        const dataToSearch = getFilteredData.length > 0 ? getFilteredData : AllVideo;
+        const dataToSearch = Array.isArray(getFilteredData) && getFilteredData.length > 0 ? 
+                            getFilteredData : 
+                            Array.isArray(AllVideo) ? AllVideo : [];
 
         if (searchQuery.trim() !== "") {
-            const filteredData = dataToSearch.filter((item) => {
+            return dataToSearch.filter((item) => {
                 const lowerCaseQuery = searchQuery.toLowerCase();
                 return (
-                    item.title.toLowerCase().includes(lowerCaseQuery) ||
-                    item.category.toLowerCase().includes(lowerCaseQuery) ||
-                    item.upload_status.toLowerCase().includes(lowerCaseQuery)
-                );
+                    (item.title?.toLowerCase().includes(lowerCaseQuery) ||
+                    (item.category?.toLowerCase().includes(lowerCaseQuery)) ||
+                    (item.upload_status?.toLowerCase().includes(lowerCaseQuery)
+                )));
             });
-            return filteredData;
         }
-
         return dataToSearch;
     }, [getFilteredData, AllVideo, searchQuery]);
 
@@ -503,7 +503,7 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
 
     
     
-     //function fo filter modal footer button
+     //function for filter modal footer button
      function filterModalFooterButton() {
         return[
             <div className='mt-[50px]'>
@@ -809,7 +809,7 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
             </Modal>
     
              {/* testimony video details modal */}
-             <Modal
+            <Modal
                 open={openVideoViewModal}
                 onCancel={handleCloseModal}
                 footer={null}
@@ -817,78 +817,100 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 closeIcon={<span style={{ color: 'white', fontSize: '12px', marginTop: '-10px' }}>X</span>}
                 styles={{
                     content: {
-                    backgroundColor: '#171717',
-                    width: '300px',
-                    height: 'auto',
-                    color: 'white',
-                    margin: '-40px auto',
-                    borderRadius: '8px',
+                        backgroundColor: '#171717',
+                        width: '300px',
+                        height: 'auto',
+                        color: 'white',
+                        margin: '-40px auto',
+                        borderRadius: '8px',
                     },
                     body: {
-                    backgroundColor: '#171717',
-                    color: 'white',
+                        backgroundColor: '#171717',
+                        color: 'white',
                     },
                 }}
-                >
-                {details ? (
+            >
+                {editDetails ? (
                     <div>
-                    <h2 className='mt-[-10px] text-[20px] font-sans pb-2'>Video Details</h2>
-                    <hr className='opacity-[0.6] w-[118%] ml-[-23px]'/> 
-                    
-                    {/* Video Player Section */}
-                    <div className='w-[113%] ml-[-16px] rounded-xl overflow-hidden h-[230px] mt-6 relative'>
-                    <VideoPlayer videoUrl={details.video_file}>
-                    <video 
-                        poster={details.thumbnail || 'No thumbnail avialable'}
-                        style={{
-                        width: '100%',
-                        height: '100%',
-                        objectFit: 'cover'
-                        }}
-                    />
-                    </VideoPlayer>
-                    </div>
-                    
-                    {/* Details Sections */}
-                    {details.upload_status === 'upload_now' && (
+                        <h2 className='mt-[-10px] text-[20px] font-sans pb-2'>Video Details</h2>
+                        <hr className='opacity-[0.6] w-[118%] ml-[-23px]'/> 
+                        
+                        {/* Video Player Section */}
+                        <div className='w-[113%] ml-[-16px] rounded-xl overflow-hidden h-[230px] mt-6 relative'>
+                            <VideoPlayer videoUrl={editDetails?.video_file}>
+                                <video 
+                                    poster={editDetails?.data?.thumbnail || 'No thumbnail available'}
+                                    style={{
+                                        width: '100%',
+                                        height: '100%',
+                                        objectFit: 'cover'
+                                    }}
+                                />
+                            </VideoPlayer>
+                        </div>
+                        
+                        {/* Details Sections */}
                         <div className='w-[110%] ml-[-13px] mt-2 text-[11px] h-[auto] text-white'>
-                        <div className='flex items-center justify-between p-2'>
-                            <h2 className='opacity-[0.6]'>Title</h2>
-                            <p>{details.title || 'N/A'}</p>
+                            <div className='flex items-center justify-between p-2'>
+                                <h2 className='opacity-[0.6]'>Title</h2>
+                                <p>{editDetails?.data?.title || 'N/A'}</p>
+                            </div>
+                            <div className='flex items-center justify-between p-2 pt-1'>
+                                <h2 className='opacity-[0.6]'>Category</h2>
+                                <p>{editDetails?.data?.category || 'N/A'}</p>
+                            </div>
+                            <div className='flex items-center justify-between p-2 pt-1'>
+                                <h2 className='opacity-[0.6]'>Source</h2>
+                                <p>{editDetails?.data?.source || 'N/A'}</p>
+                            </div>
+                            <div className='flex items-center justify-between p-2 pt-1'>
+                                <h2 className='opacity-[0.6]'>Status</h2>
+                                <p className='capitalize'>
+                                    {editDetails?.data?.upload_status?.replace(/_/g, ' ') || 'N/A'}
+                                </p>
+                            </div>
+                            {editDetails?.scheduled_date && (
+                                <div className='flex items-center justify-between p-2 pt-1'>
+                                    <h2 className='opacity-[0.6]'>Scheduled Date</h2>
+                                    <p>
+                                        {new Date(editDetails?.data?.scheduled_date).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        })}
+                                    </p>
+                                </div>
+                            )}
+                            {editDetails?.scheduled_time && (
+                                <div className='flex items-center justify-between p-2 pt-1'>
+                                    <h2 className='opacity-[0.6]'>Scheduled Time</h2>
+                                    <p>{editDetails?.data?.scheduled_time}</p>
+                                </div>
+                            )}
+                            <div className='flex items-center justify-between p-2 pt-1'>
+                                <h2 className='opacity-[0.6]'>Date</h2>
+                                <p>
+                                    {editDetails?.data?.created_at ? 
+                                        new Date(editDetails?.data?.created_at).toLocaleDateString('en-US', {
+                                            year: 'numeric',
+                                            month: 'short',
+                                            day: 'numeric'
+                                        }) : 'N/A'
+                                    }
+                                </p>
+                            </div>
+                            <div className='flex items-center justify-between p-2 pt-1'>
+                                <h2 className='opacity-[0.6]'>Uploaded By</h2>
+                                <p>{editDetails?.data?.uploaded_by?.full_name || editDetails?.data?.uploaded_by?.email || 'N/A'}</p>
+                            </div>
                         </div>
-                        <div className='flex items-center justify-between p-2 pt-1'>
-                            <h2 className='opacity-[0.6]'>Category</h2>
-                            <p>{details.category || 'N/A'}</p>
-                        </div>
-                        <div className='flex items-center justify-between p-2 pt-1'>
-                            <h2 className='opacity-[0.6]'>Source</h2>
-                            <p>{details.source || 'N/A'}</p>
-                        </div>
-                        <div className='flex items-center justify-between p-2 pt-1'>
-                            <h2 className='opacity-[0.6]'>Upload Date</h2>
-                            <p>
-                            {details.created_at ? 
-                                new Date(details.created_at).toLocaleDateString('en-US', {
-                                year: 'numeric',
-                                month: 'short',
-                                day: 'numeric'
-                                }) : 'N/A'
-                            }
-                            </p>
-                        </div>
-                        <div className='flex items-center justify-between p-2 pt-1'>
-                            <h2 className='opacity-[0.6]'>Uploaded By</h2>
-                            <p>{details.uploaded_by?.full_name || 'N/A'}</p>
-                        </div>
-                        </div>
-                    )}
                     </div>
                 ) : (
                     <div className="text-white text-center p-4">
-                    <p>Loading video details...</p>
+                        <p>Loading video details...</p>
                     </div>
                 )}
-             </Modal>
+            </Modal>
                     
             {/* all video action modal */}
             <Modal
@@ -916,7 +938,7 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 <div className='flex flex-col'>
                     <div className='border-b w-[150%] ml-[-25px] pb-2 opacity-[0.6]'>
                         <button onClick={() => {
-                            handleDetail(getDetail)// Pass just the ID here
+                            handleDetail(getDetail)
                             setVideoViewModal(true)
 
                         }}
@@ -926,7 +948,7 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                     <div className='border-b w-[150%] ml-[-25px] pt-2 pb-2 opacity-[0.6]'>
                         <button 
                         onClick={() => {
-                            handleDetail(editDetails) // Pass just the ID here
+                            handleDetail(editDetails)
                             setOpenEditModal(true)
                             setVideoActionModal(false)
                             setVideoViewModal(false)
@@ -1426,69 +1448,105 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 
     
                  {/* Data Rows */}
-                 {sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => (
-                <div
-                onClick={() => {
-                    // setGetDetail(item.id)
-                    // setEditDetails(item.id)
-                    // setDeleteDetails(item.upload_status)
-                    setGetDetail(item.id)
-                    setEditDetails(item) // Set the entire item object
-                    setDeleteDetails(item.upload_status)
-                    setDetails(item) 
-                }}
-                key={item.id}
-                className={`border-b border-white  text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] flex items-center
-                 ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}
-                >
+                {loading ? (
+                    <div className="w-full text-center p-4">Loading...</div>
+                )
+                :Array.isArray(sortedData) && sortedData.length > 0 ? (
+                  sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => (
+                    <div key={item.id || index}
+                    className={`border-b border-white text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] flex items-center ${
+                        isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"
+                    }`}
+                    >
                     <div onClick={() => setDeleteDetails(item.upload_status)} className='flex items-center w-[260px]'>
                         <div className='p-2 flex w-[60px] h-[50px] items-center'>{startIndex + index + 1}</div>
                         <div className='p-2 flex w-[103px] h-[50px] items-center'>
-                            <img src={item.thumbnail} alt="" />
+                        {item.thumbnail ? (
+                            <img 
+                            src={item.thumbnail} 
+                            alt="video thumbnail"
+                            className="max-w-full max-h-full object-contain"
+                            />
+                        ) : (
+                            <div className="w-full h-full flex items-center justify-center bg-gray-100">
+                            No thumbnail
+                            </div>
+                        )}
                         </div>
                         <div className='pl-2 flex w-[150px] h-[50px] items-center'>
-                        {item.title.length > 12 ? `${item.title.slice(0, 12)}...` : item.title}
+                        {item.title ? (item.title.length > 12 ? `${item.title.slice(0, 12)}...` : item.title) : 'No title'}
                         </div>
                     </div>
-    
-                    
-                    <div className='flex items-center  w-[263px]'>
-                        <div className='p-2 flex w-[150px] ml-[-15px] h-[50px] items-center'>{item.category}</div>
-                        <div className='p-2 flex  w-[153px] h-[50px] items-center'>{item.source}</div>
+
+                    <div className='flex items-center w-[263px]'>
+                        <div className='p-2 flex w-[150px] ml-[-15px] h-[50px] items-center'>
+                        {item.category || 'N/A'}
+                        </div>
+                        <div className='p-2 flex w-[153px] h-[50px] items-center'>
+                        {item.source || 'N/A'}
+                        </div>
                         <div className='pl-1 flex text-[11px] w-[205px] h-[50px] items-center'>
-                        {new Date(item.created_at).toLocaleDateString('en-US', {
+                        {item.created_at ? new Date(item.created_at).toLocaleDateString('en-US', {
                             year: 'numeric',
                             month: 'short',
                             day: 'numeric'
-                        })}
+                        }) : 'N/A'}
                         </div>
                     </div>
-    
+
                     <div className='flex items-center w-[216px]'>
-                        <div className='p-2 ml-[-5px] flex  flex-[2]  w-[50px] h-[50px] items-center'>{item.uploaded_by?.full_name}</div>
-                        <div className='p-2 ml-[5px] flex flex-1  w-[130px] h-[50px] items-center'>{item.views || 0}</div>
-                        <div className='p-2 ml-[5px] flex flex-1 w-[50px] h-[50px] items-center'>{item.likes || 0}</div>
+                        <div className='p-2 ml-[-5px] flex flex-[2] w-[50px] h-[50px] items-center'>
+                        {item.uploaded_by?.full_name ? item.uploaded_by?.full_name.slice(0,11) + '...' : item.uploaded_by?.email.slice(0,10) + '...' || 'N/A'}
+                        </div>
+                        <div className='p-2 ml-[5px] flex flex-1 w-[130px] h-[50px] items-center'>
+                        {item.views ?? 0}
+                        </div>
+                        <div className='p-2 ml-[5px] flex flex-1 w-[50px] h-[50px] items-center'>
+                        {item.likes ?? 0}
+                        </div>
                     </div>
-    
+
                     <div className='flex items-center w-[320px]'>
-                        <div className='p-2 flex  w-[90px] h-[50px] pl-5 items-center'>{item.comments || 0}</div>
-                        <div className='p-2 flex w-[90px] h-[50px] pl-5 items-center'>{item.shares || 0}</div>
-                        <div className={`p-2 flex  w-[120px] h-[30px] pl-2 items-center font-semibold ${item.upload_status === 'upload_now' ?
-                            'border border-green-500 text-green-700 rounded-xl p-1 pl-3 outline-none' :
-                            item.upload_status === 'schedule_for_later' ?  'border w-[120px] border-yellow-500 text-yellow-500 rounded-xl p-1' :
-                            'border border-gray-500 text-gray-500 pl-9 rounded-xl'
-                         }`}>
-                            {item.upload_status.charAt(0).toUpperCase() + item.upload_status.slice(1)}
+                        <div className='p-2 flex w-[90px] h-[50px] pl-5 items-center'>
+                        {item.comments ?? 0}
                         </div>
-                        <div onClick={() => {
-                            setVideoActionModal(true)
+                        <div className='p-2 flex w-[90px] h-[50px] pl-5 items-center'>
+                        {item.shares ?? 0}
+                        </div>
+                        <div className={`p-2 flex w-[120px] h-[30px] pl-2 items-center font-semibold ${
+                        item.upload_status === 'upload_now' ?
+                            'border border-green-500 text-green-700 rounded-xl p-1 pl-3 outline-none' :
+                        item.upload_status === 'schedule_for_later' ? 
+                            'border w-[120px] border-yellow-500 text-yellow-500 rounded-xl p-1' :
+                            'border border-gray-500 text-gray-500 pl-9 rounded-xl'
+                        }`}>
+                        {item.upload_status ? 
+                            item.upload_status.split('_').map(word => 
+                            word.charAt(0).toUpperCase() + word.slice(1)
+                            ).join(' ') : 
+                            'N/A'}
+                        </div>
+                        <div 
+                        onClick={(e) => {
+                            e.stopPropagation();
+                            setGetDetail(item.id);
+                            setEditDetails(item);
+                            setDeleteDetails(item.upload_status);
+                            setDetails(item);
+                            setVideoActionModal(true);
                         }} 
-                        className='p-2 flex w-[90px] h-[50px] pl-10 items-center'>
-                            <IoIosMore />
+                        className='p-2 flex w-[90px] h-[50px] pl-10 items-center'
+                        >
+                        <IoIosMore />
                         </div>
                     </div>
+                    </div>
+                ))
+                ) : (
+                <div className="w-full text-center p-4">
+                    {error || 'No videos found'}
                 </div>
-                 ))}
+                )}
                 {/* end of Data row */}
             </div>
     
@@ -1496,7 +1554,7 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
               <div className='flex justify-between items-center mt-6'>
                 <div className={`text-[12px] ml-[10px]
                         ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
-                    Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, AllVideo.length)} of {AllVideo.length}
+                    Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, (AllVideo.length) || 1)} of {AllVideo.length || 1}
                 </div>
                 <div className='text-[13px] mr-5 flex items-center gap-3'>
                     <button
