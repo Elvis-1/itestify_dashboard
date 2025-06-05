@@ -58,8 +58,12 @@ function Reviews() {
       getFilteredData.length > 0 ? getFilteredData : reviewData;
 
     if (searchQuery.trim() !== "") {
-      return dataToSearch.filter((item) =>
-        item.user_full_name.toLowerCase().includes(searchQuery.toLowerCase())
+      return dataToSearch.filter(
+        (item) =>
+          item.user_full_name
+            .toLowerCase()
+            .includes(searchQuery.toLowerCase()) ||
+          item.user_email.toLowerCase().includes(searchQuery.toLowerCase())
       );
     }
     return dataToSearch;
@@ -929,19 +933,22 @@ function Reviews() {
                     </div>
                     <div className="p-2 flex items-center">{item.id}</div>
                     <div className="p-2 flex items-center ml-[-10px]">
-                      <p>{item.user_full_name|| "--- ---"}</p>
+                      <p>{item.user_full_name || "--- ---"}</p>
                     </div>
                     <div className="pl-2 flex items-center">
-                      {item.user_email||"------"}
+                      {item.user_email || "------"}
                     </div>
-                    <div className="pl-2 flex items-center">{item.message||"------"}</div>
+                    <div className="pl-2 flex items-center">
+                      {item.message || "------"}
+                    </div>
                     <div className="p-2 flex items-center">
                       {[...Array(item.rating)].map((_, i) => (
                         <AiFillStar key={i} className="text-[#9966CC]" />
                       ))}
                     </div>
                     <div className="p-2 flex items-center">
-                      {new Date(item.created_at).toLocaleDateString()||"------"}
+                      {new Date(item.created_at).toLocaleDateString() ||
+                        "------"}
                     </div>
                     <div
                       onClick={(e) => {
