@@ -1,5 +1,6 @@
 import React from "react";
 import itestifyLogo from "../assets/images/loadinganimation.png";
+
 const LoadingState = () => {
   return (
     <div className="fixed inset-0 z-[70]">
@@ -8,7 +9,11 @@ const LoadingState = () => {
         aria-hidden="true"
       />
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-md">
-        <img className="w-24" src={itestifyLogo} alt="" />
+        <img
+          className="w-24 animate-spin-slow" // Added animation class
+          src={itestifyLogo}
+          alt="Loading"
+        />
       </div>
     </div>
   );

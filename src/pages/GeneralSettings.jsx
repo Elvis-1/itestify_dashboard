@@ -11,9 +11,17 @@ import ShortPopup from "../component/generalSettingsPopups/ShortPopup";
 import { MdOutlineMoreHoriz } from "react-icons/md";
 import DeleteMember from "../component/generalSettingsPopups/DeleteMember";
 import ShortSuccessMessage from "../component/generalSettingsPopups/ShortSuccessMessage";
+import axios from "axios";
+import { message } from "antd";
+import LoadingState from "../component/LoadingState"
 
 const GeneralSettings = () => {
   const { isDarkMode } = useContext(DarkModeContext);
+
+  const token = localStorage.getItem("token");
+
+  const [loading, setLoading] = useState(false);
+
   const [memberModal, setMemberModal] = useState(false);
   const [confirmAddAdmin, setConfirmAddAdmin] = useState(false);
   const [successModal, setSuccessModal] = useState(false);
@@ -21,17 +29,18 @@ const GeneralSettings = () => {
   const [deleteSuperAdminModal, setDeleteSuperAdminModal] = useState(false);
   const [deleteMemberModal, setDeleteMemberModal] = useState(false);
   const [transferConfirmModal, setTransferConfirmModal] = useState(false);
+
   const [newMember, setNewMember] = useState([]);
-  const [selectedRole, setSelectedRole] = useState(null);
   const [adminDetails, setAdminDetails] = useState({
     name: "",
     email: "",
     role: "",
   });
+
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
   const [isEditing, setIsEditing] = useState(false);
   const [editMemberId, setEditMemberId] = useState(null);
-  const [currentMemberDetails, setCurrentMemberDetails] = useState({});
+
   const [isDeleted, setIsDeleted] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
   const toggleOptions = (index) => {
@@ -42,39 +51,93 @@ const GeneralSettings = () => {
     setConfirmAddAdmin(true);
   };
 
-  const addAdminMember = (e) => {
+  //FETCH ALL ADMINS MEMEBERS
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        setLoading(true);
+        const response = await axios.get(
+          `${import.meta.env.VITE_API_URL}/auths/members/list-members/`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setNewMember(response.data.data);
+      } catch (error) {
+        message.error(error.response.data.message);
+        console.log(error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchMembers();
+  }, []);
+
+  //ADD NEW MEMEBERS AND UPDATE EXISTING MEMEBERS
+  const addAdminMember = async (e) => {
     e.preventDefault();
+
     if (!adminDetails.name || !adminDetails.email || !adminDetails.role) {
-      alert("Details missing");
+      message.error("Please fill in all the required fields.");
       return;
     }
 
-    if (isEditing) {
-      setNewMember((prev) =>
-        prev.map((member) =>
-          member.id === editMemberId
-            ? { ...member, value: { ...adminDetails } }
-            : member
-        )
-      );
-
-      setIsEditing(false);
-      setEditMemberId(null);
-      setSuccessChangeModal(true);
-    } else {
-      const details = {
-        id: Math.floor(Math.random() * 1000),
-        value: { ...adminDetails },
+    try {
+      const payload = {
+        email: adminDetails.email,
+        full_name: adminDetails.name,
+        role: adminDetails.role,
       };
-      setNewMember((prev) => [...prev, details]);
-      setSuccessModal(true);
+
+      if (isEditing) {
+        const response = await axios.patch(
+          `${
+            import.meta.env.VITE_API_URL
+          }/auths/members/${editMemberId}/update-member/`,
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setNewMember((prev) =>
+          prev.map((member) =>
+            member.id === editMemberId
+              ? { ...member, ...response.data }
+              : member
+          )
+        );
+        setIsEditing(false);
+        setEditMemberId(null);
+        setSuccessChangeModal(true);
+      } else {
+        const response = await axios.post(
+          `${import.meta.env.VITE_API_URL}/auths/members/create-member/`,
+          payload,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`,
+            },
+          }
+        );
+        setNewMember((prev) => [...prev, response.data]);
+        setSuccessModal(true);
+      }
+
+      setConfirmAddAdmin(false);
+      setAdminDetails({ name: "", email: "", role: "" });
+      setMemberModal(false);
+    } catch (error) {
+      console.error("Failed to add member:", error);
+      message.error(
+        error?.response?.data?.message ||
+          "Failed to add member. Please try again."
+      );
     }
-    setConfirmAddAdmin(false);
-    setSelectedRole(adminDetails.role);
-    setTimeout(() => {
-      setAdminDetails({ name: "", email: "", role: "" })
-    }, 5000);
-    setMemberModal(false);
   };
   useEffect(() => {
     if (successModal) {
@@ -99,40 +162,31 @@ const GeneralSettings = () => {
     }
   }, [successModal, transferConfirmModal, successChangeModal, isDeleted]);
 
-  const editAdminMember = (id) => {
-    const userMemberMatch = newMember.find((mem) => mem.id === id);
-    setIsOpenOptions(-1);
-    if (userMemberMatch) {
-      setAdminDetails({ ...userMemberMatch.value });
-      setIsEditing(true);
-      setEditMemberId(id);
-      setMemberModal(true);
-    } else {
-      console.error("User not found");
-    }
-  };
-  const deleteMember = (id) => {
-    const memberToRemove = newMember.find((mem) => mem.id === id);
+  //DELETE ADMIN MEMBERS
+  const confirmDeleteMember = async () => {
+    try {
+      await axios.delete(
+        `${
+          import.meta.env.VITE_API_URL
+        }/auths/members/${memberToDelete}/delete-member/`,
+        {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        }
+      );
 
-    if (!memberToRemove) return;
-
-    if (memberToRemove.value.role === "Super admin") {
-      setDeleteSuperAdminModal(true);
-      return;
-    }
-
-    setMemberToDelete(id);
-    setDeleteMemberModal(true);
-  };
-
-  const confirmDeleteMember = () => {
-    if (memberToDelete !== null) {
-      setNewMember((prev) => prev.filter((mem) => mem.id !== memberToDelete));
-      setMemberToDelete(null);
+      setNewMember((prev) =>
+        prev.filter((member) => member.id !== memberToDelete)
+      );
       setDeleteMemberModal(false);
       setIsDeleted(true);
+      setMemberToDelete(null);
+    } catch (error) {
+      message.error("Failed to delete member.");
     }
   };
+
   const SUCCESS_MESSAGES = {
     "Super admin": {
       title: "Super Admin Added Successfully!",
@@ -147,8 +201,6 @@ const GeneralSettings = () => {
       message: `You have successfully assigned a new Viewer. An invitation email has been sent to ${adminDetails.email} to set up their account.`,
     },
   };
-  console.log("Admin Role:", adminDetails.role);
-  console.log("Success Message Object:", SUCCESS_MESSAGES[adminDetails.role]);
 
   return (
     <div>
@@ -162,8 +214,6 @@ const GeneralSettings = () => {
           setAdminDetails={setAdminDetails}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
-          currentMemberDetails={currentMemberDetails}
-          setCurrentMemberDetails={setCurrentMemberDetails}
         />
       )}
 
@@ -173,7 +223,7 @@ const GeneralSettings = () => {
           onProceed={addAdminMember}
         />
       )}
-      {successModal && selectedRole && (
+      {successModal && adminDetails.role && (
         <SuccessModal successMessage={SUCCESS_MESSAGES[adminDetails.role]} />
       )}
       {successChangeModal && (
@@ -193,7 +243,7 @@ const GeneralSettings = () => {
       {deleteMemberModal && (
         <DeleteMember
           onCancel={() => setDeleteMemberModal(false)}
-          onConfirm={confirmDeleteMember} // Correct function now
+          onConfirm={confirmDeleteMember}
         />
       )}
       {isDeleted && (
@@ -218,8 +268,8 @@ const GeneralSettings = () => {
               : `bg-off-white border-b-near-white`
           } border-b-2 pb-3`}
         >
-          <Link to="/invite">Go to invite admin page</Link>
-          <h1 >General</h1>
+          {/* <Link to="/invite">Go to invite admin page</Link> */}
+          <h1>General</h1>
           <Link to="/dashboard/manage-permissions">
             <button
               //   onClick={() => {
@@ -233,96 +283,111 @@ const GeneralSettings = () => {
           </Link>
         </div>
         <div className="pt-3 flex justify-between items-start w-full">
-          <div
-            className={`w-full p-3 pb-6 rounded-lg ${
-              isDarkMode ? `bg-grayBlack` : `bg-white`
-            }`}
-          >
-            <div className="flex justify-between">
-              <div className="text-sm">
-                <h2 className="font-bold">Admin managament</h2>
-                <p
-                  className={`pt-2 ${
-                    isDarkMode ? "text-white" : "text-off-black"
-                  } opacity-80`}
-                >
-                  Manage administrative access for the system
-                </p>
-              </div>
-              <div
-                onClick={() => setMemberModal(true)}
-                className="flex gap-3 items-center cursor-pointer"
-              >
-                <IoMdAdd fill="#9966CC" />
-                <p className="text-primary text-xs font-bold">Add member</p>
-              </div>
-            </div>
-
-            {newMember.map((member) => (
-              <div
-                key={member.id}
-                className={`flex justify-between  align items-center w-full text-sm pt-4 pb-6 pr-6`}
-              >
-                <div className="">
-                  <p>{member.value.name}</p>
+          {loading ? (
+            <LoadingState />
+          ) : (
+            <div
+              className={`w-full p-3 pb-6 rounded-lg ${
+                isDarkMode ? `bg-grayBlack` : `bg-white`
+              }`}
+            >
+              <div className="flex justify-between">
+                <div className="text-sm">
+                  <h2 className="font-bold">Admin managament</h2>
                   <p
-                    className={`pt-1  ${
-                      isDarkMode ? `text-white` : `text-off-black`
-                    }  opacity-80`}
+                    className={`pt-2 ${
+                      isDarkMode ? "text-white" : "text-off-black"
+                    } opacity-80`}
                   >
-                    {member.value.email}
+                    Manage administrative access for the system
                   </p>
                 </div>
-                <p
-                  className={` ${
-                    member.value.role === "Super admin"
-                      ? `text-near-white`
-                      : `text-primary`
-                  } `}
+                <div
+                  onClick={() => setMemberModal(true)}
+                  className="flex gap-3 items-center cursor-pointer"
                 >
-                  {member.value.role}
-                </p>
-                <div className="relative">
-                  <MdOutlineMoreHoriz
-                    onClick={() => {
-                      toggleOptions(member.id);
-                    }}
-                    className="cursor-pointer"
-                  />
-                  {isOpenOptions === member.id && (
-                    <div
-                      className={`rounded-lg ${
-                        isDarkMode
-                          ? `text-white bg-[#292929]`
-                          : `text-black bg-white`
-                      } w-[120px]  border border-[#787878] h-fit absolute top-5 right-0 z-10 shadow-lg`}
-                    >
-                      <p
-                        onClick={() => {
-                          editAdminMember(member.id);
-                        }}
-                        className="border-b border-[#787878] p-2 cursor-pointer"
-                      >
-                        Edit
-                      </p>
-                      <p
-                        onClick={() => {
-                          member.value.role === "Super admin"
-                            ? setDeleteSuperAdminModal(true)
-                            : setDeleteMemberModal(true);
-                          setIsOpenOptions(false);
-                          setMemberToDelete(member.id);
-                        }}
-                        className="p-2 text-[#E53935] cursor-pointer"
-                      >
-                        Delete
-                      </p>
-                    </div>
-                  )}
+                  <IoMdAdd fill="#9966CC" />
+                  <p className="text-primary text-xs font-bold">Add member</p>
                 </div>
               </div>
-            ))}
-          </div>
+
+              {newMember.map((member) => (
+                <div
+                  key={member.id}
+                  className={`flex justify-between  align items-center w-full text-sm pt-4 pb-6`}
+                >
+                  <div className="">
+                    <p>{member.full_name}</p>
+                    <p
+                      className={`pt-1  ${
+                        isDarkMode ? `text-white` : `text-off-black`
+                      }  opacity-80`}
+                    >
+                      {member.email}
+                    </p>
+                  </div>
+                  <div></div>
+                  <div className="flex justify-between items-center w-full gap-96">
+                    <p
+                      className={`ml-auto ${
+                        member.role === "Super admin"
+                          ? `text-near-white`
+                          : `text-primary`
+                      } `}
+                    >
+                      {member.role}
+                    </p>
+                    <div className="relative">
+                      <MdOutlineMoreHoriz
+                        onClick={() => {
+                          toggleOptions(member.id);
+                        }}
+                        className="cursor-pointer"
+                      />
+                      {isOpenOptions === member.id && (
+                        <div
+                          className={`rounded-lg ${
+                            isDarkMode
+                              ? `text-white bg-[#292929]`
+                              : `text-black bg-white`
+                          } w-[120px]  border border-[#787878] h-fit absolute top-5 right-0 z-10 shadow-lg`}
+                        >
+                          <p
+                            onClick={() => {
+                              setAdminDetails({
+                                name: member.full_name,
+                                email: member.email,
+                                role: member.role,
+                              });
+                              setIsEditing(true);
+                              setEditMemberId(member.id);
+                              setMemberModal(true);
+                              setIsOpenOptions(-1);
+                            }}
+                            className="border-b border-[#787878] p-2 cursor-pointer"
+                          >
+                            Edit
+                          </p>
+                          <p
+                            onClick={() => {
+                              member.role === "Super admin"
+                                ? setDeleteSuperAdminModal(true)
+                                : setDeleteMemberModal(true);
+                              setIsOpenOptions(false);
+                              setMemberToDelete(member.id);
+                            }}
+                            className="p-2 text-[#E53935] cursor-pointer"
+                          >
+                            Delete
+                          </p>
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          )}
         </div>
       </div>
     </div>

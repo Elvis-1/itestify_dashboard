@@ -60,7 +60,7 @@ const DelUsers = () => {
       const token = localStorage.getItem("token");
       try {
         const response = await axios.get(
-          "https://itestify-backend-nxel.onrender.com/auths/users/all/?status=deleted",
+          `${import.meta.env.VITE_API_URL}/users/all/?status=deleted`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -132,7 +132,7 @@ const DelUsers = () => {
       const deletePromises = selectedUsers.map(async (userId) => {
         try {
           await axios.delete(
-            `https://itestify-backend-nxel.onrender.com/auths/users/${userId}`,
+            `${import.meta.env.VITE_API_URL}/auths/users/${userId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -166,7 +166,7 @@ const DelUsers = () => {
   const handleDeleteById = async (userId) => {
     try {
       await axios.delete(
-        `https://itestify-backend-nxel.onrender.com/auths/users/${userId}/`,
+        `${import.meta.env.VITE_API_URL}/auths/users/${userId}/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -198,7 +198,6 @@ const DelUsers = () => {
 
   return (
     <div className="relative">
-      {isLoading && <LoadingState />}
       {/* <---------------delete modal----------------> */}
       {deleteRecordModal && (
         <DeleteRecordsModal
@@ -267,149 +266,153 @@ const DelUsers = () => {
           isDarkMode ? `bg-lightBlack` : `bg-white`
         }`}
       >
-        <table
-          className={`custom-table  opacity-70 font-san text-[14px]   ${
-            isDarkMode ? `bg-lightBlack dark-mode ` : `light-mode`
-          } `}
-        >
-          <thead
-            className={` text-xs  ${
-              isDarkMode ? `bg-near-black` : `bg-off-white text-black`
-            }`}
+        {isLoading ? (
+          <LoadingState />
+        ) : (
+          <table
+            className={`custom-table  opacity-70 font-san text-[14px]   ${
+              isDarkMode ? `bg-lightBlack dark-mode ` : `light-mode`
+            } `}
           >
-            <tr>
-              <th
-                className={`cursor-pointer ${
-                  isDarkMode
-                    ? `bg-off-black text-white`
-                    : `bg-off-white text-black`
-                }`}
-              >
-                <input
-                  className=""
-                  type="checkbox"
-                  name="deletedUser"
-                  id="delUser-checkbox"
-                  onChange={handleSelectAll}
-                  checked={selectAll}
-                />
-              </th>
-              {tableHeaders.map((header, index) => (
+            <thead
+              className={` text-xs  ${
+                isDarkMode ? `bg-near-black` : `bg-off-white text-black`
+              }`}
+            >
+              <tr>
                 <th
                   className={`cursor-pointer ${
                     isDarkMode
                       ? `bg-off-black text-white`
                       : `bg-off-white text-black`
                   }`}
-                  onClick={() => {
-                    sortHeader(header);
-                  }}
-                  key={index}
                 >
-                  <div className="flex items-center gap-1 ">
-                    {header.Label}
-                    <i>
-                      <LuChevronsUpDown
-                        direction={
-                          sort.keyToSort === header.key
-                            ? sort.direction
-                            : "ascending"
-                        }
-                      />
-                    </i>
-                  </div>
+                  <input
+                    className=""
+                    type="checkbox"
+                    name="deletedUser"
+                    id="delUser-checkbox"
+                    onChange={handleSelectAll}
+                    checked={selectAll}
+                  />
                 </th>
-              ))}
-              <th
-                className={`cursor-pointer ${
-                  isDarkMode
-                    ? `bg-off-black text-white`
-                    : `bg-off-white text-black`
-                }`}
-              >
-                Action
-              </th>
-            </tr>
-          </thead>
-          {delUsersIndex.length > 0 ? (
-            users.map((data, index) => (
-              <tbody className="relative" key={data.id}>
-                <tr
-                  className={` ${
+                {tableHeaders.map((header, index) => (
+                  <th
+                    className={`cursor-pointer ${
+                      isDarkMode
+                        ? `bg-off-black text-white`
+                        : `bg-off-white text-black`
+                    }`}
+                    onClick={() => {
+                      sortHeader(header);
+                    }}
+                    key={index}
+                  >
+                    <div className="flex items-center gap-1 ">
+                      {header.Label}
+                      <i>
+                        <LuChevronsUpDown
+                          direction={
+                            sort.keyToSort === header.key
+                              ? sort.direction
+                              : "ascending"
+                          }
+                        />
+                      </i>
+                    </div>
+                  </th>
+                ))}
+                <th
+                  className={`cursor-pointer ${
                     isDarkMode
-                      ? `bg-lightBlack text-white hover:bg-[#313131]`
-                      : `bg-white text-black hover:bg-off-white`
+                      ? `bg-off-black text-white`
+                      : `bg-off-white text-black`
                   }`}
                 >
-                  <td>
-                    <input
-                      type="checkbox"
-                      name="deletedUser"
-                      id="delUser-checkbox"
-                      onChange={() => {
-                        handleUserSelect(data.id);
-                      }}
-                      checked={selectedUsers.includes(data.id)}
-                    />
-                  </td>
-                  <td>{index + 1}</td>
-                  <td>{data.id.slice(0, 6)}</td>
-                  <td>{data.full_name}</td>
-                  <td>{data.email}</td>
-                  <td>{new Date(data.updated_at).toLocaleDateString()}</td>
-                  <td>{data.reason}</td>
-                  <td className="">
-                    <i
-                      onClick={() => {
-                        toggleOptions(data.id);
-                      }}
-                    >
-                      <MdOutlineMoreHoriz />
-                    </i>
-                    {/* <----------------------------------Option dropdown-----------------------------------------> */}
-                    {isOpenOptions === data.id && (
-                      <div
-                        className={`rounded-lg ${
-                          isDarkMode
-                            ? `text-white bg-[#292929]`
-                            : `text-black bg-white`
-                        } w-[120px]  border-[1px] border-white h-fit absolute top-10 right-10 z-[99999] shadow-lg`}
+                  Action
+                </th>
+              </tr>
+            </thead>
+            {delUsersIndex.length > 0 ? (
+              users.map((data, index) => (
+                <tbody className="relative" key={data.id}>
+                  <tr
+                    className={` ${
+                      isDarkMode
+                        ? `bg-lightBlack text-white hover:bg-[#313131]`
+                        : `bg-white text-black hover:bg-off-white`
+                    }`}
+                  >
+                    <td>
+                      <input
+                        type="checkbox"
+                        name="deletedUser"
+                        id="delUser-checkbox"
+                        onChange={() => {
+                          handleUserSelect(data.id);
+                        }}
+                        checked={selectedUsers.includes(data.id)}
+                      />
+                    </td>
+                    <td>{index + 1}</td>
+                    <td>{data.id.slice(0, 6)}</td>
+                    <td>{data.full_name}</td>
+                    <td>{data.email}</td>
+                    <td>{new Date(data.updated_at).toLocaleDateString()}</td>
+                    <td>{data.reason}</td>
+                    <td className="">
+                      <i
+                        onClick={() => {
+                          toggleOptions(data.id);
+                        }}
                       >
-                        <p
-                          onClick={() => {
-                            openProfileModal(data.id);
-                          }}
-                          className="border-b-[1px] border-gray-300 p-2 cursor-pointer"
+                        <MdOutlineMoreHoriz />
+                      </i>
+                      {/* <----------------------------------Option dropdown-----------------------------------------> */}
+                      {isOpenOptions === data.id && (
+                        <div
+                          className={`rounded-lg ${
+                            isDarkMode
+                              ? `text-white bg-[#292929]`
+                              : `text-black bg-white`
+                          } w-[120px]  border-[1px] border-white h-fit absolute top-10 right-10 z-[99999] shadow-lg`}
                         >
-                          View profile
-                        </p>
-                        <p
-                          onClick={() => {
-                            handleDeleteById(data.id);
-                          }}
-                          className="p-2 text-[#E53935] cursor-pointer"
-                        >
-                          Delete
-                        </p>
-                      </div>
-                    )}
+                          <p
+                            onClick={() => {
+                              openProfileModal(data.id);
+                            }}
+                            className="border-b-[1px] border-gray-300 p-2 cursor-pointer"
+                          >
+                            View profile
+                          </p>
+                          <p
+                            onClick={() => {
+                              handleDeleteById(data.id);
+                            }}
+                            className="p-2 text-[#E53935] cursor-pointer"
+                          >
+                            Delete
+                          </p>
+                        </div>
+                      )}
+                    </td>
+                  </tr>
+                </tbody>
+              ))
+            ) : (
+              <tbody>
+                <tr className="border-b-0">
+                  <td
+                    colSpan={8}
+                    className="hover:bg-transparent border-b-0 border-b-transparent"
+                  >
+                    <NoDataComponent />
                   </td>
                 </tr>
               </tbody>
-            ))
-          ) : (
-            <tbody>
-              <tr className="border-b-0">
-                <td
-                  colSpan={8}
-                  className="hover:bg-transparent border-b-0 border-b-transparent"
-                >
-                  <NoDataComponent />
-                </td>
-              </tr>
-            </tbody>
-          )}
-        </table>
+            )}
+          </table>
+        )}
       </div>
       {/* <---------------------------------------------Pagination --------------------------------------------> */}
       <Pagination

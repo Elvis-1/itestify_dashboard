@@ -15,14 +15,13 @@ const AddMemeber = ({
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
 
   const options = [
-    { value: "Super admin", label: "Super admin" },
-    { value: "Admin", label: "Admin" },
-    { value: "Viewer", label: "Viewer" },
+    // { value: "Super admin", label: "Super admin" },
+    { value: "admin", label: "admin" },
+    { value: "viewer", label: "viewer" },
   ];
   const handleChange = (e) => {
     const { name, value } = e.target;
     setAdminDetails({ ...adminDetails, [name]: value });
-    console.log(adminDetails);
   };
 
   return (
