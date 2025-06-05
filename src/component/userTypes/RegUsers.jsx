@@ -200,7 +200,7 @@ const RegUsers = () => {
             </tr>
           </thead>
           {regUsersIndex.length > 0 ? (
-            users.map((data, index) => (
+            (users||[]).map((data, index) => (
               <tbody className="relative" key={data.id}>
                 <tr
                   className={` ${
