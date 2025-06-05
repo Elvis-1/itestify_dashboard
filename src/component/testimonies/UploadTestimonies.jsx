@@ -228,7 +228,7 @@ function UploadTestimonies() {
     message.error(errorMessage);
   };
 
-  // Main submit function
+  
   const handleSubmit = async () => {
     console.log("[Upload] Starting submission process");
     
@@ -236,14 +236,14 @@ function UploadTestimonies() {
     const controller = new AbortController();
   
     try {
-      // 1. Authentication Check
+      //Authentication Check
       const token = localStorage.getItem('token');
       if (!token) {
         message.error('Authentication required. Please login again.');
         return;
       }
   
-      // 2. Field Validation
+      // Field Validation
       if (!title?.trim()) {
         message.error('Title is required');
         return;
@@ -261,7 +261,7 @@ function UploadTestimonies() {
         return;
       }
   
-      // Schedule validation - more robust handling
+      // Schedule validation
       let scheduledDateTime;
       if (uploadStatus === 'schedule_for_later') {
         if (!scheduleDate || !scheduleTime) {
@@ -283,11 +283,11 @@ function UploadTestimonies() {
         }
       }
   
-      // 3. Prepare FormData (matches API requirements exactly)
+      // FormData
       const formData = new FormData();
       formData.append('title', title.trim());
       formData.append('source', source.trim());
-      formData.append('category', uploadCategory.toLowerCase()); // Ensure lowercase as per API
+      formData.append('category', uploadCategory.toLowerCase());
       formData.append('upload_status', uploadStatus);
       formData.append('video_file', file);
       
@@ -296,7 +296,7 @@ function UploadTestimonies() {
         formData.append('thumbnail', thumbnail);
       }
   
-      // Handle scheduling - format exactly as API expects
+      // Handling scheduling - format exactly as API expects
       if (uploadStatus === 'schedule_for_later') {
         // Format as ISO string with timezone offset
         const isoString = scheduledDateTime.toISOString();
@@ -305,7 +305,7 @@ function UploadTestimonies() {
         console.log('Scheduling video for:', isoString);
       }
   
-      // 4. Upload Configuration
+      //Upload Configuration
       setLoading(true);
       setUploadProgress(0);
       setUploadError(null);
@@ -315,14 +315,13 @@ function UploadTestimonies() {
         throw new Error('Upload timed out after 5 minutes');
       }, 5 * 60 * 1000);
   
-      // 5. Execute Upload
+      //Executing Upload
       const response = await axios.post(
         'https://itestify-backend-nxel.onrender.com/testimonies/videos/create_video/',
         formData,
         {
           headers: {
             'Authorization': `Bearer ${token}`,
-            // Let browser set Content-Type with boundary
           },
           signal: controller.signal,
           onUploadProgress: (progressEvent) => {
@@ -336,7 +335,7 @@ function UploadTestimonies() {
         }
       );
   
-      // 6. Handle Response
+      //Handling Response
       clearTimeout(timeoutId);
       
       if (response.data?.success) {
@@ -347,7 +346,7 @@ function UploadTestimonies() {
         message.success(successMessage);
         resetForm();
       } else {
-        // Handle success cases where response structure differs
+        // Handling success cases where response structure differs
         if (response.status === 200 && response.data) {
           const successMessage = uploadStatus === 'schedule_for_later'
             ? 'Video scheduled successfully'

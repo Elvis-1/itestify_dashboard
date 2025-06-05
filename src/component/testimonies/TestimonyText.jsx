@@ -88,6 +88,7 @@ function TestimonyText() {
                     category: item.category ?? "Uncategorized",
                     status: item.status ?? "Pending",
                 }));
+                console.log(testimoniesWithDefaults)
         
                 setTestimonies(testimoniesWithDefaults);
             } catch (error) {
@@ -192,9 +193,11 @@ function TestimonyText() {
                     },
                 }
             );
+
+            console.log(response.data.data)
     
             if (response.data) {
-                const testimonyDetails = response.data;
+                const testimonyDetails = response?.data?.data;
     
                 if (!testimonyDetails) {
                     console.error("No testimony details found in the response.");
@@ -241,7 +244,7 @@ function TestimonyText() {
             <button
               key="reject"
               onClick={() => {
-                setRejectionReason(''); // Clear previous rejection reason
+                setRejectionReason('');
                 handleRejectionReason();
               }}
               className='text-[12px] border border-red-600 text-red p-1 w-[100px] rounded'
@@ -307,7 +310,6 @@ function TestimonyText() {
 
         } catch (error) {
           console.error('Error updating testimony status:', error);
-          // You might want to show an error message to the user here
           return false;
         }
     }
@@ -578,7 +580,7 @@ function TestimonyText() {
                     <div className='flex border rounded-2xl border-gray-100 items-center justify-between w-[110%] h-[70px] m-[auto] ml-[-15px] mt-[20px]'>
                         <div className='text-center ml-5 opacity-[0.6] border-r h-[50px] pr-3 font-sans'>
                             <p className='text-[10px]'>Name</p>
-                            <p className='text-[9px]'>{details.uploaded_by.full_name || "N/A"}</p>
+                            <p className='text-[9px]'>{details?.uploaded_by.full_name || "N/A"}</p>
                         </div>
                         <div className='text-center ml-2 text-[12px] opacity-[0.6] w-[100%] h-[50px] m-[auto] border-r pr-3 font-sans'>
                             <p>Email</p>
@@ -601,7 +603,7 @@ function TestimonyText() {
                     <div className='mt-3 mb-7'>
                         <h3 className='text-white font-sans text-[11px]'>{details.title || "no title"}</h3>
                         <p className='text-[11px] text-white pt-2'>
-                            {details.content.slice(0, 500) + "..."}
+                            {details?.content?.slice(0, 500) + "..."}
                         </p>
                     </div>    
                 </div>

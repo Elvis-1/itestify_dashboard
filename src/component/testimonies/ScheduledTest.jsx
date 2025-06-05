@@ -102,7 +102,8 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
 
     // search Data logic
     const searchedData = React.useMemo(() => {
-        const dataToSearch = getFilteredData?.length > 0 ? getFilteredData : scheduledVideo;
+        const dataToSearch = Array.isArray(getFilteredData) ? getFilteredData : 
+        Array.isArray(scheduledVideo) ? scheduledVideo : [];
 
         if (searchQuery.trim() !== "") {
             const filteredData = dataToSearch.filter((item) => {
@@ -1121,6 +1122,12 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
                         className='p-2 flex items-center ml-3'><IoIosMore /></div>
                 </div>
             ))}
+
+             {Array.isArray(sortedData) && sortedData.length === 0 && (
+                <div className="text-center p-4">
+                    No Scheduled Videos found
+                </div>
+             )}
             {/* end of Data row */}
         </div>
 
@@ -1129,7 +1136,7 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
         <div className='flex justify-between items-center mt-1'>
             <div className={`text-[12px] ml-[10px]
                 ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
-                Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, scheduledVideo.length)} of {scheduledVideo.length}
+                Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, (scheduledVideo.length) || 1)} of {scheduledVideo.length || 1}
             </div>
             <div className='text-[13px] mr-5 flex items-center gap-3'>
                 <button
