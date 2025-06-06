@@ -38,7 +38,7 @@ function Reviews() {
 
   const startIndex = (page - 1) * itemsPerPage;
   const totalPages = Math.ceil(
-    (getFilteredData.length > 0 ? getFilteredData : reviewData).length /
+    (getFilteredData?.length > 0 ? getFilteredData : reviewData)?.length /
       itemsPerPage
   );
   const sortData = (key) => {
@@ -55,7 +55,7 @@ function Reviews() {
 
   const searchedData = useMemo(() => {
     const dataToSearch =
-      getFilteredData.length > 0 ? getFilteredData : reviewData;
+      getFilteredData?.length > 0 ? getFilteredData : reviewData;
 
     if (searchQuery.trim() !== "") {
       return dataToSearch.filter(
@@ -95,7 +95,7 @@ function Reviews() {
   const singleChecked =
     Object.values(checkedItems).filter(Boolean).length === 1;
   const allChecked =
-    sortedData.length > 0 &&
+    sortedData?.length > 0 &&
     sortedData?.slice(startIndex, startIndex + itemsPerPage)
       .every((item) => checkedItems[item.id]);
 
@@ -149,7 +149,7 @@ function Reviews() {
   }
 
   function handleFiltering() {
-    const filteredData = reviewData.filter((item) => {
+    const filteredData = reviewData?.filter((item) => {
       const itemDate = new Date(item.created_at);
       const startDate = filterDate1 ? new Date(filterDate1) : null;
       const endDate = filterDate2 ? new Date(filterDate2) : null;
@@ -909,7 +909,7 @@ function Reviews() {
               <div className="p-2 flex items-center">Action</div>
             </div>
 
-            {sortedData.length > 0 ? (
+            {sortedData?.length > 0 ? (
               sortedData?.slice(startIndex, startIndex + itemsPerPage)
                 .map((item) => (
                   <div
@@ -974,8 +974,8 @@ function Reviews() {
       >
         <div className={`text-[12px] ml-[10px]`}>
           Showing {startIndex + 1}-
-          {Math.min(startIndex + itemsPerPage, sortedData.length)} of{" "}
-          {sortedData.length}
+          {Math.min(startIndex + itemsPerPage, sortedData?.length)} of{" "}
+          {sortedData?.length}
         </div>
         <div className="text-[13px] mr-5 flex items-center gap-3">
           <button
