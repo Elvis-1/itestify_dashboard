@@ -20,7 +20,7 @@ const GeneralSettings = () => {
 
   const token = localStorage.getItem("token");
 
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const [memberModal, setMemberModal] = useState(false);
   const [confirmAddAdmin, setConfirmAddAdmin] = useState(false);

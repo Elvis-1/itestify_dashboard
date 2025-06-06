@@ -36,7 +36,7 @@ const UserDelProfile = ({ deletedUsers, setProfile }) => {
           >
             <img
               className="flex justify-center items-center w-24 h-24 absolute top-[60%] left-[38%]"
-              src={avatarProfile}
+              src="avatarProfile"
               alt=""
             />
           </div>
