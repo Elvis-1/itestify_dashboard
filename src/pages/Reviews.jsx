@@ -96,8 +96,7 @@ function Reviews() {
     Object.values(checkedItems).filter(Boolean).length === 1;
   const allChecked =
     sortedData.length > 0 &&
-    sortedData
-      .slice(startIndex, startIndex + itemsPerPage)
+    sortedData?.slice(startIndex, startIndex + itemsPerPage)
       .every((item) => checkedItems[item.id]);
 
   const handleCheckboxChange = (id) => {
@@ -806,8 +805,7 @@ function Reviews() {
                     const newCheckedState = allChecked
                       ? {}
                       : Object.fromEntries(
-                          sortedData
-                            .slice(startIndex, startIndex + itemsPerPage)
+                          sortedData?.slice(startIndex, startIndex + itemsPerPage)
                             .map((item) => [item.id, true])
                         );
                     setCheckedItems(newCheckedState);
@@ -912,8 +910,7 @@ function Reviews() {
             </div>
 
             {sortedData.length > 0 ? (
-              sortedData
-                .slice(startIndex, startIndex + itemsPerPage)
+              sortedData?.slice(startIndex, startIndex + itemsPerPage)
                 .map((item) => (
                   <div
                     key={item.id}
