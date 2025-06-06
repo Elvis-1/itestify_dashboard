@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { RiSettings5Line } from "react-icons/ri";
 import { DarkModeContext } from "../context/DarkModeContext";
 import { IoMdAdd } from "react-icons/io";
-import AddMemeber from "../component/generalSettingsPopups/AddMemeber";
+import AddMember from "../component/generalSettingsPopups/AddMember";
 import ConfirmAddAdmin from "../component/generalSettingsPopups/ConfirmAddAdmin";
 import SuccessModal from "../component/generalSettingsPopups/SuccessModal";
 import DeleteSuperAdmin from "../component/generalSettingsPopups/DeleteSuperAdmin";
@@ -66,7 +66,7 @@ const GeneralSettings = () => {
         );
         setNewMember(response?.data?.data);
       } catch (error) {
-        message.error(error.response.data.message);
+        // message.error(error.response.data.message);
         console.error("Error fetching members:", error?.response || error.message)
       } finally {
         setLoading(false);
@@ -205,7 +205,7 @@ const GeneralSettings = () => {
   return (
     <div>
       {memberModal && (
-        <AddMemeber
+        <AddMember
           memberModal={memberModal}
           setMemberModal={setMemberModal}
           onConfirm={openConfirmModal}

@@ -2,7 +2,7 @@ import React, { useContext, useState } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { MdClose } from "react-icons/md";
 import { IoMdArrowDropdown } from "react-icons/io";
-const AddMemeber = ({
+const AddMember = ({
   setMemberModal,
   onConfirm,
   adminDetails,
@@ -71,6 +71,7 @@ const AddMemeber = ({
                   className={`${
                     isDarkMode ? `bg-off-black` : `bg-off-white`
                   } p-2 rounded-md outline-none text-sm placeholder:text-xs`}
+                  disabled={isEditing}
                 />
               </div>
               <div className="flex flex-col gap-2">
@@ -86,6 +87,7 @@ const AddMemeber = ({
                   className={`${
                     isDarkMode ? `bg-off-black` : `bg-off-white`
                   } p-2 rounded-md outline-none text-sm placeholder:text-xs`}
+                  disabled={isEditing}
                 />
               </div>
               {/* Dropdown  */}
@@ -168,4 +170,4 @@ const AddMemeber = ({
   );
 };
 
-export default AddMemeber;
+export default AddMember;
