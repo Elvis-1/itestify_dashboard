@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router";
+import { Link } from "react-router-dom";
 import { RiSettings5Line } from "react-icons/ri";
 import { DarkModeContext } from "../context/DarkModeContext";
 import { IoMdAdd } from "react-icons/io";
@@ -67,7 +67,7 @@ const GeneralSettings = () => {
         setNewMember(response?.data?.data);
       } catch (error) {
         message.error(error.response.data.message);
-        console.log(error);
+        console.error("Error fetching members:", error?.response || error.message)
       } finally {
         setLoading(false);
       }
