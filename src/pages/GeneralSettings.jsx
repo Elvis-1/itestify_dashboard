@@ -64,7 +64,7 @@ const GeneralSettings = () => {
             },
           }
         );
-        setNewMember(response.data.data);
+        setNewMember(response?.data?.data);
       } catch (error) {
         message.error(error.response.data.message);
         console.log(error);

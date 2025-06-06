@@ -93,7 +93,7 @@ function Reviews() {
 
   const hasCheckedItems = Object.values(checkedItems).some(Boolean);
   const singleChecked =
-    Object.values(checkedItems).filter(Boolean).length === 1;
+    Object.values(checkedItems).filter(Boolean)?.length === 1;
   const allChecked =
     sortedData?.length > 0 &&
     sortedData?.slice(startIndex, startIndex + itemsPerPage)
@@ -235,13 +235,13 @@ function Reviews() {
       const checkedIds = Object.keys(checkedItems).filter(
         (id) => checkedItems[id]
       );
-      if (checkedIds.length === 0) {
+      if (checkedIds?.length === 0) {
         message.error("No reviews selected for deletion");
         return;
       }
 
       await Promise.all(
-        checkedIds.map((id) =>
+        checkedIds?.map((id) =>
           axios.delete(
             `${import.meta.env.VITE_API_URL}/review/admin/reviews/${id}/`,
             {
