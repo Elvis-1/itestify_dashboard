@@ -334,26 +334,22 @@ function Reviews() {
                 : [...Array(ratingType)].map((_, i) => (
                     <AiFillStar className="text-[#9966CC]" key={i} />
                   ))}
-              {ratingType < 5 &&
-                [...Array(5 - ratingType)].map((_, i) => (
-                  <AiOutlineStar className="text-[#9966CC]" key={i} />
-                ))}
             </p>
             {filterDropDown ? <FaCaretUp /> : <FaCaretDown />}
           </div>
 
           {filterDropDown && (
-            <div className="flex flex-col rounded-xl cursor-pointer p-1 opacity-[0.6] mt-3 border overflow-hidden w-[115%] ml-[-20px]">
+            <div className="flex flex-col rounded-t-xl cursor-pointer p-1 opacity-[0.6] mt-3 border-x border-t overflow-hidden w-[115%] ml-[-20px]">
               {[5, 4, 3, 2, 1].map((rating) => (
                 <div
                   onClick={() => {
                     setRatingType(rating);
                     setFilterDropDown(false);
                   }}
-                  className="w-[110%] ml-[-15px] border-b pl-5 pb-1"
+                  className="w-[110%] ml-[-15px] border-b pl-2 pb-1"
                   key={rating}
                 >
-                  <div className="flex item-center">
+                  <div className="flex item-center p-[6px]">
                     {[...Array(rating)].map((_, i) => (
                       <AiFillStar className="text-[#9966CC]" key={i} />
                     ))}
@@ -929,7 +925,7 @@ function Reviews() {
                       <input
                         className="cursor-pointer"
                         type="checkbox"
-                        checked={checkedItems[item.id] || false}
+                        checked={singleChecked} //NEW CHANGE
                         onChange={() => handleCheckboxChange(item.id)}
                       />
                     </div>
@@ -978,7 +974,7 @@ function Reviews() {
         }`}
       >
         <div className={`text-[12px] ml-[10px]`}>
-          Showing {startIndex + 1}-
+          Showing {startIndex}-
           {Math.min(startIndex + itemsPerPage, sortedData?.length)} of{" "}
           {sortedData?.length}
         </div>
@@ -989,7 +985,7 @@ function Reviews() {
             className={`w-[90px] p-2 rounded-xl ${
               page === 1
                 ? "opacity-[0.5] text-gray-500 border border-gray-500"
-                : "border border-[#9966CC] text-[#9966CC]"
+                : "border border-primary text-primary"
             }`}
           >
             Previous
@@ -1000,7 +996,7 @@ function Reviews() {
             className={`w-[90px] p-2 rounded-xl ${
               page === totalPages
                 ? "opacity-[0.5] text-gray-500 border border-gray-500"
-                : "border border-[#9966CC] text-[#9966CC]"
+                : "border border-primary text-primary"
             }`}
           >
             Next
