@@ -17,6 +17,7 @@ import axios from "axios";
 
 const DelUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
+  const API_URL = import.meta.env.VITE_API_URL || "https://itestify-backend-nxel.onrender.com"
   const [deletedUsers, setDeletedUsers] = useState([]);
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
   const [deleteRecordModal, setDeleteRecordModal] = useState(false);
@@ -60,7 +61,7 @@ const DelUsers = () => {
       const token = localStorage.getItem("token");
       try {
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/auths/users/all/?status=deleted`,
+          `${API_URL}/auths/users/all/?status=deleted`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
@@ -132,7 +133,7 @@ const DelUsers = () => {
       const deletePromises = selectedUsers.map(async (userId) => {
         try {
           await axios.delete(
-            `${import.meta.env.VITE_API_URL}/auths/users/${userId}`,
+            `${API_URL}/auths/users/${userId}`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
@@ -166,7 +167,7 @@ const DelUsers = () => {
   const handleDeleteById = async (userId) => {
     try {
       await axios.delete(
-        `${import.meta.env.VITE_API_URL}/auths/users/${userId}/`,
+        `${API_URL}/auths/users/${userId}/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
