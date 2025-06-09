@@ -13,6 +13,8 @@ import axios from "axios";
 
 const RegUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
+  const API_URL = import.meta.env.VITE_API_URL || "https://itestify-backend-nxel.onrender.com"
+
   const [registeredUsers, setRegisteredUsers] = useState([]);
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
   const [searchItem, setSearchItem] = useState("");
@@ -67,7 +69,7 @@ const RegUsers = () => {
       try {
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/auths/users/all/?status=registered&ordering=-created_at`,
+          `${API_URL}/auths/users/all/?status=registered&ordering=-created_at`,
           {
             headers: {
               Authorization: `Bearer ${token}`,

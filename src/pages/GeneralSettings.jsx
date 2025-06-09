@@ -13,13 +13,13 @@ import DeleteMember from "../component/generalSettingsPopups/DeleteMember";
 import ShortSuccessMessage from "../component/generalSettingsPopups/ShortSuccessMessage";
 import axios from "axios";
 import { message } from "antd";
-import LoadingState from "../component/LoadingState"
+import LoadingState from "../component/LoadingState";
 
 const GeneralSettings = () => {
   const { isDarkMode } = useContext(DarkModeContext);
 
   const token = localStorage.getItem("token");
-
+  const API_URL = import.meta.env.VITE_API_URL || "https://itestify-backend-nxel.onrender.com"
   const [loading, setLoading] = useState(true);
 
   const [memberModal, setMemberModal] = useState(false);
@@ -57,17 +57,21 @@ const GeneralSettings = () => {
       try {
         setLoading(true);
         const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/auths/members/list-members/`,
+          `${API_URL}/auths/members/list-members/`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
           }
         );
         setNewMember(response?.data?.data);
       } catch (error) {
         // message.error(error.response.data.message);
-        console.error("Error fetching members:", error?.response || error.message)
+        console.error(
+          "Error fetching members:",
+          error?.response || error.message
+        );
       } finally {
         setLoading(false);
       }
@@ -95,12 +99,13 @@ const GeneralSettings = () => {
       if (isEditing) {
         const response = await axios.patch(
           `${
-            import.meta.env.VITE_API_URL
+            API_URL
           }/auths/members/${editMemberId}/update-member/`,
           payload,
           {
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
           }
         );
@@ -116,11 +121,12 @@ const GeneralSettings = () => {
         setSuccessChangeModal(true);
       } else {
         const response = await axios.post(
-          `${import.meta.env.VITE_API_URL}/auths/members/create-member/`,
+          `${API_URL}/auths/members/create-member/`,
           payload,
           {
             headers: {
               Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
             },
           }
         );
@@ -167,11 +173,12 @@ const GeneralSettings = () => {
     try {
       await axios.delete(
         `${
-          import.meta.env.VITE_API_URL
+          API_URL
         }/auths/members/${memberToDelete}/delete-member/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         }
       );

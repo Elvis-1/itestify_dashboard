@@ -15,6 +15,8 @@ import LoadingState from "../component/LoadingState";
 function Reviews() {
   const { isDarkMode } = useContext(DarkModeContext);
 
+  const API_URL = import.meta.env.VITE_API_URL || "https://itestify-backend-nxel.onrender.com"
+
   const [reviewData, setReviewData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [sortConfig, setSortConfig] = useState(null);
@@ -180,10 +182,11 @@ function Reviews() {
     try {
       setLoadingReviews(true);
       const response = await axios.get(
-        `${import.meta.env.VITE_API_URL}/review/admin/reviews/`,
+        `${API_URL}/review/admin/reviews/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
           },
         }
       );
@@ -203,10 +206,11 @@ function Reviews() {
   const DeleteReview = async (id) => {
     try {
       await axios.delete(
-        `${import.meta.env.VITE_API_URL}/review/admin/reviews/${id}/`,
+        `${API_URL}/review/admin/reviews/${id}/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json"
           },
         }
       );
@@ -243,10 +247,11 @@ function Reviews() {
       await Promise.all(
         checkedIds?.map((id) =>
           axios.delete(
-            `${import.meta.env.VITE_API_URL}/review/admin/reviews/${id}/`,
+            `${API_URL}/review/admin/reviews/${id}/`,
             {
               headers: {
                 Authorization: `Bearer ${token}`,
+                "Content-Type": "application/json"
               },
             }
           )

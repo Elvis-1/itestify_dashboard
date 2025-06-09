@@ -13,9 +13,7 @@ const UserRegProfile = ({ registeredUsers, setProfile }) => {
   return (
     <div className="fixed inset-0 z-50">
       {/* Non-clickable overlay */}
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50"
-      />
+      <div className="fixed inset-0 bg-black bg-opacity-50" />
 
       {/* Modal container */}
       <div
@@ -38,7 +36,7 @@ const UserRegProfile = ({ registeredUsers, setProfile }) => {
             <img
               className="flex justify-center items-center w-24 h-24 absolute top-[60%] left-[38%]"
               src="avatarProfile"
-              alt=""
+              alt={`${registeredUsers?.full_name} picture`}
             />
           </div>
 
@@ -65,7 +63,10 @@ const UserRegProfile = ({ registeredUsers, setProfile }) => {
             </div>
             <div className="flex justify-between items-center w-full py-2">
               <p>Registration date</p>
-              <p>{new Date(registeredUsers?.created_at).toLocaleDateString() || "----"}</p>
+              <p>
+                {new Date(registeredUsers?.created_at).toLocaleDateString() ||
+                  "----"}
+              </p>
             </div>
           </div>
         </div>
