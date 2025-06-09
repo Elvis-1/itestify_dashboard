@@ -19,7 +19,9 @@ const GeneralSettings = () => {
   const { isDarkMode } = useContext(DarkModeContext);
 
   const token = localStorage.getItem("token");
-  const API_URL = import.meta.env.VITE_API_URL || "https://itestify-backend-nxel.onrender.com"
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://itestify-backend-nxel.onrender.com";
   const [loading, setLoading] = useState(true);
 
   const [memberModal, setMemberModal] = useState(false);
@@ -66,8 +68,9 @@ const GeneralSettings = () => {
           }
         );
         setNewMember(response?.data?.data);
+        console.log(response?.data?.data);
       } catch (error) {
-        // message.error(error.response.data.message);
+        message.error(error?.response?.data?.message);
         console.error(
           "Error fetching members:",
           error?.response || error.message
@@ -98,9 +101,7 @@ const GeneralSettings = () => {
 
       if (isEditing) {
         const response = await axios.patch(
-          `${
-            API_URL
-          }/auths/members/${editMemberId}/update-member/`,
+          `${API_URL}/auths/members/${editMemberId}/update-member/`,
           payload,
           {
             headers: {
@@ -172,9 +173,7 @@ const GeneralSettings = () => {
   const confirmDeleteMember = async () => {
     try {
       await axios.delete(
-        `${
-          API_URL
-        }/auths/members/${memberToDelete}/delete-member/`,
+        `${API_URL}/auths/members/${memberToDelete}/delete-member/`,
         {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -192,6 +191,12 @@ const GeneralSettings = () => {
     } catch (error) {
       message.error("Failed to delete member.");
     }
+  };
+    const formatSnakeToTitle = (value) => {
+    return value
+      .split("_")
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
   };
 
   const SUCCESS_MESSAGES = {
@@ -334,15 +339,15 @@ const GeneralSettings = () => {
                     </p>
                   </div>
                   <div></div>
-                  <div className="flex justify-between items-center w-full gap-96">
+                  <div className="flex justify-between items-center w-full gap-96 capitalize">
                     <p
                       className={`ml-auto ${
-                        member.role === "Super admin"
+                        member.role === "super_admin"
                           ? `text-near-white`
                           : `text-primary`
                       } `}
                     >
-                      {member.role}
+                      {formatSnakeToTitle(member.role)}
                     </p>
                     <div className="relative">
                       <MdOutlineMoreHoriz

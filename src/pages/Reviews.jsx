@@ -15,7 +15,9 @@ import LoadingState from "../component/LoadingState";
 function Reviews() {
   const { isDarkMode } = useContext(DarkModeContext);
 
-  const API_URL = import.meta.env.VITE_API_URL || "https://itestify-backend-nxel.onrender.com"
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://itestify-backend-nxel.onrender.com";
 
   const [reviewData, setReviewData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -34,15 +36,21 @@ function Reviews() {
   const [filterDate2, setFilterDate2] = useState("");
   const [ratingType, setRatingType] = useState(0);
   const token = localStorage.getItem("token");
-  const itemsPerPage = 6;
+  const itemsPerPage = 4;
 
   const [loadingReviews, setLoadingReviews] = useState(true);
 
   const startIndex = (page - 1) * itemsPerPage;
-  const totalPages = Math.ceil(
-    (getFilteredData?.length > 0 ? getFilteredData : reviewData)?.length /
-      itemsPerPage
+  const totalPages = Math.max(
+    1,
+    Math.ceil(
+      (getFilteredData?.length > 0 ? getFilteredData : reviewData)?.length /
+        itemsPerPage
+    )
   );
+  useEffect(() => {
+    setPage(1);
+  }, [getFilteredData, reviewData]);
   const sortData = (key) => {
     let direction = "ascending";
     if (
@@ -98,7 +106,8 @@ function Reviews() {
     Object.values(checkedItems).filter(Boolean)?.length === 1;
   const allChecked =
     sortedData?.length > 0 &&
-    sortedData?.slice(startIndex, startIndex + itemsPerPage)
+    sortedData
+      ?.slice(startIndex, startIndex + itemsPerPage)
       .every((item) => checkedItems[item.id]);
 
   const handleCheckboxChange = (id) => {
@@ -181,16 +190,14 @@ function Reviews() {
   const fetchReviewData = async () => {
     try {
       setLoadingReviews(true);
-      const response = await axios.get(
-        `${API_URL}/review/admin/reviews/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          },
-        }
-      );
+      const response = await axios.get(`${API_URL}/review/admin/reviews/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       setReviewData(response.data.results);
+      console.log(response.data.results);
     } catch (error) {
       console.error("Error fetching review data:", error);
       message.error(error?.message || "Failed to fetch reviews");
@@ -205,15 +212,12 @@ function Reviews() {
 
   const DeleteReview = async (id) => {
     try {
-      await axios.delete(
-        `${API_URL}/review/admin/reviews/${id}/`,
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json"
-          },
-        }
-      );
+      await axios.delete(`${API_URL}/review/admin/reviews/${id}/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
       setReviewData((prevData) =>
         prevData.filter((review) => review.id !== id)
       );
@@ -246,15 +250,12 @@ function Reviews() {
 
       await Promise.all(
         checkedIds?.map((id) =>
-          axios.delete(
-            `${API_URL}/review/admin/reviews/${id}/`,
-            {
-              headers: {
-                Authorization: `Bearer ${token}`,
-                "Content-Type": "application/json"
-              },
-            }
-          )
+          axios.delete(`${API_URL}/review/admin/reviews/${id}/`, {
+            headers: {
+              Authorization: `Bearer ${token}`,
+              "Content-Type": "application/json",
+            },
+          })
         )
       );
 
@@ -272,7 +273,6 @@ function Reviews() {
       message.error("Failed to delete reviews");
     }
   };
-
   return (
     <div
       className={`w-[98%] flex flex-col justify-between m-[auto] mt-8 ${
@@ -334,26 +334,22 @@ function Reviews() {
                 : [...Array(ratingType)].map((_, i) => (
                     <AiFillStar className="text-[#9966CC]" key={i} />
                   ))}
-              {ratingType < 5 &&
-                [...Array(5 - ratingType)].map((_, i) => (
-                  <AiOutlineStar className="text-[#9966CC]" key={i} />
-                ))}
             </p>
             {filterDropDown ? <FaCaretUp /> : <FaCaretDown />}
           </div>
 
           {filterDropDown && (
-            <div className="flex flex-col rounded-xl cursor-pointer p-1 opacity-[0.6] mt-3 border overflow-hidden w-[115%] ml-[-20px]">
+            <div className="flex flex-col rounded-t-xl cursor-pointer p-1 opacity-[0.6] mt-3 border-x border-t overflow-hidden w-[115%] ml-[-20px]">
               {[5, 4, 3, 2, 1].map((rating) => (
                 <div
                   onClick={() => {
                     setRatingType(rating);
                     setFilterDropDown(false);
                   }}
-                  className="w-[110%] ml-[-15px] border-b pl-5 pb-1"
+                  className="w-[110%] ml-[-15px] border-b pl-2 pb-1"
                   key={rating}
                 >
-                  <div className="flex item-center">
+                  <div className="flex item-center p-[6px]">
                     {[...Array(rating)].map((_, i) => (
                       <AiFillStar className="text-[#9966CC]" key={i} />
                     ))}
@@ -748,7 +744,11 @@ function Reviews() {
         <div className="flex gap-2">
           {hasCheckedItems && (
             <button
-              onClick={() => setReviewDeleteAllModal(true)}
+              onClick={() =>
+                allChecked
+                  ? setReviewDeleteAllModal(true)
+                  : setReviewDeleteModal(true)
+              }
               className="p-2 text-[12px] rounded-xl w-[110px] cursor-pointer bg-red text-white"
             >
               Delete
@@ -773,12 +773,12 @@ function Reviews() {
             />
           </div>
 
-          <div className="flex items-center justify-center w-[60px] rounded border border-[#9966CC] text-[#9966CC]">
+          <div
+            className="cursor-pointer flex items-center justify-center w-[60px] rounded border border-[#9966CC] text-[#9966CC]"
+            onClick={() => setReviewFilterModal(true)}
+          >
             <IoFilterOutline />
-            <button
-              onClick={() => setReviewFilterModal(true)}
-              className="text-[12px] outline-none border-none"
-            >
+            <button className="text-[12px] outline-none border-none">
               Filter
             </button>
           </div>
@@ -810,7 +810,8 @@ function Reviews() {
                     const newCheckedState = allChecked
                       ? {}
                       : Object.fromEntries(
-                          sortedData?.slice(startIndex, startIndex + itemsPerPage)
+                          sortedData
+                            ?.slice(startIndex, startIndex + itemsPerPage)
                             .map((item) => [item.id, true])
                         );
                     setCheckedItems(newCheckedState);
@@ -915,7 +916,8 @@ function Reviews() {
             </div>
 
             {sortedData?.length > 0 ? (
-              sortedData?.slice(startIndex, startIndex + itemsPerPage)
+              sortedData
+                ?.slice(startIndex, startIndex + itemsPerPage)
                 .map((item) => (
                   <div
                     key={item.id}
@@ -941,7 +943,7 @@ function Reviews() {
                       {item.user_email || "------"}
                     </div>
                     <div className="pl-2 flex items-center">
-                      {item.message || "------"}
+                      {`${item.message.slice(0, 20)}... ` || "------"}
                     </div>
                     <div className="p-2 flex items-center">
                       {[...Array(item.rating)].map((_, i) => (
@@ -989,18 +991,18 @@ function Reviews() {
             className={`w-[90px] p-2 rounded-xl ${
               page === 1
                 ? "opacity-[0.5] text-gray-500 border border-gray-500"
-                : "border border-[#9966CC] text-[#9966CC]"
+                : "border border-primary text-primary"
             }`}
           >
             Previous
           </button>
           <button
             onClick={handleNextPage}
-            disabled={page === totalPages}
+            disabled={page >= totalPages}
             className={`w-[90px] p-2 rounded-xl ${
-              page === totalPages
+              page >= totalPages
                 ? "opacity-[0.5] text-gray-500 border border-gray-500"
-                : "border border-[#9966CC] text-[#9966CC]"
+                : "border border-primary text-primary"
             }`}
           >
             Next
