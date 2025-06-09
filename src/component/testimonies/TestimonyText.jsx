@@ -453,7 +453,7 @@ function TestimonyText() {
     //function handling delete modal footer button
     function handleDeleteAlertFooterButton() {
         return [
-            deleteStatus === 'Pending' ? <button onClick={() => setDeleteAlert(false)}
+            deleteStatus === 'pending' ? <button onClick={() => setDeleteAlert(false)}
             className='mr-[110px] mt-3 bg-[#9966CC] 
             border-none outline-none rounded w-[80px] p-1'>Okay</button> :
 
@@ -464,9 +464,12 @@ function TestimonyText() {
                 text-[#9966CC] w-[100px] p-1 rounded ml-[-20px] mr-2'>Cancel
                 </button>
                 <button 
-                onClick={deleteSuccessFulModal}
+                onClick={() => {
+                    handleTestimonyDelete(controlDetail)
+                    deleteSuccessFulModal
+                }}
                 className='border-none outline-none
-                    bg-red-600 w-[100px] rounded p-1 mr-2 pl-3'>Yes delete
+                    bg-red w-[100px] rounded p-1 mr-2 pl-3'>Yes delete
                 </button>
             </div> 
         ]
@@ -957,7 +960,7 @@ function TestimonyText() {
                     <button 
                     onClick={() => {
                         setActionModal(false);
-                        handleTestimonyDelete(controlDetail);
+                        console.log(deleteStatus)
                         showDeleteNotification(deleteStatus)
                     }} 
                     className='pl-2 pt-4 text-red'>
@@ -991,7 +994,7 @@ function TestimonyText() {
             },
         }}
         >
-        {deleteStatus === 'Pending' ? 
+        {deleteStatus === 'pending' ? 
         <div className='flex flex-col w-[128%] ml-[-20px] mt-5 items-center justify-center'>
             <div className='w-[80%] ml-[-45px]'>
                 <p className='text-[15px] text-center pt-3'>Unable to delete Pending Testimonies!</p>
