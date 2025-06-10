@@ -9,7 +9,8 @@ const AddMember = ({
   setAdminDetails,
   isEditing,
   onProceed,
-
+  setIsEditing,
+  setEditMemberId,
 }) => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
@@ -49,7 +50,11 @@ const AddMember = ({
               <button
                 className="cursor-pointer"
                 aria-label="Close Modal"
-                onClick={() => setMemberModal(false)}
+                onClick={() => {
+                  setMemberModal(false);
+                  setIsEditing(false);
+                  setEditMemberId(null);
+                }}
               >
                 <MdClose />
               </button>
@@ -94,7 +99,9 @@ const AddMember = ({
               <button
                 onClick={() => setIsOpenDropdown(!isOpenDropdown)}
                 className={`w-full p-2 ${
-                  isDarkMode ? `bg-off-black hover:bg-zinc-800` : `bg-off-white hover:bg-near-white`
+                  isDarkMode
+                    ? `bg-off-black hover:bg-zinc-800`
+                    : `bg-off-white hover:bg-near-white`
                 } flex items-center justify-between
                p-1 rounded-md outline-none text-sm placeholder:text-xs
                transition-colors duration-200`}
@@ -147,7 +154,11 @@ const AddMember = ({
               }`}
             >
               <button
-                onClick={() => setMemberModal(false)}
+                onClick={() => {
+                  setMemberModal(false);
+                  setIsEditing(false);
+                  setEditMemberId(null);
+                }}
                 className={`btn-secondary px-6 py-3 text-xs text-primary border-primary ${
                   isDarkMode ? `` : ` border-near-black `
                 }`}

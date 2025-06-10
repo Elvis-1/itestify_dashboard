@@ -20,8 +20,7 @@ const GeneralSettings = () => {
 
   const token = localStorage.getItem("token");
   const API_URL =
-    import.meta.env.VITE_API_URL ||
-    "https://itestify-backend-1.onrender.com";
+    import.meta.env.VITE_API_URL || "https://itestify-backend-1.onrender.com";
   const [loading, setLoading] = useState(true);
 
   const [memberModal, setMemberModal] = useState(false);
@@ -100,6 +99,11 @@ const GeneralSettings = () => {
       };
 
       if (isEditing) {
+        if (!editMemberId) {
+          message.error("No member selected for editing.");
+          return;
+        }
+
         const response = await axios.patch(
           `${API_URL}/auths/members/${editMemberId}/update-member/`,
           payload,
@@ -110,6 +114,7 @@ const GeneralSettings = () => {
             },
           }
         );
+
         setNewMember((prev) =>
           prev.map((member) =>
             member.id === editMemberId
@@ -117,8 +122,6 @@ const GeneralSettings = () => {
               : member
           )
         );
-        setIsEditing(false);
-        setEditMemberId(null);
         setSuccessChangeModal(true);
       } else {
         const response = await axios.post(
@@ -192,7 +195,7 @@ const GeneralSettings = () => {
       message.error("Failed to delete member.");
     }
   };
-    const formatSnakeToTitle = (value) => {
+  const formatSnakeToTitle = (value) => {
     return value
       .split("_")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
@@ -226,6 +229,7 @@ const GeneralSettings = () => {
           setAdminDetails={setAdminDetails}
           isEditing={isEditing}
           setIsEditing={setIsEditing}
+          setEditMemberId={setEditMemberId}
         />
       )}
 
@@ -299,7 +303,7 @@ const GeneralSettings = () => {
             <LoadingState />
           ) : (
             <div
-              className={`w-full p-3 pb-6 rounded-lg ${
+              className={`w-full p-6 pb-6 rounded-lg ${
                 isDarkMode ? `bg-grayBlack` : `bg-white`
               }`}
             >
@@ -315,7 +319,10 @@ const GeneralSettings = () => {
                   </p>
                 </div>
                 <div
-                  onClick={() => setMemberModal(true)}
+                  onClick={() => {
+                    setMemberModal(true);
+                    !isEditing && setAdminDetails({ name: "", email: "", role: "" });;
+                  }}
                   className="flex gap-3 items-center cursor-pointer"
                 >
                   <IoMdAdd fill="#9966CC" />

@@ -16,8 +16,7 @@ function Reviews() {
   const { isDarkMode } = useContext(DarkModeContext);
 
   const API_URL =
-    import.meta.env.VITE_API_URL ||
-    "https://itestify-backend-1.onrender.com";
+    import.meta.env.VITE_API_URL || "https://itestify-backend-1.onrender.com";
 
   const [reviewData, setReviewData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -282,6 +281,7 @@ function Reviews() {
       {/* filter modal */}
       <Modal
         open={reviewFilterModal}
+        className="max-w-sm"
         onCancel={handleCloseModal}
         footer={null}
         closeIcon={
@@ -293,8 +293,8 @@ function Reviews() {
         }
         styles={{
           content: {
-            backgroundColor: "#0B0B0B",
-            width: "330px",
+            backgroundColor: `${isDarkMode ? "#0B0B0B" : "white"}`,
+            width:"100%",
             height: "auto",
             color: "white",
             margin: "0 auto",
@@ -303,18 +303,21 @@ function Reviews() {
             marginTop: "50px",
           },
           body: {
-            backgroundColor: "#1717171",
-            color: "white",
+            color: `${isDarkMode ? "white" : "black"}`,
           },
         }}
       >
-        <div className="p-2">
-          <h3 className="text-white text-[13px] font-sans pb-2 mt-[-10px]">
+        <div className="">
+          <h3
+            className={`${
+              isDarkMode ? "text-white" : "text-black"
+            } text-[13px] font-sans pb-2 mt-[-10px]`}
+          >
             Filter
           </h3>
-          <hr className="opacity-[0.2] text-gray-300 w-[124%] ml-[-31px] " />
+          <hr className="opacity-[0.2] text-gray-300 " />
 
-          <div className="flex items-center justify-between mt-2 w-[115%] ml-[-15px]">
+          <div className="flex items-center justify-between mt-2">
             <h3 className="text-[14px]">Rating</h3>
             <button
               onClick={() => setRatingType(0)}
@@ -326,9 +329,11 @@ function Reviews() {
 
           <div
             onClick={() => setFilterDropDown(!filterDropDown)}
-            className="flex items-center justify-center w-[115%] ml-[-20px] bg-[#171717] p-1 rounded-xl cursor-pointer"
+            className={`flex items-center justify-center ${
+              isDarkMode ? `bg-[#171717] text-white` : `bg-off-white text-black`
+            } p-1 rounded-xl cursor-pointer`}
           >
-            <p className="text-white font-sans p-1 w-[100%] rounded flex items-center">
+            <p className=" font-sans p-1 w-[100%] rounded flex items-center">
               {ratingType === 0
                 ? "Select"
                 : [...Array(ratingType)].map((_, i) => (
@@ -339,14 +344,14 @@ function Reviews() {
           </div>
 
           {filterDropDown && (
-            <div className="flex flex-col rounded-t-xl cursor-pointer p-1 opacity-[0.6] mt-3 border-x border-t overflow-hidden w-[115%] ml-[-20px]">
+            <div className="flex flex-col rounded-t-xl cursor-pointer p-1 opacity-[0.6] mt-3 border-x border-t overflow-hidden">
               {[5, 4, 3, 2, 1].map((rating) => (
                 <div
                   onClick={() => {
                     setRatingType(rating);
                     setFilterDropDown(false);
                   }}
-                  className="w-[110%] ml-[-15px] border-b pl-2 pb-1"
+                  className=" border-b pb-1"
                   key={rating}
                 >
                   <div className="flex item-center p-[6px]">
@@ -362,10 +367,10 @@ function Reviews() {
             </div>
           )}
 
-          <hr className="opacity-[0.2] mt-5 text-gray-300 w-[124%] ml-[-31px] " />
+          <hr className="opacity-[0.2] mt-5 text-gray-300" />
 
           <div>
-            <div className="flex items-center justify-between mb-[-15px] mt-2 w-[110%] ml-[-15px]">
+            <div className="flex items-center justify-between mb-[-15px] pt-2 ">
               <h3 className="text-[14px]">Date Range</h3>
               <button
                 onClick={() => {
@@ -379,13 +384,19 @@ function Reviews() {
               </button>
             </div>
 
-            <div className="flex items-center justify-between mt-4 gap-2 ml-[-10px]">
+            <div className="flex items-center justify-between pt-4 gap-2">
               <div>
                 <p>From</p>
-                <div className="flex items-center rounded-xl w-[150px] p-1 bg-[#171717] mt-1 cursor-pointer">
+                <div
+                  className={`flex items-center rounded-xl px-3 py-1 ${
+                    isDarkMode ? `bg-[#171717]` : `bg-off-white`
+                  } mt-3 cursor-pointer`}
+                >
                   <CalendarOutlined
                     onClick={handleFromDateIconClick}
-                    className="text-white ml-2"
+                    className={`${
+                      isDarkMode ? `text-white` : `text-black`
+                    } `}
                   />
                   <input
                     type="date"
@@ -393,17 +404,23 @@ function Reviews() {
                     placeholder="dd/mm/yyyy"
                     value={filterDate1}
                     onChange={handleFilterDate1}
-                    className="no-icon border cursor-pointer"
+                    className={`no-icon border cursor-pointer `}
                   />
                 </div>
               </div>
 
               <div>
                 <p>To</p>
-                <div className="flex items-center rounded-xl w-[150px] p-1 bg-[#171717] mt-1 cursor-pointer">
+               <div
+                  className={`flex items-center rounded-xl px-3 py-1 ${
+                    isDarkMode ? `bg-[#171717]` : `bg-off-white`
+                  }  mt-3 cursor-pointer`}
+                >
                   <CalendarOutlined
                     onClick={handleToDateIconClick}
-                    className="text-white ml-2"
+                    className={`${
+                      isDarkMode ? `text-white` : `text-black`
+                    } ml-2`}
                   />
                   <input
                     type="date"
@@ -418,16 +435,16 @@ function Reviews() {
             </div>
           </div>
 
-          <div className="mt-[50px] flex items-center justify-end">
+          <div className="mt-[50px] flex items-center justify-end gap-3">
             <button
               onClick={handleReset}
-              className="border border-[#9966CC] outline-none p-1 rounded w-[100px] text-[#9966CC]"
+              className="border border-[#9966CC] outline-none px-3 py-[6px] rounded  text-[#9966CC]"
             >
               Clear All
             </button>
             <button
               onClick={handleFiltering}
-              className="bg-[#9966CC] ml-2 border-none outline-none rounded p-1 w-[100px]"
+              className={`bg-[#9966CC] border-none outline-none rounded py-[6px] px-4 text-white`}
             >
               Apply
             </button>
@@ -671,7 +688,7 @@ function Reviews() {
           </button>
           <button
             onClick={() => reviewDetails && DeleteReview(reviewDetails.id)}
-            className="border-none outline-none bg-red w-[100px] rounded p-1 mr-2 pl-3"
+            className="text-white border-none outline-none bg-red w-[100px] rounded p-1 mr-2 pl-3"
           >
             Yes delete
           </button>
@@ -683,7 +700,11 @@ function Reviews() {
         onCancel={handleCloseModal}
         closeIcon={
           <span
-            style={{ color: "white", fontSize: "12px", marginTop: "-30px" }}
+            style={{
+              color: isDarkMode ? "white" : "black",
+              fontSize: "12px",
+              marginTop: "-30px",
+            }}
           >
             X
           </span>
@@ -691,17 +712,17 @@ function Reviews() {
         footer={null}
         styles={{
           content: {
-            backgroundColor: "black",
+            backgroundColor: isDarkMode ? "black" : "white",
             width: "350px",
             height: "auto",
-            color: "white",
+            color: isDarkMode ? "white" : "black",
             margin: "0 auto",
             borderRadius: "8px",
             marginTop: "50px",
           },
           body: {
             backgroundColor: "#1717171",
-            color: "white",
+            color: isDarkMode ? "white" : "black",
           },
         }}
       >
@@ -724,7 +745,7 @@ function Reviews() {
           </button>
           <button
             onClick={DeleteAllReviews}
-            className="border-none outline-none bg-red w-[100px] rounded p-1 mr-2 pl-3"
+            className={`text-white border-none outline-none bg-red w-[100px] rounded p-1 mr-2 pl-3`}
           >
             Yes delete
           </button>
