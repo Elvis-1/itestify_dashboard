@@ -17,7 +17,7 @@ function Reviews() {
 
   const API_URL =
     import.meta.env.VITE_API_URL ||
-    "https://itestify-backend-nxel.onrender.com";
+    "https://itestify-backend-1.onrender.com";
 
   const [reviewData, setReviewData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
