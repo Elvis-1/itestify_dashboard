@@ -30,7 +30,7 @@ function ResetPassword() {
     try {
       setLoading(true);
       await axios.post(
-        `https://itestify-backend-nxel.onrender.com/auths/reset-password/`,
+        `https://itestify-backend-1.onrender.com/auths/reset-password/`,
         {
           uid,
           token,

@@ -8,7 +8,7 @@ export default defineConfig({
   server: {
     proxy: {
       "/users": {
-        target: "https://itestify-backend-nxel.onrender.com/mobile",
+        target: "https://itestify-backend-1.onrender.com",
         changeOrigin: true,
         secure: false,
       },

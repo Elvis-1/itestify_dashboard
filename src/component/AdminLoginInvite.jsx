@@ -60,7 +60,7 @@ const AdminLoginInvite = () => {
 
       // Use the email from URL and password from form
       const response = await axios.post(
-        "https://itestify-backend-nxel.onrender.com/admin/setup-account/",
+        "https://itestify-backend-1.onrender.com/admin/setup-account/",
         {
           email: email,
           password: values.password,

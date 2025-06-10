@@ -317,7 +317,7 @@ function UploadTestimonies() {
   
       //Executing Upload
       const response = await axios.post(
-        'https://itestify-backend-nxel.onrender.com/testimonies/videos/create_video/',
+        'https://itestify-backend-1.onrender.com/testimonies/videos/create_video/',
         formData,
         {
           headers: {

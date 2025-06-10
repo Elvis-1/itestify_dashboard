@@ -70,7 +70,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
         const responses = await Promise.all(
             types.map(type => 
                 axios.get(
-                    `https://itestify-backend-nxel.onrender.com/testimonies/videos/?type=${type}`,
+                    `https://itestify-backend-1.onrender.com/testimonies/videos/?type=${type}`,
                     { 
                         headers: { 
                             'Authorization': `Bearer ${token}` 
@@ -182,7 +182,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
             
             const token = localStorage.getItem('token');
             const response = await axios.get(
-                `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
+                `https://itestify-backend-1.onrender.com/testimonies/videos/${id}/`,
                 { 
                     headers: { 
                         'Authorization': `Bearer ${token}`,
@@ -306,7 +306,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
           };
       
           const response = await axios.put(
-            `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
+            `https://itestify-backend-1.onrender.com/testimonies/videos/${id}/`,
             requestData,
             {
               headers: {
@@ -388,7 +388,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
             };
 
             const response = await axios.put(
-                `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
+                `https://itestify-backend-1.onrender.com/testimonies/videos/${id}/`,
                 requestData,
                 {
                     headers: {
@@ -439,7 +439,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
         
         try {
             const response = await axios.delete(
-                `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
+                `https://itestify-backend-1.onrender.com/testimonies/videos/${id}/`,
                 {
                     headers: {
                         "Authorization": `Bearer ${token}`,

@@ -52,7 +52,7 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
             setError(null);
     
             let response = await axios.get(
-                'https://itestify-backend-nxel.onrender.com/testimonies/videos/?type=schedule_for_later', 
+                'https://itestify-backend-1.onrender.com/testimonies/videos/?type=schedule_for_later', 
                 { 
                     headers: { 'Authorization': `Bearer ${token}` } 
                 }
@@ -203,7 +203,7 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
             setLoading(true);
             
             const response = await axios.get(
-                `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
+                `https://itestify-backend-1.onrender.com/testimonies/videos/${id}/`,
                 { 
                     headers: { 
                         'Authorization': `Bearer ${token}`,
@@ -418,7 +418,7 @@ function ScheduledTest({all, setAll, uploaded, setUploaded, scheduled, setSchedu
             console.log('Submitting data:', requestData);
     
             const response = await axios.put(
-                `https://itestify-backend-nxel.onrender.com/testimonies/videos/${editDetails.id}/`,
+                `https://itestify-backend-1.onrender.com/testimonies/videos/${editDetails.id}/`,
                 requestData,
                 {
                     headers: {
