@@ -53,7 +53,7 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
             setError(null);
     
             let response = await axios.get(
-                'https://itestify-backend-nxel.onrender.com/testimonies/videos/?type=drafts', 
+                'https://itestify-backend-1.onrender.com/testimonies/videos/?type=drafts', 
                 { 
                     headers: { 'Authorization': `Bearer ${token}` } 
                 }
@@ -159,7 +159,7 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
             setLoading(true);
             
             const response = await axios.get(
-                `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
+                `https://itestify-backend-1.onrender.com/testimonies/videos/${id}/`,
                 { 
                     headers: { 
                         'Authorization': `Bearer ${token}`,
@@ -229,7 +229,7 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
             };
 
             const response = await axios.put(
-                `https://itestify-backend-nxel.onrender.com/testimonies/videos/${testimonyId}/`,
+                `https://itestify-backend-1.onrender.com/testimonies/videos/${testimonyId}/`,
                 requestData,
                 {
                     headers: {
@@ -304,7 +304,7 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
                 };
     
                 const response = await axios.put(
-                    `https://itestify-backend-nxel.onrender.com/testimonies/videos/${id}/`,
+                    `https://itestify-backend-1.onrender.com/testimonies/videos/${id}/`,
                     requestData,
                     {
                         headers: {
@@ -344,7 +344,7 @@ function DraftTest({ all, setAll, uploaded, setUploaded, scheduled, setScheduled
         if(!token) return
 
         try {
-            let response = axios.delete(`https://itestify-backend-nxel.onrender.com/testimonies/videos/${draftDetails.id}/`,
+            let response = axios.delete(`https://itestify-backend-1.onrender.com/testimonies/videos/${draftDetails.id}/`,
             {
                 headers:{
                     'Authorization': `Bearer ${token}`
