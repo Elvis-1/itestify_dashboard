@@ -9,16 +9,15 @@ import { useState } from "react";
 const ForgotPassword = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
+  const API_URL =
+    import.meta.env.VITE_API_URL || "https://itestify-backend-1.onrender.com";
   const onFinish = async (values) => {
     try {
       setIsLoading(true);
       const email = values.email;
-      const response = await axios.post(
-        `${import.meta.env.VITE_API_URL}/auths/forgot-password/`,
-        {
-          email: email,
-        }
-      );
+      const response = await axios.post(`${API_URL}/auths/forgot-password/`, {
+        email: email,
+      });
       message.success(response.data.message);
       navigate("/check-email/");
     } catch (error) {
