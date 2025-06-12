@@ -107,7 +107,7 @@ function TestimonyText() {
     }, [testimonies])
 
 
-    const itemsPerPage = 4;
+    const itemsPerPage = 6;
 
     // Pagination logic
     const startIndex = (currentPage - 1) * itemsPerPage;
@@ -553,19 +553,18 @@ function TestimonyText() {
             onCancel={handleCloseModal}
             footer={handleModalFooterButton()}
             closable={true}
-            closeIcon={<span style={{ color: 'white', fontSize: '12px', marginTop: '-30px' }}>X</span>}
+            closeIcon={<span style={{ color: `${isDarkMode ? '#fff' : 'black'}`, fontSize: '12px', marginTop: '-30px' }}>X</span>}
             styles={{
                 content: {
-                    backgroundColor: 'black',
+                    backgroundColor: `${isDarkMode ? 'black' : 'white'}`,
                     width: '340px',
                     height: 'auto',
-                    color: 'white',
+                    color: `${isDarkMode ? '#fff' : 'black'}`,
                     margin: '0 auto',
                     borderRadius: '8px',
                 },
                 body: {
-                    backgroundColor: '#1717171',
-                    color: 'white',
+                    color: `${isDarkMode ? '#fff' : 'black'}`,
                    
                 },
             }}
@@ -573,28 +572,29 @@ function TestimonyText() {
            {details ? (
 
                 <div>
-                    <div className='bg-[#313131] 
+                    <div className={` 
                     w-[116%] h-[50px] ml-[-24px] mt-[-22px] 
-                    rounded-tl-xl rounded-tr-xl'>
+                    rounded-tl-xl rounded-tr-xl ${isDarkMode ? 'bg-[#313131]' : 'bg-gray-200'}`}>
                     </div>
                     <div className='w-[50px] h-[50px] m-[auto] z-[1000]'>
                         <img className='w-[50px] h-[50px] m-[auto] mt-[-25px]' src={modalpic} alt="" />
                     </div>
-                    <div className='flex border rounded-2xl border-gray-100 items-center justify-between w-[110%] h-[70px] m-[auto] ml-[-15px] mt-[20px]'>
-                        <div className='text-center ml-5 opacity-[0.6] border-r h-[50px] pr-3 font-sans'>
+                    <div className={`flex w-[100%] border rounded-2xl border-gray-100 items-center 
+                        justify-between w-[110%] h-[70px] m-[auto] ml-[-15px] mt-[20px]`}>
+                        <div className='text-center w-[33.33%] ml-5 opacity-[0.6] border-r h-[50px] pr-3 font-sans'>
                             <p className='text-[10px]'>Name</p>
                             <p className='text-[9px]'>{details?.uploaded_by.full_name || "N/A"}</p>
                         </div>
-                        <div className='text-center ml-2 text-[12px] opacity-[0.6] w-[100%] h-[50px] m-[auto] border-r pr-3 font-sans'>
+                        <div className='text-center ml-2 w-[33.33%] text-[12px] opacity-[0.6] w-[100%] h-[50px] m-[auto] border-r pr-3 font-sans'>
                             <p>Email</p>
-                            <p className='ml-3 w-[130px]'>{details.uploaded_by.email || "N/A"}</p>
+                            <p className=''>{details.uploaded_by.email || "N/A"}</p>
                         </div>
-                        <div className='text-center text-[9px] opacity-[0.6] w-[100%] h-[45px] m-[auto] pr-4 font-sans'>
+                        <div className='text-center w-[33.33%] text-[9px] opacity-[0.6] w-[100%] h-[45px] m-[auto] pr-4 font-sans'>
                             <p className='mb-1'>Status</p>
-                            <p className={`w-[70px] ml-1.5 p-[2px] rounded ${
+                            <p className={`w-[100%] ml-[8px] m-auto p-[2px] rounded ${
                             details.status === 'pending' ? 
                                 'text-yellow-400 border border-yellow-500' :
-                            details.status === 'Approved' ? 
+                            details.status === 'approved' ? 
                                 'text-green-500 border border-green-500' : 
                                 'text-red border border-red'
                             }`}>
@@ -604,8 +604,8 @@ function TestimonyText() {
                     </div>
 
                     <div className='mt-3 mb-7'>
-                        <h3 className='text-white font-sans text-[11px]'>{details.title || "no title"}</h3>
-                        <p className='text-[11px] text-white pt-2'>
+                        <h3 className={`font-sans text-[11px] ${isDarkMode && 'text-white'}`}>{details.title || "no title"}</h3>
+                        <p className={`text-[11px] pt-2 ${isDarkMode && 'text-white'}`}>
                             {details?.content?.slice(0, 500) + "..."}
                         </p>
                     </div>    
@@ -620,34 +620,33 @@ function TestimonyText() {
         <Modal
         open={rejectionReasonModal}
         onCancel={handleCloseModal}
-        closeIcon={<span style={{ color: 'white', fontSize: '12px', marginTop: '-30px' }}>X</span>}
+        closeIcon={<span style={{ color: `${isDarkMode ? 'white' : 'black'}`, fontSize: '12px', marginTop: '-30px' }}>X</span>}
         footer={RejectionModalFooterButton()}
         styles={{
             content: {
-                backgroundColor: 'black',
+                backgroundColor: `${isDarkMode ? 'black' : 'white'}`,
                 width: '340px',
                 height: '420px',
-                color: 'white',
+                color: `${isDarkMode ? 'white' : 'black'}`,
                 margin: '0 auto',
                 borderRadius: '8px',
             },
             body: {
-                backgroundColor: '#1717171',
-                color: 'white',
+                color: `${isDarkMode ? 'white' : 'black'}`,
                
             },
         }}
         >
         <div>
-            <h3 className='text-white text-[18px] font-sans pb-2'>Reject Testimony</h3>
+            <h3 className={`text-[18px] font-sans pb-2${isDarkMode && 'text-white'}`}>Reject Testimony</h3>
             <hr className='opacity-[0.2] text-gray-300 w-[117%] ml-[-25px] '/>
             <div className='h-[210px] mt-3'>
                 <h3 className='text-[12px] opacity-[0.5]'>Reason for rejection</h3>
 
                 <div className='mt-2'>
-                    <textarea className='rounded-xl
-                     bg-[#313131] w-[100%] 
-                     h-[180px] indent-2 p-1 text-[12px]' placeholder='Type here...'
+                    <textarea className={`rounded-xl
+                     w-[100%] 
+                     h-[180px] indent-2 p-1 text-[12px] ${isDarkMode ? 'bg-[#313131]' : 'bg-white border border-[#9966CC]'}`} placeholder='Type here...'
                      value={rejectionReason}
                      onChange={(e) => setRejectionReason(e.target.value)}/>
                 </div>
@@ -705,35 +704,34 @@ function TestimonyText() {
         open={filterModal}
         onCancel={handleCloseModal}
         footer={filterModalFooterButton}
-        closeIcon={<span style={{ color: 'white', fontSize: '12px', marginTop: '-15px' }}>X</span>}
+        closeIcon={<span style={{ color: `${isDarkMode ? '#fff' : 'black'}`, fontSize: '12px', marginTop: '-15px' }}>X</span>}
         styles={{
             content: {
-                backgroundColor: '#0B0B0B',
+                backgroundColor: `${isDarkMode ? '#0B0B0B' : '#fff'}`,
                 width: '330px',
                 height: 'auto',
-                color: 'white',
+                color: `${isDarkMode ? '#fff' : 'black'}`,
                 margin: '0 auto',
                 borderRadius: '8px',
                 marginLeft: '100%',
                 marginTop: '50px'
             },
             body: {
-                backgroundColor: '#1717171',
-                color: 'white',
+                color: `${isDarkMode ? '#fff' : 'black'}`
                
             },
         }}
         >
 
             <div>
-                <h3 className='text-white text-[13px] font-sans pb-2 mt-[-10px]'>Filter</h3>
-                <hr className='opacity-[0.2] text-gray-300 w-[117%] ml-[-25px] '/>
+                <h3 className={`text-[13px] font-sans pb-2 mt-[-10px] ${isDarkMode ? 'text-white' : 'text-black'}`}>Filter</h3>
+                <hr className={`w-[117%] ml-[-25px] ${isDarkMode ? 'text-gray-300 opacity-[0.2]' : 'text-black'} `}/>
 
                 <div>
                     {/* Date picker section */}
                     
                     <div className='flex items-center justify-between mb-[-15px] mt-2 w-[110%] ml-[-15px]'>
-                        <h3 className='text-[14px]'>Date Range</h3>
+                        <h3 className={`text-[14px] ${isDarkMode ? 'text-white' : 'text-black'}`}>Date Range</h3>
                         <button 
                         onClick={() => {
                             setFilterDate1('')
@@ -746,11 +744,13 @@ function TestimonyText() {
                     <div className='flex items-center justify-between mt-4 gap-2 ml-[-10px]'>
                         <div>
                             <p>From</p>
-                            <div className='flex items-center rounded-xl w-[150px] p-1 bg-[#171717] mt-1 cursor-pointer'>
-                                <CalendarOutlined onClick={handleFromDateIconClick} className="text-white ml-2" />
+                            <div className={`flex items-center rounded-xl w-[150px] p-1  mt-1 cursor-pointer 
+                                ${isDarkMode ? 'bg-[#171717]' : 'border border-[#9966CC]'}`}>
+                                <CalendarOutlined onClick={handleFromDateIconClick} 
+                                className={`${isDarkMode ? 'text-white ml-2' : 'text-black ml-2'}`} />
                                 <input type="date"
                                 ref={dateInputRef1}
-                                placeholder='dd/mm/yyyy'
+                                placeholder={`dd/mm/yyyy`}
                                 value={filterDate1}
                                 onChange={handleFilterDate1}
                                 className='no-icon border cursor-pointer'/>
@@ -759,8 +759,10 @@ function TestimonyText() {
                        
                         <div>
                             <p>To</p>
-                            <div className='flex items-center rounded-xl w-[150px] p-1 bg-[#171717] mt-1 cursor-pointer'>
-                                <CalendarOutlined onClick={handleToDateIconClick} className="text-white ml-2"/>
+                            <div className={`flex items-center rounded-xl w-[150px] p-1  mt-1 cursor-pointer 
+                                ${isDarkMode ? 'bg-[#171717]' : 'border border-[#9966CC]'}`}>
+                                <CalendarOutlined onClick={handleToDateIconClick} 
+                               className={`${isDarkMode ? 'text-white ml-2' : 'text-black ml-2'}`}/>
                                 <input type="date"
                                 ref={dateInputRef2}
                                 placeholder='dd/mm/yyyy'
@@ -770,7 +772,7 @@ function TestimonyText() {
                             </div>
                         </div>
                     </div>
-                    <hr className='opacity-[0.2] text-gray-300 w-[117%] ml-[-25px] mt-3'/>
+                    <hr className={`w-[117%] ml-[-25px] mt-[15px] ${isDarkMode ? 'text-gray-300 opacity-[0.2]' : 'text-black'} `}/>
 
                     {/* category section */}
                     <div className='flex items-center justify-between mt-2 w-[110%] ml-[-15px]'>
@@ -782,10 +784,9 @@ function TestimonyText() {
                     </div>
 
                     <div onClick={() => setFilterDropDown(!filterDropDown)} 
-                    className='flex items-center justify-center w-[110%] 
-                    ml-[-15px] bg-[#171717] p-1 rounded-xl cursor-pointer'>
-                       <p className=' text-white
-                       font-sans p-1 w-[100%] rounded'>{selectTestType}</p>
+                    className={`flex items-center justify-center w-[110%] 
+                    ml-[-15px]  p-1 rounded-xl cursor-pointer ${isDarkMode ? 'bg-[#171717]' : 'bg-white border border-[#9966CC]'}`}>
+                       <p className={`font-sans p-1 w-[100%] rounded ${isDarkMode ? 'text-white' : 'text-black'}`}>{selectTestType}</p>
                        {filterDropDown  ? <FaCaretUp/> : <FaCaretDown/>}
                     </div>
 
@@ -930,18 +931,17 @@ function TestimonyText() {
         closeIcon={null}
         styles={{
             content: {
-                backgroundColor: '#0B0B0B',
+                backgroundColor: `${isDarkMode ? '#0B0B0B' : '#fff'}`,
                 width: '150px',
                 height: '100px',
-                color: 'white',
+                color: `${isDarkMode ? '#fff' : 'black'}`,
                 margin: '0 auto',
                 borderRadius: '8px',
                 marginLeft: '130%',
                 marginTop: '120px'
             },
             body: {
-                backgroundColor: '#1717171',
-                color: 'white',
+                color: `${isDarkMode ? '#fff' : 'black'}`,
                
             },
         }}
@@ -975,21 +975,20 @@ function TestimonyText() {
         <Modal
         open={deleteAlert}
         onCancel={handleCloseModal}
-        closeIcon={<span style={{ color: 'white', fontSize: '12px', marginTop: '-30px' }}>X</span>}
+        closeIcon={<span style={{ color: `${isDarkMode ? '#fff' : 'black'}`, fontSize: '12px', marginTop: '-30px' }}>X</span>}
         footer={handleDeleteAlertFooterButton()}
         styles={{
             content: {
-                backgroundColor: 'black',
+                backgroundColor: `${isDarkMode ? 'black' : 'white'}`,
                 width: '350px',
                 height: '200px',
-                color: 'white',
+                color: `${isDarkMode ? '#fff' : 'black'}`,
                 margin: '0 auto',
                 borderRadius: '8px',
                 marginTop: '50px'
             },
             body: {
-                backgroundColor: '#1717171',
-                color: 'white',
+                color: `${isDarkMode ? '#fff' : 'black'}`,
                
             },
         }}
@@ -1049,7 +1048,7 @@ function TestimonyText() {
         </Modal>
         
              
-        <div className={`${isDarkMode ? 'w-[98%]' : 'w-[100%]'} h-[400px] m-[auto] bg-[#171717] rounded-xl
+        <div className={`${isDarkMode ? 'w-[98%]' : 'w-[100%]'} h-[430px] m-[auto] bg-[#171717] rounded-xl
             ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}>
             <div className='flex items-center justify-between p-3'>
                 <h3 className={`text-[13px]`}>Testimonies</h3>
@@ -1072,7 +1071,7 @@ function TestimonyText() {
             </div>
 
             {/* table section begins here */}
-            <div className='w-[100%] m-[auto] h-[250px]'>
+            <div className='w-[100%] m-[auto] h-[auto]'>
 
                 {/* Table Header Section */}
                 <div className={`w-[100%] h-[50px] text-[14px] m-[auto] bg-[#313131] grid grid-cols-9 items-center justify-between

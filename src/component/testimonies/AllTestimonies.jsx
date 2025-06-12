@@ -1,10 +1,11 @@
-import React, {useState} from "react"
+import React, {useContext, useState} from "react"
 import TestimonyText from "./TestimonyText"
 
 import { IoAddOutline } from "react-icons/io5";
 import { CiSettings } from "react-icons/ci"
 import TestimonyVideo from "./TestimonyVideo";
 import { Modal, Switch } from "antd";
+import { DarkModeContext } from "../../context/DarkModeContext";
 
 
 
@@ -93,6 +94,8 @@ const columns = [
 
 
 function AllTestimonies() {
+    const {isDarkMode} = useContext(DarkModeContext)
+
     const[showVideoTestimonies, setShowVideoTestimonies] = useState(false)
     const [manageSettingsModal, setManageSettingsModal] = useState(false)
 
@@ -116,22 +119,22 @@ function AllTestimonies() {
         <Modal
         open={manageSettingsModal}
         onCancel={handleCloseModal}
-        closeIcon={<span style={{ color: 'white', fontSize: '20px', marginTop: '15px' }}>X</span>}
+        closeIcon={<span style={{ color: `${isDarkMode ? '#fff' : 'black'}`, fontSize: '20px', marginTop: `${isDarkMode ? '15px' : ''}` }}>X</span>}
         footer={null}
         styles={{
             content: {
-                backgroundColor: '#0B0B0B',
+                backgroundColor: `${isDarkMode ? '#0B0B0B' : '#fff'}`,
                 width: '450px',
                 height: 'auto',
-                color: 'white',
+                color: `${isDarkMode ? '#fff' : 'black'}`,
                 margin: '0 auto',
                 borderRadius: '8px',
                 marginLeft: '80%',
                 marginTop: '10px'
             },
             body: {
-                backgroundColor: '#1717171',
-                color: 'white',
+                
+                color: `${isDarkMode ? '#fff' : 'black'}`,
                
             },
         }}>
@@ -224,17 +227,26 @@ function AllTestimonies() {
 
          {/* all testimonies header */}
          <div className='p-3 flex items-center justify-between'>
-         <div className='rounded overflow-hidden bg-[#787878] text-[12px] p-1'>
-             <button 
-             onClick={() => setShowVideoTestimonies(false)}
-             className={`${!showVideoTestimonies ? 
-             'text-white bg-[#9966CC] p-1 w-[60px] rounded' : 
-             'text-white bg-[#787878] p-1 w-[60px]'}`}>Text</button>
-             <button 
-             onClick={() => setShowVideoTestimonies(true)}
-             className={`${showVideoTestimonies ? 
-             'text-white bg-[#9966CC] p-1 w-[60px] rounded' : 
-             'text-white bg-[#787878] p-1 w-[60px]'}`}>Video</button>
+         <div className={`rounded overflow-hidden text-[12px] p-1 h-[45px] w-[147px] ${isDarkMode ? 'bg-[#787878]' : 'bg-white border border-[#9966CC]' }`}>
+            <div className={`rounded w-[100%] overflow-hidden ${!isDarkMode ? 'mt-[-0.5px]' : ' mt-[-0.5px]'}`}>
+                <button 
+                    onClick={() => setShowVideoTestimonies(false)}
+                    className={`${!showVideoTestimonies ? 
+                    `text-white bg-[#9966CC] p-1.5 w-[50%] h-[38px] mt-[-2.33px] ${isDarkMode && 'mt-[-1px]'}` : 
+                    `p-1.5 w-[50%] mt-[-2.3px] h-[38px] ${isDarkMode ? 'bg-[#787878] text-white' : 'bg-white text-[#9966CC]' }`}`}>
+                        Text
+                </button>
+
+                <button 
+                    onClick={() => setShowVideoTestimonies(true)}
+                    className={`${showVideoTestimonies ? 
+                    `text-white bg-[#9966CC] p-1.5 w-[50%] h-[38px] mt-[-2.33px] ${isDarkMode && 'mt-[-1px]'}` :
+                    `p-1.5 w-[50%] mt-[-2.3px] h-[38px] ${isDarkMode ? 'bg-[#787878] text-white' : 'bg-white text-[#9966CC]' }`}`}>
+                        Video
+                </button>
+            </div>
+            
+             
          </div>
 
          <div className='flex items-center gap-5'>
