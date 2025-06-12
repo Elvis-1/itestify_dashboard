@@ -75,7 +75,7 @@ function TestimonyText() {
                 }
         
                 const response = await axios.get(
-                    "https://itestify-backend-1.onrender.com/testimonies/texts/",
+                    "https://itestify-backend-38u1.onrender.com/testimonies/texts/",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -186,7 +186,7 @@ function TestimonyText() {
             }
     
             const response = await axios.get(
-                `https://itestify-backend-1.onrender.com/testimonies/texts/${id}/`,
+                `https://itestify-backend-38u1.onrender.com/testimonies/texts/${id}/`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,
@@ -285,7 +285,7 @@ function TestimonyText() {
           }
 
           const response = await axios.post(
-            `https://itestify-backend-1.onrender.com/text-testimonies/${id}/review/`,
+            `https://itestify-backend-38u1.onrender.com/text-testimonies/${id}/review/`,
             payload,
             {
               headers: {
@@ -494,7 +494,7 @@ function TestimonyText() {
         try {
             setLoading(true);
             await axios.delete(
-                `https://itestify-backend-1.onrender.com/testimonies/texts/${id}/`,
+                `https://itestify-backend-38u1.onrender.com/testimonies/texts/${id}/`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

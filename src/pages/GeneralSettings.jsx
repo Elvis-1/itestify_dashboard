@@ -20,7 +20,7 @@ const GeneralSettings = () => {
 
   const token = localStorage.getItem("token");
   const API_URL =
-    import.meta.env.VITE_API_URL || "https://itestify-backend-1.onrender.com";
+    import.meta.env.VITE_API_URL || "https://itestify-backend-38u1.onrender.com";
   const [loading, setLoading] = useState(true);
 
   const [memberModal, setMemberModal] = useState(false);

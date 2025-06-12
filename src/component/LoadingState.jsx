@@ -10,7 +10,7 @@ const LoadingState = () => {
       />
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 max-w-md">
         <img
-          className="w-24 animate-spin-slow" // Added animation class
+          className="w-24 spin 3s linear infinite" 
           src={itestifyLogo}
           alt="Loading"
         />

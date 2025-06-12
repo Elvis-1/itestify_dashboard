@@ -14,7 +14,7 @@ function EntryCodeLogin() {
     setLoading(true);
 
     try {
-      const response = await axios.post('https://itestify-backend-1.onrender.com/auths/login/entry_code/',
+      const response = await axios.post('https://itestify-backend-38u1.onrender.com/auths/login/entry_code/',
         {
           email: values.email,
           entry_code: values.password,
