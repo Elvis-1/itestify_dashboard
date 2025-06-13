@@ -42,16 +42,13 @@ function ResetPassword() {
         },
       );
 
-      const user = JSON.parse(localStorage.getItem("user"));
-      user.created_password = true;
-      localStorage.setItem("user", JSON.stringify(user));
-
-      navigate("/dashboard");
+      navigate("/login");
       message.success(
         "Password Reset successfully, use this password when next you want to log In"
       );
     } catch (error) {
       message.error("Failed to update password. Please try again.");
+      console.log(error)
     } finally {
       setLoading(false);
     }
