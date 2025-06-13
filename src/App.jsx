@@ -29,7 +29,7 @@ import ScriptureForDay from "./pages/ScriptureForDay";
 import ScriptureContextProvider from "./context/ScriptureContext";
 import ScheduleScriptures from "./pages/ScheduleScriptures";
 import HomeManagement from "./pages/HomeManagement";
-import CheckMail from "./pages/CheckMail";
+import CheckMail from "./component/CheckMail";
 import ResetPassword from "./pages/ResetPassword";
 import AdminLoginInvite from "./component/AdminLoginInvite";
 
