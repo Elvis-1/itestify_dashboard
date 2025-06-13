@@ -24,7 +24,8 @@ export default {
         grayBlack: "#171717",
         borderColor: "#575757"
 
-      }, animation: {
+      }, 
+      animation: {
         'spin-slow': 'spin 3s linear infinite',
       },
     },

@@ -1,4 +1,4 @@
-import React, { useContext, useMemo, useState, useEffect } from "react";
+import { useContext, useMemo, useState, useEffect } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext.jsx";
 import { DeletedUsers } from "../../data/userdetails";
 import { MdOutlineMoreHoriz } from "react-icons/md";
@@ -14,6 +14,7 @@ import SuccessModal from "../Popups/SuccessModal.jsx";
 import NoDataComponent from "../NoDataComponent.jsx";
 import LoadingState from "../LoadingState.jsx";
 import axios from "axios";
+import { message } from "antd";
 
 const DelUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -23,7 +24,7 @@ const DelUsers = () => {
   const [deleteRecordModal, setDeleteRecordModal] = useState(false);
   const [isSuccessModal, setIsSuccessModal] = useState(false);
   const [searchItem, setSearchItem] = useState("");
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(true)
   const token = localStorage.getItem("token");
 
   const tableHeaders = [
@@ -127,7 +128,7 @@ const DelUsers = () => {
     try {
       // Ensure selectedUsers is not empty
       if (selectedUsers.length === 0) {
-        setError("No users selected for deletion");
+       message("No users selected for deletion");
         return;
       }
       const deletePromises = selectedUsers.map(async (userId) => {
@@ -159,7 +160,7 @@ const DelUsers = () => {
       setIsSuccessModal(true);
     } catch (error) {
       console.error("Error deleting users:", error.message);
-      setError(error.message);
+      message(error.message);
     }
   };
 
