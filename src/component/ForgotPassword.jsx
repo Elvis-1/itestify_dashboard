@@ -10,22 +10,27 @@ const ForgotPassword = () => {
   const navigate = useNavigate();
   const [isLoading, setIsLoading] = useState(false);
   const API_URL =
-    import.meta.env.VITE_API_URL || "https://itestify-backend-38u1.onrender.com";
+    import.meta.env.VITE_API_URL ||
+    "https://itestify-backend-38u1.onrender.com";
   const onFinish = async (values) => {
     try {
       setIsLoading(true);
       const email = values.email;
-      const response = await axios.post(`${API_URL}/auths/forgot-password/`, {
-        email
-      });
+      const response = await axios.post(
+        `${API_URL}/auths/forgot-password/`, 
+        {
+          email,
+        },
+        
+      );
       message.success(response.data.message);
       navigate("/check-email/");
     } catch (error) {
       message.error(
-        error?.response?.data?.message ||
+        error?.message ||
           "Failed to send password reset link. Please try again."
       );
-      console.log(error)
+      console.log(error);
     } finally {
       setIsLoading(false);
     }
