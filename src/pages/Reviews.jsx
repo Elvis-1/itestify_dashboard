@@ -16,7 +16,7 @@ function Reviews() {
   const { isDarkMode } = useContext(DarkModeContext);
 
   const API_URL =
-    import.meta.env.VITE_API_URL || "https://itestify-backend-1.onrender.com";
+    import.meta.env.VITE_API_URL || "https://itestify-backend-38u1.onrender.com";
 
   const [reviewData, setReviewData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -383,7 +383,6 @@ function Reviews() {
                 Clear
               </button>
             </div>
-
             <div className="flex items-center justify-between pt-4 gap-2">
               <div>
                 <p>From</p>

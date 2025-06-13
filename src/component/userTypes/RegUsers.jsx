@@ -13,7 +13,7 @@ import axios from "axios";
 
 const RegUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
-  const API_URL = import.meta.env.VITE_API_URL || "https://itestify-backend-1.onrender.com"
+  const API_URL = import.meta.env.VITE_API_URL || "https://itestify-backend-38u1.onrender.com"
 
   const [registeredUsers, setRegisteredUsers] = useState([]);
   const [isOpenOptions, setIsOpenOptions] = useState(-1);

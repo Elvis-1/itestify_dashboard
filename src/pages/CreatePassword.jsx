@@ -47,7 +47,7 @@ function CreatePassword() {
       });
   
       const response = await axios.post(
-        "https://itestify-backend-1.onrender.com/dashboard/create_password/",
+        "https://itestify-backend-38u1.onrender.com/dashboard/create_password/",
         {
           password: password1,
           confirm_password: password2,

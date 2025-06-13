@@ -75,7 +75,7 @@ function TestimonyText() {
                 }
         
                 const response = await axios.get(
-                    "https://itestify-backend-38u1.onrender.com/text-testimonies/",
+                    "https://itestify-backend-38u1.onrender.com/testimonies/texts/",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -494,7 +494,7 @@ function TestimonyText() {
         try {
             setLoading(true);
             await axios.delete(
-                `https://itestify-backend-38u1.onrender.com/texts/${id}/`,
+                `https://itestify-backend-38u1.onrender.com/testimonies/texts/${id}/`,
                 {
                     headers: {
                         Authorization: `Bearer ${token}`,

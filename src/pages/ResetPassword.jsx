@@ -4,11 +4,15 @@ import { CheckCircleFilled, LockOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
 import logo from "../assets/icons/Logo.png";
 import axios from "axios";
-import { id } from "date-fns/locale";
+import { useSearchParams } from "react-router-dom";
 
 function ResetPassword() {
   const navigate = useNavigate();
-  const { uid, token } = useParams();
+
+  const [searchParams] = useSearchParams();
+  const uid = searchParams.get("uid");
+  const token = searchParams.get("token");
+
   const [password1, setPassword1] = useState("");
   const [loading, setLoading] = useState(false);
 
@@ -30,17 +34,12 @@ function ResetPassword() {
     try {
       setLoading(true);
       await axios.post(
-        `https://itestify-backend-1.onrender.com/auths/reset-password/`,
+        `https://itestify-backend-38u1.onrender.com/auths/reset-password/`,
         {
           uid,
           token,
           password: password1,
         },
-        {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
       );
 
       const user = JSON.parse(localStorage.getItem("user"));

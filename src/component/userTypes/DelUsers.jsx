@@ -17,7 +17,7 @@ import axios from "axios";
 
 const DelUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
-  const API_URL = import.meta.env.VITE_API_URL || "https://itestify-backend-1.onrender.com"
+  const API_URL = import.meta.env.VITE_API_URL || "https://itestify-backend-38u1.onrender.com"
   const [deletedUsers, setDeletedUsers] = useState([]);
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
   const [deleteRecordModal, setDeleteRecordModal] = useState(false);
