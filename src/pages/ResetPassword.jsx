@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useState } from "react";
 import { Button, Form, Input, message } from "antd";
 import { CheckCircleFilled, LockOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";

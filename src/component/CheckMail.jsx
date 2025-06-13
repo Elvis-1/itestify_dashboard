@@ -21,7 +21,7 @@ const CheckMail = () => {
             <div className="text-[#FFFFFF] text-[12px] mt-[-10px] opacity-[0.7]">
               <ul className="pl-2">
                 <li className="list-disc pt-2 pl-1">
-                  We've sent a password reset link to email address.{" "}
+                  We&aposve;ve sent a password reset link to email address.{" "}
                 </li>
                 <li className="list-disc pt-2 pl-1">
                   The link will expire in 30 minutes.
