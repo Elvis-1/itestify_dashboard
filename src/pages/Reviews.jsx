@@ -118,7 +118,7 @@ const searchedData = useMemo(() => {
 
   // Default case (loading or no data)
   return [];
-}, [getFilteredData, reviewData, searchQuery, ratingType, filterDate1, filterDate2]);
+}, [getFilteredData, reviewData, searchQuery]);
 
   const sortedData = useMemo(() => {
     if (!sortConfig) return searchedData;

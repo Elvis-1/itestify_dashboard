@@ -128,7 +128,7 @@ function TestimonyText() {
         }
 
         return [];
-    }, [getFilteredData, testimonies, searchQuery, selectTestType, filterDate1, filterDate2, ApprovalStatus]);
+    }, [getFilteredData, testimonies, searchQuery]);
 
     const sortedData = useMemo(() => {
         if (!sortConfig) return searchedData;
