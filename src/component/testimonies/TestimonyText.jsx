@@ -1296,4 +1296,4 @@ function TestimonyText() {
     );
 }
 
-export default TestimonyText;
+export default TestimonyText
