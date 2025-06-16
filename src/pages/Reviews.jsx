@@ -36,7 +36,7 @@ function Reviews() {
   const [filterDate2, setFilterDate2] = useState("");
   const [ratingType, setRatingType] = useState(0);
   const token = localStorage.getItem("token");
-  const itemsPerPage = 4;
+  const itemsPerPage = 6;
 
   const [loadingReviews, setLoadingReviews] = useState(true);
 
@@ -63,21 +63,63 @@ function Reviews() {
     setSortConfig({ key, direction });
   };
 
-  const searchedData = useMemo(() => {
-    const dataToSearch =
-      getFilteredData?.length > 0 ? getFilteredData : reviewData;
+  
 
+//   const searchedData = useMemo(() => {
+ 
+//   // If filtered data is explicitly set to empty array (no matches), return empty
+//   if (Array.isArray(getFilteredData) && getFilteredData.length === null) {
+//     return [];
+//   }
+  
+//   // Otherwise use either filtered data or all review data
+//   const dataToSearch = getFilteredData?.length > 0 ? getFilteredData : reviewData;
+
+//   if (searchQuery.trim() !== "") {
+//     const searched = dataToSearch.filter(
+//       (item) =>
+//         item.user_full_name
+//           .toLowerCase()
+//           .includes(searchQuery.toLowerCase()) ||
+//         item.user_email.toLowerCase().includes(searchQuery.toLowerCase())
+//     );
+//     return searched?.length > 0 ? searched : [];
+//   }
+//   return dataToSearch;
+// }, [getFilteredData, reviewData, searchQuery]);
+
+const searchedData = useMemo(() => {
+  // If we have active filters (rating or dates) and filtered data is empty, return empty
+  if ((ratingType > 0 || filterDate1 || filterDate2) && getFilteredData?.length === 0) {
+    return [];
+  }
+
+  // If we have filtered data, use that
+  if (getFilteredData?.length > 0) {
+    const dataToSearch = getFilteredData;
     if (searchQuery.trim() !== "") {
-      return dataToSearch.filter(
-        (item) =>
-          item.user_full_name
-            .toLowerCase()
-            .includes(searchQuery.toLowerCase()) ||
-          item.user_email.toLowerCase().includes(searchQuery.toLowerCase())
+      return dataToSearch.filter(item => 
+        item.user_full_name?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
+        item.user_email?.toLowerCase()?.includes(searchQuery.toLowerCase())
       );
     }
     return dataToSearch;
-  }, [getFilteredData, reviewData, searchQuery]);
+  }
+
+  // Otherwise use all review data (if loaded)
+  if (reviewData?.length > 0) {
+    if (searchQuery.trim() !== "") {
+      return reviewData.filter(item => 
+        item.user_full_name?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
+        item.user_email?.toLowerCase()?.includes(searchQuery.toLowerCase())
+      );
+    }
+    return reviewData;
+  }
+
+  // Default case (loading or no data)
+  return [];
+}, [getFilteredData, reviewData, searchQuery]);
 
   const sortedData = useMemo(() => {
     if (!sortConfig) return searchedData;
@@ -97,6 +139,7 @@ function Reviews() {
 
       if (valueA < valueB) return sortConfig.direction === "ascending" ? -1 : 1;
       if (valueA > valueB) return sortConfig.direction === "ascending" ? 1 : -1;
+
       return 0;
     });
   }, [searchedData, sortConfig]);
@@ -159,25 +202,37 @@ function Reviews() {
     setFilterDate2(event.target.value);
   }
 
-  function handleFiltering() {
-    const filteredData = reviewData?.filter((item) => {
-      const itemDate = new Date(item.created_at);
-      const startDate = filterDate1 ? new Date(filterDate1) : null;
-      const endDate = filterDate2 ? new Date(filterDate2) : null;
 
-      const isWithinDateRange =
-        (!startDate || itemDate >= startDate) &&
-        (!endDate || itemDate <= endDate.setHours(23, 59, 59, 999));
-
-      const matchesRating = ratingType === 0 || item.rating === ratingType;
-
-      return isWithinDateRange && matchesRating;
-    });
-
-    setGetFilterData(filteredData);
+function handleFiltering() {
+  // If no filters are active, reset to show all data
+  if (ratingType === 0 && !filterDate1 && !filterDate2) {
+    setGetFilterData([]);
     setReviewFilterModal(false);
-    setPage(1); // Reset to first page after filtering
+    setPage(1);
+    return;
   }
+
+  const filteredData = reviewData?.filter((item) => {
+    const itemDate = new Date(item.created_at);
+    const startDate = filterDate1 ? new Date(filterDate1) : null;
+    const endDate = filterDate2 ? new Date(filterDate2) : null;
+
+    // Date range check
+    const isWithinDateRange =
+      (!startDate || itemDate >= startDate) &&
+      (!endDate || itemDate <= new Date(endDate.setHours(23, 59, 59, 999)));
+
+    // Rating check
+    const matchesRating = ratingType === 0 || item.rating === ratingType;
+
+    return isWithinDateRange && matchesRating;
+  });
+
+  // Set the filtered data (will be empty array if no matches)
+  setGetFilterData(filteredData || []);
+  setReviewFilterModal(false);
+  setPage(1);
+}
 
   function handleReset() {
     setRatingType(0);
@@ -186,6 +241,7 @@ function Reviews() {
     setGetFilterData([]);
     setPage(1);
   }
+
 
   const fetchReviewData = async () => {
     try {
@@ -196,11 +252,11 @@ function Reviews() {
           "Content-Type": "application/json",
         },
       });
-      setReviewData(response.data.results);
-      console.log(response.data.results);
+      setReviewData(response.data.results || []); // Set to empty array if no results
     } catch (error) {
       console.error("Error fetching review data:", error);
       message.error(error?.message || "Failed to fetch reviews");
+      setReviewData([]); // Set to empty array on error
     } finally {
       setLoadingReviews(false);
     }
@@ -273,10 +329,11 @@ function Reviews() {
       message.error("Failed to delete reviews");
     }
   };
+
   return (
     <div
       className={`w-[98%] flex flex-col justify-between m-[auto] mt-8 ${
-        isDarkMode ? "bg-[#171717]" : "bg-white"
+        isDarkMode ? "bg-[#171717]" : "bg-white border border-gray-400 overflow-hidden"
       } rounded-xl`}
     >
       {/* filter modal */}
@@ -379,7 +436,6 @@ function Reviews() {
                   setFilterDate2("");
                 }}
                 className="outline-none border-none p-1 text-[#9966CC] rounded"
-                bang
               >
                 Clear
               </button>
@@ -458,7 +514,7 @@ function Reviews() {
         styles={{
           content: {
             backgroundColor: isDarkMode ? "#171717" : "white",
-            width: "120px",
+            width: "130px",
             height: "auto",
             color: isDarkMode ? "white" : "black",
             margin: "0 auto",
@@ -476,25 +532,25 @@ function Reviews() {
             isDarkMode ? "bg-[#171717]" : "bg-white"
           }`}
         >
-          <div className="border-b w-[170%] ml-[-25px] opacity-[0.6]">
+          <div className="border-b-2 w-[160%] ml-[-25px] opacity-[0.9]">
             <button
               onClick={() => {
                 setReviewViewModal(true);
                 setReviewActionModal(false);
               }}
-              className="pl-2 pb-2"
+              className="pl-2 pb-2 font-extrabold text-black"
             >
               View
             </button>
           </div>
 
-          <div className="w-[150%] ml-[-25px] opacity-[0.6] cursor-pointer">
+          <div className="w-[150%] ml-[-25px] opacity-[0.9] cursor-pointer">
             <button
               onClick={() => {
                 setReviewDeleteModal(true);
                 setReviewActionModal(false);
               }}
-              className="pl-2 pt-2 text-red"
+              className="pl-2 pt-2 text-red font-extrabold"
             >
               Delete
             </button>
@@ -514,7 +570,7 @@ function Reviews() {
               fontSize: "18px",
               fontWeight: "300",
               position: "absolute",
-              top: "15px",
+              top: "1px",
               right: "15px",
             }}
           >
@@ -523,114 +579,65 @@ function Reviews() {
         }
         styles={{
           content: {
-            backgroundColor: "#2a2a2a",
-            width: "380px",
+            backgroundColor: isDarkMode ? '#212121' : 'white',
+            color: isDarkMode ? 'white' : 'black',
+            width: "460px",
             height: "auto",
             margin: "0 auto",
-            borderRadius: "20px",
+            borderRadius: "16px",
             padding: "0",
+            overflow: 'hidden',
+            marginTop: '-40px',
+            marginLeft: '60px'
           },
           body: {
-            backgroundColor: "#2a2a2a",
             padding: "0",
-            borderRadius: "20px",
+            borderRadius: "16px",
+            color: isDarkMode ? 'white' : 'black',
           },
         }}
       >
         {reviewDetails && (
-          <div
-            style={{ padding: "0", position: "relative" }}
-            className={`${isDarkMode ? "bg-[#171717]" : "bg-white text-black"}`}
-          >
-            <div
-              style={{
-                position: "absolute",
-                top: "60px",
-                left: "50%",
-                transform: "translateX(-50%)",
-                width: "2px",
-                height: "40px",
-                borderLeft: "2px dotted #4A90E2",
-                zIndex: 1,
-              }}
-            ></div>
-
-            <div className="flex justify-center pt-8 pb-4">
-              <div
-                className="w-[80px] h-[80px] rounded-full border-4 border-white overflow-hidden"
-                style={{ position: "relative", zIndex: 2 }}
-              >
-                <img
-                  className="w-full h-full object-cover"
-                  src={modalpic}
-                  alt="Profile"
-                />
-              </div>
-            </div>
-            <div className="mx-4 mb-6 rounded-lg p-4 bg">
-              <div className="mb-4">
-                <p className="text-gray-400 text-xs mb-1">Email Address</p>
-                <p
-                  className={`${
-                    isDarkMode ? `text-white` : `text-black`
-                  } text-sm font-medium`}
-                >
-                  {reviewDetails.user_email}
-                </p>
+          <div>
+            <div className={`w-[100%] h-[100px] ${isDarkMode ? 'bg-[#171717]' : 'bg-gray-200'} `}></div>
+            <div>
+              <div >
+                <img className="w-[20%] m-auto mt-[-50px]" src={modalpic} alt="" />
               </div>
 
-              <div className="mb-4">
-                <p className="text-gray-400 text-xs mb-1">Name</p>
-                <p
-                  className={`${
-                    isDarkMode ? `text-white` : `text-black`
-                  } text-sm font-medium`}
-                >
-                  {reviewDetails.user_full_name}
-                </p>
+              <div className="rounded-3xl px-5 py-4 overflow-hidden border border-gray-600 w-[95%] m-auto h-auto mt-6">
+                  <div className="mb-2">
+                    <h3>Email Address</h3>
+                    <p> {reviewDetails.user_email} </p>
+                  </div>
+
+                   <div className="mb-2">
+                    <h3>Name</h3>
+                    <p> {reviewDetails.user_full_name} </p>
+                  </div>
+
+                   <div className="mb-2">
+                    <h3>Date</h3>
+                    <p> {new Date(reviewDetails.created_at).toLocaleDateString()} </p>
+                  </div>
+
+                  <div>
+                    <h3>Rating</h3>
+                    <div className="flex">
+                        {[...Array(reviewDetails.rating)].map((_, i) => (
+                          <AiFillStar
+                            key={i}
+                            className="text-purple-400 text-[12px] mr-1"
+                          />
+                        ))}
+                    </div>
+                  </div>
               </div>
 
-              <div className="mb-4">
-                <p className="text-gray-400 text-xs mb-1">Date</p>
-                <p
-                  className={`${
-                    isDarkMode ? `text-white` : `text-black`
-                  } text-sm`}
-                >
-                  {new Date(reviewDetails.created_at).toLocaleDateString()}
-                </p>
+              <div className="mt-5 px-5 mb-3">
+                  <h3>Review</h3>
+                  <p>{reviewDetails.message}</p>
               </div>
-
-              <div className="mb-4">
-                <p className="text-gray-400 text-xs mb-2">Rating</p>
-                <div className="flex">
-                  {[...Array(reviewDetails.rating)].map((_, i) => (
-                    <AiFillStar
-                      key={i}
-                      className="text-purple-400 text-lg mr-1"
-                    />
-                  ))}
-                </div>
-              </div>
-            </div>
-
-            <div className="px-4 pb-6">
-              <div className="flex items-center mb-3">
-                <h3
-                  className={`${
-                    isDarkMode ? `text-white` : `text-black`
-                  } font-medium text-sm mr-3`}
-                >
-                  Review
-                </h3>
-              </div>
-              <p
-                className={`${
-                  isDarkMode ? `text-white` : `text-black`
-                } text-sm leading-relaxed`}
-              >
-                {reviewDetails.message}
-              </p>
             </div>
           </div>
         )}
@@ -991,7 +998,12 @@ function Reviews() {
                 ))
             ) : (
               <div className="h-[240px] m-[auto] flex items-center justify-center">
-                <div className="p-2 flex items-center">No Data here Yet</div>
+
+               {reviewData?.length === 0 ? (
+                  <div className="p-2 flex items-center">No Data Available</div>
+                ) : (
+                  <div className="p-2 flex items-center">No Matching Results Found</div>
+               )}
               </div>
             )}
           </div>
