@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import avatarProfile from "../../assets/images/avatar.png";
+import avatarProfile from "../../assets/images/no-pfp.png";
 import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import "../../styles/animation.css";
@@ -35,7 +35,7 @@ const UserRegProfile = ({ registeredUsers, setProfile }) => {
           >
             <img
               className="flex justify-center items-center w-24 h-24 absolute top-[60%] left-[38%]"
-              src="avatarProfile"
+              src={registeredUsers?.profile_image||avatarProfile}
               alt={`${registeredUsers?.full_name} picture`}
             />
           </div>

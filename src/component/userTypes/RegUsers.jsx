@@ -14,7 +14,9 @@ import { message } from "antd";
 
 const RegUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
-  const API_URL = import.meta.env.VITE_API_URL || "https://itestify-backend-38u1.onrender.com"
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://itestify-backend-38u1.onrender.com";
 
   const [registeredUsers, setRegisteredUsers] = useState([]);
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
@@ -27,11 +29,11 @@ const RegUsers = () => {
       Label: "S/N",
     },
     {
-      key: "userid",
+      key: "id",
       Label: "User ID",
     },
     {
-      key: "name",
+      key: "full_name",
       Label: "Name",
     },
     {
@@ -39,11 +41,11 @@ const RegUsers = () => {
       Label: "Email",
     },
     {
-      key: "regdate",
+      key: "created_at",
       Label: "Registration Date",
     },
     {
-      key: "lastlogin",
+      key: "last_login",
       Label: "Last Login",
     },
   ];
@@ -68,22 +70,25 @@ const RegUsers = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
-        setIsLoading(true)
+        setIsLoading(true);
         const token = localStorage.getItem("token");
         const response = await axios.get(
-          `${API_URL}/auths/users/all/?status=registered&ordering=-created_at`,
+          `${API_URL}/auths/users/all/?status=registered`,
           {
             headers: {
               Authorization: `Bearer ${token}`,
             },
           }
         );
-        setRegisteredUsers(response?.data?.data?.data);
+        const sorted = (response?.data?.data?.data || []).sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        );
+        setRegisteredUsers(sorted);
       } catch (error) {
-        message.error(error?.message)
+        message.error(error?.message);
         console.error("Error fetching registered users:", error);
-      }finally{
-        setIsLoading(false)
+      } finally {
+        setIsLoading(false);
       }
     };
 
@@ -139,6 +144,7 @@ const RegUsers = () => {
               placeholder="Search by name, email, userID"
               onChange={(e) => {
                 setSearchItem(e.target.value);
+                setCurrentPage(1)
               }}
             />
           </div>
@@ -216,8 +222,8 @@ const RegUsers = () => {
                   }`}
                 >
                   <td>{firstIndex + index + 1}</td>
-                  <td>{data.id.slice(0, 6)}</td>
-                  <td>{data.full_name}</td>
+                  <td>{data.id?.slice(0, 6)}</td>
+                  <td>{data.full_name || "Unknown user"}</td>
                   <td>{data.email}</td>
                   <td>{new Date(data.created_at).toLocaleDateString()}</td>
                   <td>{new Date(data.last_login).toLocaleDateString()}</td>

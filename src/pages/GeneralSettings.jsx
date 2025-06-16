@@ -288,7 +288,7 @@ const GeneralSettings = () => {
               : `bg-off-white border-b-near-white`
           } border-b-2 pb-3`}
         >
-          {/* <Link to="/invite">Go to invite admin page</Link> */}
+          {/* <Link to="/reset-password">Go to invite admin page</Link> */}
           <h1>General</h1>
           <Link to="manage-permissions">
             <button
@@ -312,7 +312,7 @@ const GeneralSettings = () => {
               }`}
             >
               <div className="flex justify-between">
-                <div className="text-sm">
+                <div className="text-sm" >
                   <h2 className="font-bold">Admin managament</h2>
                   <p
                     className={`pt-2 ${
