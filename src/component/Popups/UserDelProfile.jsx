@@ -1,5 +1,5 @@
 import React, { useContext } from "react";
-import avatarProfile from "../../assets/images/avatar.png";
+import avatarProfile from "../../assets/images/no-pfp.png";
 import { MdClose } from "react-icons/md";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import "../../styles/animation.css";
@@ -13,10 +13,7 @@ const UserDelProfile = ({ deletedUsers, setProfile }) => {
   return (
     <div className="fixed inset-0 z-50">
       {/* Non-clickable overlay */}
-      <div
-        className="fixed inset-0 bg-black bg-opacity-50"
-
-      />
+      <div className="fixed inset-0 bg-black bg-opacity-50" />
 
       {/* Modal container */}
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md">
@@ -36,7 +33,7 @@ const UserDelProfile = ({ deletedUsers, setProfile }) => {
           >
             <img
               className="flex justify-center items-center w-24 h-24 absolute top-[60%] left-[38%]"
-              src="avatarProfile"
+              src={deletedUsers?.profile_image || avatarProfile}
               alt={`${deletedUsers?.full_name} picture`}
             />
           </div>
@@ -64,7 +61,10 @@ const UserDelProfile = ({ deletedUsers, setProfile }) => {
             </div>
             <div className="flex justify-between items-center w-full py-2">
               <p>Deletion date</p>
-              <p>{new Date(deletedUsers?.updated_at).toLocaleDateString() || "----"}</p>
+              <p>
+                {new Date(deletedUsers?.updated_at).toLocaleDateString() ||
+                  "----"}
+              </p>
             </div>
           </div>
         </div>

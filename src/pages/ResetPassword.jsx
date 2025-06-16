@@ -5,6 +5,8 @@ import { useNavigate } from "react-router-dom";
 import logo from "../assets/icons/Logo.png";
 import axios from "axios";
 import { useSearchParams } from "react-router-dom";
+import { FaCircleCheck } from "react-icons/fa6";
+import { GoCheckCircleFill } from "react-icons/go";
 
 function ResetPassword() {
   const navigate = useNavigate();
@@ -39,16 +41,18 @@ function ResetPassword() {
           uid,
           token,
           password: password1,
-        },
+        }
       );
-
+      const user = { ...JSON.parse(localStorage.getItem("user")) };
+      user.created_password = true;
+      localStorage.setItem("user", JSON.stringify(user));
       navigate("/login");
       message.success(
         "Password Reset successfully, use this password when next you want to log In"
       );
     } catch (error) {
       message.error("Failed to update password. Please try again.");
-      console.log(error)
+      console.log(error);
     } finally {
       setLoading(false);
     }
@@ -88,61 +92,37 @@ function ResetPassword() {
               <ul>
                 <li className="flex items-center gap-2 pb-2 capitalize">
                   {validations.length ? (
-                    <CheckCircleFilled
-                      style={{ fontSize: "15px", color: "#9966CC" }}
-                    />
+                    <GoCheckCircleFill color="#9966CC" />
                   ) : (
-                    <CheckCircleFilled
-                      style={{ fontSize: "15px", color: "#FFFFFF80" }}
-                    />
+                    <FaCircleCheck />
                   )}
                   Password must be atleast 8 characters
                 </li>
                 <li className="flex items-center gap-2 pb-2 capitalize">
                   {validations.uppercase ? (
-                    <CheckCircleFilled
-                      style={{ fontSize: "15px", color: "#9966CC" }}
-                    />
+                    <GoCheckCircleFill color="#9966CC" />
                   ) : (
-                    <CheckCircleFilled
-                      style={{ fontSize: "15px", color: "#FFFFFF80" }}
-                    />
+                    <FaCircleCheck />
                   )}
                   Atleast one uppercase letter
                 </li>
                 <li className="flex items-center gap-2 pb-2 capitalize">
                   {validations.lowercase ? (
-                    <CheckCircleFilled
-                      style={{ fontSize: "15px", color: "#9966CC" }}
-                    />
+                    <GoCheckCircleFill color="#9966CC" />
                   ) : (
-                    <CheckCircleFilled
-                      style={{ fontSize: "15px", color: "#FFFFFF80" }}
-                    />
+                    <FaCircleCheck />
                   )}
                   Atleast one lowercase letter
                 </li>
                 <li className="flex items-center gap-2 pb-2 capitalize">
-                  {validations.number ? (
-                    <CheckCircleFilled
-                      style={{ fontSize: "15px", color: "#9966CC" }}
-                    />
-                  ) : (
-                    <CheckCircleFilled
-                      style={{ fontSize: "15px", color: "#FFFFFF80" }}
-                    />
-                  )}
+                  {validations.number ? <GoCheckCircleFill /> : <FaCircleCheck />}
                   Atleast one number
                 </li>
                 <li className="flex items-center gap-2 pb-2 capitalize">
                   {validations.specialChar ? (
-                    <CheckCircleFilled
-                      style={{ fontSize: "15px", color: "#9966CC" }}
-                    />
+                    <GoCheckCircleFill color="#9966CC" />
                   ) : (
-                    <CheckCircleFilled
-                      style={{ fontSize: "15px", color: "#FFFFFF80" }}
-                    />
+                    <FaCircleCheck />
                   )}
                   Atleast one special character
                 </li>

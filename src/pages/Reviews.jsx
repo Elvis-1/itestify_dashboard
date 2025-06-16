@@ -16,7 +16,8 @@ function Reviews() {
   const { isDarkMode } = useContext(DarkModeContext);
 
   const API_URL =
-    import.meta.env.VITE_API_URL || "https://itestify-backend-38u1.onrender.com";
+    import.meta.env.VITE_API_URL ||
+    "https://itestify-backend-38u1.onrender.com";
 
   const [reviewData, setReviewData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
@@ -351,7 +352,7 @@ function handleFiltering() {
         styles={{
           content: {
             backgroundColor: `${isDarkMode ? "#0B0B0B" : "white"}`,
-            width:"100%",
+            width: "100%",
             height: "auto",
             color: "white",
             margin: "0 auto",
@@ -449,9 +450,7 @@ function handleFiltering() {
                 >
                   <CalendarOutlined
                     onClick={handleFromDateIconClick}
-                    className={`${
-                      isDarkMode ? `text-white` : `text-black`
-                    } `}
+                    className={`${isDarkMode ? `text-white` : `text-black`} `}
                   />
                   <input
                     type="date"
@@ -466,7 +465,7 @@ function handleFiltering() {
 
               <div>
                 <p>To</p>
-               <div
+                <div
                   className={`flex items-center rounded-xl px-3 py-1 ${
                     isDarkMode ? `bg-[#171717]` : `bg-off-white`
                   }  mt-3 cursor-pointer`}
@@ -790,6 +789,7 @@ function handleFiltering() {
           >
             <CiSearch size={20} />
             <input
+              disabled={sortedData.length === 0}
               onChange={(e) => setSearchQuery(e.target.value)}
               value={searchQuery}
               type="search"
@@ -805,7 +805,10 @@ function handleFiltering() {
             onClick={() => setReviewFilterModal(true)}
           >
             <IoFilterOutline />
-            <button className="text-[12px] outline-none border-none">
+            <button
+              className="text-[12px] outline-none border-none"
+              disabled={sortedData.length === 0}
+            >
               Filter
             </button>
           </div>
