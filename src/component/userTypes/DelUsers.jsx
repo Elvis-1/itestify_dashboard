@@ -61,6 +61,7 @@ const DelUsers = () => {
     const fetchData = async () => {
       const token = localStorage.getItem("token");
       try {
+        setIsLoading(true)
         const response = await axios.get(
           `${API_URL}/auths/users/all/?status=deleted`,
           {
@@ -70,9 +71,10 @@ const DelUsers = () => {
           }
         );
         setDeletedUsers(response.data.data.data);
-        setIsLoading(false);
       } catch (error) {
         console.error("Error fetching deleted users:", error);
+      }finally{
+        setIsLoading(false)
       }
     };
 

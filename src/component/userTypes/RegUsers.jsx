@@ -10,6 +10,7 @@ import Pagination from "../Pagination";
 import NoDataComponent from "../NoDataComponent";
 import LoadingState from "../LoadingState.jsx";
 import axios from "axios";
+import { message } from "antd";
 
 const RegUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -67,6 +68,7 @@ const RegUsers = () => {
   useEffect(() => {
     const fetchData = async () => {
       try {
+        setIsLoading(true)
         const token = localStorage.getItem("token");
         const response = await axios.get(
           `${API_URL}/auths/users/all/?status=registered&ordering=-created_at`,
@@ -77,9 +79,11 @@ const RegUsers = () => {
           }
         );
         setRegisteredUsers(response?.data?.data?.data);
-        setIsLoading(false);
       } catch (error) {
+        message.error(error?.message)
         console.error("Error fetching registered users:", error);
+      }finally{
+        setIsLoading(false)
       }
     };
 

@@ -20,7 +20,8 @@ const GeneralSettings = () => {
 
   const token = localStorage.getItem("token");
   const API_URL =
-    import.meta.env.VITE_API_URL || "https://itestify-backend-38u1.onrender.com";
+    import.meta.env.VITE_API_URL ||
+    "https://itestify-backend-38u1.onrender.com";
   const [loading, setLoading] = useState(true);
 
   const [memberModal, setMemberModal] = useState(false);
@@ -67,12 +68,12 @@ const GeneralSettings = () => {
           }
         );
         setNewMember(response?.data?.data);
-        console.log(response?.data?.data);
       } catch (error) {
-        message.error(error?.response?.data?.message);
+        message.error(error?.message);
+        console.log(error);
         console.error(
           "Error fetching members:",
-          error?.response || error.message
+          error?.response || error?.message
         );
       } finally {
         setLoading(false);
@@ -144,8 +145,11 @@ const GeneralSettings = () => {
     } catch (error) {
       console.error("Failed to add member:", error);
       message.error(
-        error?.response?.data?.message ||
-          "Failed to add member. Please try again."
+        `${
+          error?.response?.data?.message ||
+          `Failed to add member:  ${error?.message}`
+        }
+         `
       );
     }
   };
@@ -286,7 +290,7 @@ const GeneralSettings = () => {
         >
           {/* <Link to="/invite">Go to invite admin page</Link> */}
           <h1>General</h1>
-          <Link to="/dashboard/manage-permissions">
+          <Link to="manage-permissions">
             <button
               //   onClick={() => {
               //     //  setIsSettingsModal(!isSettingsModal);
@@ -321,7 +325,8 @@ const GeneralSettings = () => {
                 <div
                   onClick={() => {
                     setMemberModal(true);
-                    !isEditing && setAdminDetails({ name: "", email: "", role: "" });;
+                    !isEditing &&
+                      setAdminDetails({ name: "", email: "", role: "" });
                   }}
                   className="flex gap-3 items-center cursor-pointer"
                 >
