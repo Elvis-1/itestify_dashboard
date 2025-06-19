@@ -14,6 +14,7 @@ import ShortSuccessMessage from "../component/generalSettingsPopups/ShortSuccess
 import axios from "axios";
 import { message } from "antd";
 import LoadingState from "../component/LoadingState";
+import CreateRole from "../component/generalSettingsPopups/CreateRole";
 
 const GeneralSettings = () => {
   const { isDarkMode } = useContext(DarkModeContext);
@@ -26,10 +27,14 @@ const GeneralSettings = () => {
 
   const [memberModal, setMemberModal] = useState(false);
   const [confirmAddAdmin, setConfirmAddAdmin] = useState(false);
+
   const [successModal, setSuccessModal] = useState(false);
   const [successChangeModal, setSuccessChangeModal] = useState(false);
+  const [successCreateRole, setSuccessCreateRole] = useState(false);
+
   const [deleteSuperAdminModal, setDeleteSuperAdminModal] = useState(false);
   const [deleteMemberModal, setDeleteMemberModal] = useState(false);
+
   const [transferConfirmModal, setTransferConfirmModal] = useState(false);
 
   const [newMember, setNewMember] = useState([]);
@@ -45,6 +50,8 @@ const GeneralSettings = () => {
 
   const [isDeleted, setIsDeleted] = useState(false);
   const [memberToDelete, setMemberToDelete] = useState(null);
+
+  const [isCreateRoleOpen, setIsCreateRoleOpen] = useState(false);
   const toggleOptions = (index) => {
     setIsOpenOptions(isOpenOptions === index ? -1 : index);
   };
@@ -84,8 +91,8 @@ const GeneralSettings = () => {
   }, []);
 
   //ADD NEW MEMEBERS AND UPDATE EXISTING MEMEBERS
-  const addAdminMember = async (e) => {
-    e.preventDefault();
+  const addAdminMember = async () => {
+    // e.preventDefault();
 
     if (!adminDetails.name || !adminDetails.email || !adminDetails.role) {
       message.error("Please fill in all the required fields.");
@@ -174,7 +181,16 @@ const GeneralSettings = () => {
         setIsDeleted(false);
       }, 2000);
     }
-  }, [successModal, transferConfirmModal, successChangeModal, isDeleted]);
+    if (successCreateRole) {
+      setTimeout(() => setSuccessCreateRole(false));
+    }
+  }, [
+    successModal,
+    transferConfirmModal,
+    successChangeModal,
+    isDeleted,
+    successCreateRole,
+  ]);
 
   //DELETE ADMIN MEMBERS
   const confirmDeleteMember = async () => {
@@ -207,15 +223,15 @@ const GeneralSettings = () => {
   };
 
   const SUCCESS_MESSAGES = {
-    "Super admin": {
+    super_admin: {
       title: "Super Admin Added Successfully!",
       message: `You have successfully added a new Super Admin. An invitation email has been sent to ${adminDetails.email} to set up their account.`,
     },
-    Admin: {
+    admin: {
       title: "Admin Added Successfully!",
       message: `You have successfully added a new Admin. An invitation email has been sent to ${adminDetails.email} to set up their account.`,
     },
-    Viewer: {
+    viewer: {
       title: "Viewer Added Successfully!",
       message: `You have successfully assigned a new Viewer. An invitation email has been sent to ${adminDetails.email} to set up their account.`,
     },
@@ -234,6 +250,7 @@ const GeneralSettings = () => {
           isEditing={isEditing}
           setIsEditing={setIsEditing}
           setEditMemberId={setEditMemberId}
+          formatSnakeToTitle={formatSnakeToTitle}
         />
       )}
 
@@ -241,6 +258,8 @@ const GeneralSettings = () => {
         <ConfirmAddAdmin
           onCancel={() => setConfirmAddAdmin(false)}
           onProceed={addAdminMember}
+          newMember={newMember}
+          formatSnakeToTitle={formatSnakeToTitle}
         />
       )}
       {successModal && adminDetails.role && (
@@ -276,6 +295,15 @@ const GeneralSettings = () => {
             be deleted."
         />
       )}
+      {isCreateRoleOpen && (
+        <CreateRole
+          setIsCreateRoleOpen={setIsCreateRoleOpen}
+          setSuccessCreateRole={setSuccessCreateRole}
+        />
+      )}
+      {successCreateRole && (
+        <ShortSuccessMessage successMessage="Role Created Successfully!" />
+      )}
       <div
         className={`border-b-1 p-3 ${
           isDarkMode ? `bg-black` : `bg-off-white`
@@ -290,29 +318,39 @@ const GeneralSettings = () => {
         >
           {/* <Link to="/reset-password">Go to invite admin page</Link> */}
           <h1>General</h1>
-          <Link to="manage-permissions">
+          <div className="flex items-center  gap-2">
+            <Link to="manage-permissions">
+              <button
+                //   onClick={() => {
+                //     //  setIsSettingsModal(!isSettingsModal);
+                //   }}
+                className="flex justify-end gap-1 p-2 rounded-md border-2 border-primary cursor-pointer ml-auto items-center"
+              >
+                <RiSettings5Line fill="#9966CC" />
+                <span className="text-primary text-xs">
+                  View Permission Details
+                </span>
+              </button>
+            </Link>
             <button
-              //   onClick={() => {
-              //     //  setIsSettingsModal(!isSettingsModal);
-              //   }}
-              className="flex justify-end gap-1 p-3 rounded-md bg-primary cursor-pointer ml-auto items-center"
+              className="bg-primary btn-primary px-3"
+              onClick={() => setIsCreateRoleOpen(true)}
             >
-              <RiSettings5Line fill="#ffffff" />
-              <span className="text-white text-xs">Manage Permissions</span>
+              Create a role
             </button>
-          </Link>
+          </div>
         </div>
         <div className="pt-3 flex justify-between items-start w-full">
           {loading ? (
             <LoadingState />
           ) : (
-            <div
-              className={`w-full p-6 pb-6 rounded-lg ${
-                isDarkMode ? `bg-grayBlack` : `bg-white`
-              }`}
-            >
-              <div className="flex justify-between">
-                <div className="text-sm" >
+            <div className={`w-full p-3`}>
+              <div
+                className={`${
+                  isDarkMode ? `bg-grayBlack` : `bg-white`
+                } flex justify-between mb-4 rounded-xl p-5`}
+              >
+                <div className="text-sm">
                   <h2 className="font-bold">Admin managament</h2>
                   <p
                     className={`pt-2 ${
@@ -338,75 +376,74 @@ const GeneralSettings = () => {
               {newMember?.map((member) => (
                 <div
                   key={member.id}
-                  className={`flex justify-between  align items-center w-full text-sm pt-4 pb-6`}
+                  className={`${
+                    isDarkMode ? `bg-grayBlack` : `bg-white`
+                  } rounded-xl flex justify-between align-top items-start w-full text-sm p-5 mb-4`}
                 >
                   <div className="">
+                    {member.role !== "super_admin" && (
+                      <p className="pb-5 font-bold">
+                        {formatSnakeToTitle(member.role)}
+                      </p>
+                    )}
                     <p>{member.full_name}</p>
                     <p
-                      className={`pt-1  ${
-                        isDarkMode ? `text-white` : `text-off-black`
+                      className={`text-xs  ${
+                        isDarkMode ? `text-off-white` : `text-off-black`
                       }  opacity-80`}
                     >
                       {member.email}
                     </p>
                   </div>
                   <div></div>
-                  <div className="flex justify-between items-center w-full gap-96 capitalize">
+
+                  <div className="relative">
                     <p
-                      className={`ml-auto ${
-                        member.role === "super_admin"
-                          ? `text-near-white`
-                          : `text-primary`
-                      } `}
+                      onClick={() => {
+                        toggleOptions(member.id);
+                      }}
+                      className="cursor-pointer text-primary font-bold text-xs"
                     >
-                      {formatSnakeToTitle(member.role)}
+                      Manage Role
                     </p>
-                    <div className="relative">
-                      <MdOutlineMoreHoriz
-                        onClick={() => {
-                          toggleOptions(member.id);
-                        }}
-                        className="cursor-pointer"
-                      />
-                      {isOpenOptions === member.id && (
-                        <div
-                          className={`rounded-lg ${
-                            isDarkMode
-                              ? `text-white bg-[#292929]`
-                              : `text-black bg-white`
-                          } w-[120px]  border border-[#787878] h-fit absolute top-5 right-0 z-10 shadow-lg`}
+                    {isOpenOptions === member.id && (
+                      <div
+                        className={`rounded-lg ${
+                          isDarkMode
+                            ? `text-white bg-[#292929]`
+                            : `text-black bg-white`
+                        } w-[120px]  border border-[#787878] h-fit absolute top-5 right-0 z-10 shadow-lg`}
+                      >
+                        <p
+                          onClick={() => {
+                            setAdminDetails({
+                              name: member.full_name,
+                              email: member.email,
+                              role: member.role,
+                            });
+                            setIsEditing(true);
+                            setEditMemberId(member.id);
+                            setMemberModal(true);
+                            setIsOpenOptions(-1);
+                          }}
+                          className="border-b border-[#787878] p-2 cursor-pointer"
                         >
-                          <p
-                            onClick={() => {
-                              setAdminDetails({
-                                name: member.full_name,
-                                email: member.email,
-                                role: member.role,
-                              });
-                              setIsEditing(true);
-                              setEditMemberId(member.id);
-                              setMemberModal(true);
-                              setIsOpenOptions(-1);
-                            }}
-                            className="border-b border-[#787878] p-2 cursor-pointer"
-                          >
-                            Edit
-                          </p>
-                          <p
-                            onClick={() => {
-                              member.role === "Super admin"
-                                ? setDeleteSuperAdminModal(true)
-                                : setDeleteMemberModal(true);
-                              setIsOpenOptions(false);
-                              setMemberToDelete(member.id);
-                            }}
-                            className="p-2 text-[#E53935] cursor-pointer"
-                          >
-                            Delete
-                          </p>
-                        </div>
-                      )}
-                    </div>
+                          Edit
+                        </p>
+                        <p
+                          onClick={() => {
+                            member.role === "Super admin"
+                              ? setDeleteSuperAdminModal(true)
+                              : setDeleteMemberModal(true);
+                            setIsOpenOptions(false);
+                            setMemberToDelete(member.id);
+                          }}
+                          className="p-2 text-[#E53935] cursor-pointer"
+                        >
+                          Delete
+                        </p>
+                      </div>
+                    )}
                   </div>
                 </div>
               ))}

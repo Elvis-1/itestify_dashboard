@@ -32,7 +32,7 @@ const SuccessModal = ({ successMessage, adminDetails }) => {
                 }`}
               >
                 {successMessage?.message ||
-                  `You have changed ${adminDetails.email} to a ${adminDetails.role}. The viewer will be notified of the change via email.`}
+                  `You have changed ${adminDetails.email} to a ${adminDetails.role}. The admin will be notified of the change via email.`}
               </p>
             </div>
           </div>

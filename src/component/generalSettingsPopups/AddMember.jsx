@@ -11,14 +11,16 @@ const AddMember = ({
   onProceed,
   setIsEditing,
   setEditMemberId,
+  formatSnakeToTitle
 }) => {
   const { isDarkMode } = useContext(DarkModeContext);
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
 
   const options = [
     // { value: "Super admin", label: "Super admin" },
-    { value: "admin", label: "admin" },
-    { value: "viewer", label: "viewer" },
+    { value: "admin", label: "Admin" },
+    { value: "viewer", label: "Viewer" },
+    { value: "super_admin", label: "Super Admin" },
   ];
   const handleChange = (e) => {
     const { name, value } = e.target;
@@ -106,7 +108,7 @@ const AddMember = ({
                p-1 rounded-md outline-none text-sm placeholder:text-xs
                transition-colors duration-200`}
               >
-                <span className="text-sm opacity-80">
+                <span className="text-sm opacity-80 capitalize">
                   {adminDetails.role
                     ? options.find((opt) => opt.value === adminDetails.role)
                         ?.label
@@ -140,7 +142,7 @@ const AddMember = ({
                       } text-sm
                      transition-colors duration-150 last-of-type:border-t first-of-type:border-b`}
                     >
-                      {option.label}
+                      {formatSnakeToTitle(option.label)}
                     </div>
                   ))}
                 </div>
@@ -166,9 +168,12 @@ const AddMember = ({
                 Cancel
               </button>
               <button
-                onClick={
-                  adminDetails.role !== "Super admin" ? onProceed : onConfirm
-                }
+              type="submit"
+                onClick={() => {
+                  adminDetails.role === "super_admin"
+                    ? onConfirm()
+                    : onProceed();
+                }}
                 className="btn-primary px-3 py-3 text-xs"
               >
                 {isEditing ? "Save Changes" : "Add member"}
