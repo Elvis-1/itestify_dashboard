@@ -32,6 +32,7 @@ import HomeManagement from "./pages/HomeManagement";
 import CheckMail from "./component/CheckMail";
 import ResetPassword from "./pages/ResetPassword";
 import AdminLoginInvite from "./component/AdminLoginInvite";
+import ManageUser from "./pages/ManageUser";
 
 function App() {
   return (
@@ -46,12 +47,9 @@ function App() {
                   <Route path="/create-password" element={<CreatePassword />} />
                   <Route path="/login" element={<Login />} />
                   <Route path="/forgot-password" element={<ForgotPassword />} />
-                  <Route
-                    path="/reset-password"
-                    element={<ResetPassword />}
-                  />
+                  <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/check-email" element={<CheckMail />} />
-                   <Route path="invite" element={<AdminLoginInvite/>}/>
+                  <Route path="invite" element={<AdminLoginInvite />} />
                   <Route element={<ProtectedRoute />}>
                     <Route path="/dashboard" element={<Dashboard />}>
                       <Route path="" element={<Overview />} />
@@ -71,16 +69,6 @@ function App() {
                       <Route path="users" element={<Users />} />
                       <Route path="donations" element={<Donations />} />
                       <Route path="notifications" element={<Notifications />} />
-
-                      <Route
-                        path="all-testimonies"
-                        element={<AllTestimonies />}
-                      />
-                      <Route
-                        path="upload-testimonies"
-                        element={<UploadTestimonies />}
-                      />
-                      <Route path="users" element={<Users />} />
                       <Route
                         path="inspirational-pictures"
                         element={<Allpics />}
@@ -111,9 +99,14 @@ function App() {
                         element={<GeneralSettings />}
                       />
                       <Route
-                        path="manage-permissions"
+                        path="general-settings/manage-permissions"
                         element={<Permissions />}
                       />
+                      <Route
+                        path="general-settings/manage-admin"
+                        element={<ManageUser />}
+                      />
+
                       <Route path="profile" element={<Profile />} />
                       <Route
                         path="notification-settings"

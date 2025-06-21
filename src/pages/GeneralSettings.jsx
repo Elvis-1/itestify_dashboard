@@ -1,5 +1,5 @@
 import React, { useContext, useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { RiSettings5Line } from "react-icons/ri";
 import { DarkModeContext } from "../context/DarkModeContext";
 import { IoMdAdd } from "react-icons/io";
@@ -18,6 +18,7 @@ import CreateRole from "../component/generalSettingsPopups/CreateRole";
 
 const GeneralSettings = () => {
   const { isDarkMode } = useContext(DarkModeContext);
+  const navigate = useNavigate()
 
   const token = localStorage.getItem("token");
   const API_URL =
@@ -319,7 +320,7 @@ const GeneralSettings = () => {
           {/* <Link to="/reset-password">Go to invite admin page</Link> */}
           <h1>General</h1>
           <div className="flex items-center  gap-2">
-            <Link to="manage-permissions">
+            <Link to="/dashboard/general-settings/manage-permissions">
               <button
                 //   onClick={() => {
                 //     //  setIsSettingsModal(!isSettingsModal);
@@ -399,9 +400,7 @@ const GeneralSettings = () => {
 
                   <div className="relative">
                     <p
-                      onClick={() => {
-                        toggleOptions(member.id);
-                      }}
+                     onClick={()=> navigate('/dashboard/general-settings/manage-admin')}
                       className="cursor-pointer text-primary font-bold text-xs"
                     >
                       Manage Role
