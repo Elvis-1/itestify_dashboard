@@ -383,3 +383,15 @@ input::-webkit-inner-spin-button {
   opacity: 1;
 }
 
+.ant-radio-inner {
+  border-color: #9966CC !important;
+}
+.ant-radio-checked .ant-radio-inner {
+  background-color: #9966CC !important;
+  border-color: #9966CC !important;
+}
+.ant-radio-wrapper:hover .ant-radio-inner,
+.ant-radio:hover .ant-radio-inner {
+  border-color: #9966CC !important;
+}
+

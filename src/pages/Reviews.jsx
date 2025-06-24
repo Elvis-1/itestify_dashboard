@@ -50,7 +50,7 @@ function Reviews() {
   );
   useEffect(() => {
     setPage(1);
-  }, [getFilteredData, reviewData]);
+  }, [getFilteredData, reviewData, searchQuery]);
   const sortData = (key) => {
     let direction = "ascending";
     if (
@@ -344,7 +344,7 @@ function handleFiltering() {
         footer={null}
         closeIcon={
           <span
-            style={{ color: "white", fontSize: "12px", marginTop: "-15px" }}
+            style={{ color: `${isDarkMode ? 'white' : 'black'}`, fontSize: "12px", marginTop: "-15px" }}
           >
             X
           </span>
@@ -402,8 +402,8 @@ function handleFiltering() {
           </div>
 
           {filterDropDown && (
-            <div className="flex flex-col rounded-t-xl cursor-pointer p-1 opacity-[0.6] mt-3 border-x border-t overflow-hidden">
-              {[5, 4, 3, 2, 1].map((rating) => (
+            <div className="flex flex-col rounded-xl cursor-pointer p-1 opacity-[0.9] mt-3 border border-t overflow-hidden">
+              {[5, 4, 3, 2, 1,0].map((rating) => (
                 <div
                   onClick={() => {
                     setRatingType(rating);
@@ -538,7 +538,7 @@ function handleFiltering() {
                 setReviewViewModal(true);
                 setReviewActionModal(false);
               }}
-              className="pl-2 pb-2 font-extrabold text-black"
+              className="pl-2 pb-2 font-bold"
             >
               View
             </button>
@@ -550,7 +550,7 @@ function handleFiltering() {
                 setReviewDeleteModal(true);
                 setReviewActionModal(false);
               }}
-              className="pl-2 pt-2 text-red font-extrabold"
+              className="pl-2 pt-2 text-red font-bold"
             >
               Delete
             </button>
@@ -757,7 +757,11 @@ function handleFiltering() {
         </div>
       </Modal>
 
-      <div
+      {loadingReviews ?(
+        <LoadingState/>
+      ) : (
+          <>
+            <div
         className={`flex items-center justify-between p-3 ${
           isDarkMode
             ? "text-white"
@@ -789,8 +793,15 @@ function handleFiltering() {
           >
             <CiSearch size={20} />
             <input
+<<<<<<< Updated upstream
               disabled={sortedData.length === 0}
               onChange={(e) => setSearchQuery(e.target.value)}
+=======
+              onChange={(e) => {
+                setSearchQuery(e.target.value)
+                setPage(1)
+              }}
+>>>>>>> Stashed changes
               value={searchQuery}
               type="search"
               placeholder="Search by name, Email Address"
@@ -813,237 +824,238 @@ function handleFiltering() {
             </button>
           </div>
         </div>
-      </div>
+           </div>
 
-      {loadingReviews ? (
-        <LoadingState />
-      ) : (
-        <div>
-          <div
-            className={`w-[100%] h-[240px] m-[auto] ${
-              isDarkMode ? "bg-[#171717]" : "bg-white"
-            } overflow-hidden`}
-          >
-            <div
-              className={`h-10 grid grid-cols-8 text-[11px] ${
-                isDarkMode
-                  ? "bg-[#313131] text-white"
-                  : "bg-slate-100 text-black border-b border-b-slate-200"
-              }`}
-            >
-              <div className="p-2 flex items-center">
-                <input
-                  className="cursor-pointer"
-                  type="checkbox"
-                  checked={allChecked}
-                  onChange={() => {
-                    const newCheckedState = allChecked
-                      ? {}
-                      : Object.fromEntries(
-                          sortedData
-                            ?.slice(startIndex, startIndex + itemsPerPage)
-                            .map((item) => [item.id, true])
-                        );
-                    setCheckedItems(newCheckedState);
-                  }}
-                />
-              </div>
+  
+            <div>
+              <div
+                className={`w-[100%] h-[240px] m-[auto] ${
+                  isDarkMode ? "bg-[#171717]" : "bg-white"
+                } overflow-hidden`}
+              >
+                <div
+                  className={`h-10 grid grid-cols-8 text-[11px] ${
+                    isDarkMode
+                      ? "bg-[#313131] text-white"
+                      : "bg-slate-100 text-black border-b border-b-slate-200"
+                  }`}
+                >
+                  <div className="p-2 flex items-center">
+                    <input
+                      className="cursor-pointer"
+                      type="checkbox"
+                      checked={allChecked}
+                      onChange={() => {
+                        const newCheckedState = allChecked
+                          ? {}
+                          : Object.fromEntries(
+                              sortedData
+                                ?.slice(startIndex, startIndex + itemsPerPage)
+                                .map((item) => [item.id, true])
+                            );
+                        setCheckedItems(newCheckedState);
+                      }}
+                    />
+                  </div>
 
-              <div className="p-2 flex items-center">
-                Review ID
-                <div className="flex flex-col">
-                  <IoIosArrowUp
-                    onClick={() => sortData("id")}
-                    size={10}
-                    className="ml-2 cursor-pointer"
-                  />
-                  <IoIosArrowDown
-                    onClick={() => sortData("id")}
-                    size={10}
-                    className="ml-2 cursor-pointer"
-                  />
-                </div>
-              </div>
-              <div className="p-2 flex items-center ml-[-15px]">
-                Name
-                <div className="flex flex-col">
-                  <IoIosArrowUp
-                    onClick={() => sortData("user_full_name")}
-                    size={10}
-                    className="ml-2 cursor-pointer"
-                  />
-                  <IoIosArrowDown
-                    onClick={() => sortData("user_full_name")}
-                    size={10}
-                    className="ml-2 cursor-pointer"
-                  />
-                </div>
-              </div>
-              <div className="p-2 flex items-center">
-                Email Address
-                <div className="flex flex-col">
-                  <IoIosArrowUp
-                    onClick={() => sortData("user_email")}
-                    size={10}
-                    className="ml-2 cursor-pointer"
-                  />
-                  <IoIosArrowDown
-                    onClick={() => sortData("user_email")}
-                    size={10}
-                    className="ml-2 cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              <div className="p-2 flex items-center">
-                Reviews
-                <div className="flex flex-col">
-                  <IoIosArrowUp
-                    onClick={() => sortData("message")}
-                    size={10}
-                    className="ml-2 cursor-pointer"
-                  />
-                  <IoIosArrowDown
-                    onClick={() => sortData("message")}
-                    size={10}
-                    className="ml-2 cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              <div className="p-2 flex items-center">
-                Ratings
-                <div className="flex flex-col">
-                  <IoIosArrowUp
-                    onClick={() => sortData("rating")}
-                    size={10}
-                    className="ml-2 cursor-pointer"
-                  />
-                  <IoIosArrowDown
-                    onClick={() => sortData("rating")}
-                    size={10}
-                    className="ml-2 cursor-pointer"
-                  />
-                </div>
-              </div>
-              <div className="p-2 flex items-center">
-                Date Submitted
-                <div className="flex flex-col">
-                  <IoIosArrowUp
-                    onClick={() => sortData("created_at")}
-                    size={10}
-                    className="ml-2 cursor-pointer"
-                  />
-                  <IoIosArrowDown
-                    onClick={() => sortData("created_at")}
-                    size={10}
-                    className="ml-2 cursor-pointer"
-                  />
-                </div>
-              </div>
-
-              <div className="p-2 flex items-center">Action</div>
-            </div>
-
-            {sortedData?.length > 0 ? (
-              sortedData
-                ?.slice(startIndex, startIndex + itemsPerPage)
-                .map((item) => (
-                  <div
-                    key={item.id}
-                    className={`border-b border-white text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-8 ${
-                      isDarkMode
-                        ? "text-white"
-                        : "bg-white text-black border-b border-b-slate-200"
-                    }`}
-                  >
-                    <div className="p-2 flex items-center">
-                      <input
-                        className="cursor-pointer"
-                        type="checkbox"
-                        checked={checkedItems[item.id] || false}
-                        onChange={() => handleCheckboxChange(item.id)}
+                  <div className="p-2 flex items-center">
+                    Review ID
+                    <div className="flex flex-col">
+                      <IoIosArrowUp
+                        onClick={() => sortData("id")}
+                        size={10}
+                        className="ml-2 cursor-pointer"
+                      />
+                      <IoIosArrowDown
+                        onClick={() => sortData("id")}
+                        size={10}
+                        className="ml-2 cursor-pointer"
                       />
                     </div>
-                    <div className="p-2 flex items-center">{item.id}</div>
-                    <div className="p-2 flex items-center ml-[-10px]">
-                      <p>{item.user_full_name || "--- ---"}</p>
-                    </div>
-                    <div className="pl-2 flex items-center">
-                      {item.user_email || "------"}
-                    </div>
-                    <div className="pl-2 flex items-center">
-                      {`${item.message.slice(0, 20)}... ` || "------"}
-                    </div>
-                    <div className="p-2 flex items-center">
-                      {[...Array(item.rating)].map((_, i) => (
-                        <AiFillStar key={i} className="text-[#9966CC]" />
-                      ))}
-                    </div>
-                    <div className="p-2 flex items-center">
-                      {new Date(item.created_at).toLocaleDateString() ||
-                        "------"}
-                    </div>
-                    <div
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleDetail(item);
-                        setReviewActionModal(true);
-                      }}
-                      className="p-2 flex items-center ml-3"
-                    >
-                      <MdOutlineMoreHoriz />
+                  </div>
+                  <div className="p-2 flex items-center ml-[-15px]">
+                    Name
+                    <div className="flex flex-col">
+                      <IoIosArrowUp
+                        onClick={() => sortData("user_full_name")}
+                        size={10}
+                        className="ml-2 cursor-pointer"
+                      />
+                      <IoIosArrowDown
+                        onClick={() => sortData("user_full_name")}
+                        size={10}
+                        className="ml-2 cursor-pointer"
+                      />
                     </div>
                   </div>
-                ))
-            ) : (
-              <div className="h-[240px] m-[auto] flex items-center justify-center">
+                  <div className="p-2 flex items-center">
+                    Email Address
+                    <div className="flex flex-col">
+                      <IoIosArrowUp
+                        onClick={() => sortData("user_email")}
+                        size={10}
+                        className="ml-2 cursor-pointer"
+                      />
+                      <IoIosArrowDown
+                        onClick={() => sortData("user_email")}
+                        size={10}
+                        className="ml-2 cursor-pointer"
+                      />
+                    </div>
+                  </div>
 
-               {reviewData?.length === 0 ? (
-                  <div className="p-2 flex items-center">No Data Available</div>
+                  <div className="p-2 flex items-center">
+                    Reviews
+                    <div className="flex flex-col">
+                      <IoIosArrowUp
+                        onClick={() => sortData("message")}
+                        size={10}
+                        className="ml-2 cursor-pointer"
+                      />
+                      <IoIosArrowDown
+                        onClick={() => sortData("message")}
+                        size={10}
+                        className="ml-2 cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="p-2 flex items-center">
+                    Ratings
+                    <div className="flex flex-col">
+                      <IoIosArrowUp
+                        onClick={() => sortData("rating")}
+                        size={10}
+                        className="ml-2 cursor-pointer"
+                      />
+                      <IoIosArrowDown
+                        onClick={() => sortData("rating")}
+                        size={10}
+                        className="ml-2 cursor-pointer"
+                      />
+                    </div>
+                  </div>
+                  <div className="p-2 flex items-center">
+                    Date Submitted
+                    <div className="flex flex-col">
+                      <IoIosArrowUp
+                        onClick={() => sortData("created_at")}
+                        size={10}
+                        className="ml-2 cursor-pointer"
+                      />
+                      <IoIosArrowDown
+                        onClick={() => sortData("created_at")}
+                        size={10}
+                        className="ml-2 cursor-pointer"
+                      />
+                    </div>
+                  </div>
+
+                  <div className="p-2 flex items-center">Action</div>
+                </div>
+
+                {sortedData?.length > 0 ? (
+                  sortedData
+                    ?.slice(startIndex, startIndex + itemsPerPage)
+                    .map((item) => (
+                      <div
+                        key={item.id}
+                        className={`border-b border-white text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-8 ${
+                          isDarkMode
+                            ? "text-white"
+                            : "bg-white text-black border-b border-b-slate-200"
+                        }`}
+                      >
+                        <div className="p-2 flex items-center">
+                          <input
+                            className="cursor-pointer"
+                            type="checkbox"
+                            checked={checkedItems[item.id] || false}
+                            onChange={() => handleCheckboxChange(item.id)}
+                          />
+                        </div>
+                        <div className="p-2 flex items-center">{item.id}</div>
+                        <div className="p-2 flex items-center ml-[-10px]">
+                          <p>{item.user_full_name || "--- ---"}</p>
+                        </div>
+                        <div className="pl-2 flex items-center">
+                          {`${item.user_email.slice(0, 10)}...` || "------"}
+                        </div>
+                        <div className="pl-2 flex items-center">
+                          {`${item.message.slice(0, 20)}... ` || "------"}
+                        </div>
+                        <div className="p-2 flex items-center">
+                          {[...Array(item.rating)].map((_, i) => (
+                            <AiFillStar key={i} className="text-[#9966CC]" />
+                          ))}
+                        </div>
+                        <div className="p-2 flex items-center">
+                          {new Date(item.created_at).toLocaleDateString() ||
+                            "------"}
+                        </div>
+                        <div
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            handleDetail(item);
+                            setReviewActionModal(true);
+                          }}
+                          className="p-2 flex items-center ml-3"
+                        >
+                          <MdOutlineMoreHoriz />
+                        </div>
+                      </div>
+                    ))
                 ) : (
-                  <div className="p-2 flex items-center">No Matching Results Found</div>
-               )}
+                  <div className="h-[240px] m-[auto] flex items-center justify-center">
+
+                    {reviewData?.length === 0 ? (
+                      <div className="p-2 flex items-center">No Data Available</div>
+                    ) : (
+                      <div className="p-2 flex items-center">No Matching Results Found</div>
+                    )}
+                  </div>
+                )}
               </div>
-            )}
-          </div>
-        </div>
+            </div>
+
+            <div
+              className={`flex justify-between items-center mt-6 pb-6 ${
+                isDarkMode ? "bg-[#171717]" : "bg-white"
+              }`}
+            >
+              <div className={`text-[12px] ml-[10px]`}>
+                Showing {startIndex + 1}-
+                {Math.min(startIndex + itemsPerPage, sortedData?.length)} of{" "}
+                {sortedData?.length}
+              </div>
+              <div className="text-[13px] mr-5 flex items-center gap-3">
+                <button
+                  onClick={handlePrevPage}
+                  disabled={page === 1}
+                  className={`w-[90px] p-2 rounded-xl ${
+                    page === 1
+                      ? "opacity-[0.5] text-gray-500 border border-gray-500"
+                      : "border border-primary text-primary"
+                  }`}
+                >
+                  Previous
+                </button>
+                <button
+                  onClick={handleNextPage}
+                  disabled={page >= totalPages}
+                  className={`w-[90px] p-2 rounded-xl ${
+                    page >= totalPages
+                      ? "opacity-[0.5] text-gray-500 border border-gray-500"
+                      : "border border-primary text-primary"
+                  }`}
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          </>
       )}
-      <div
-        className={`flex justify-between items-center mt-6 pb-6 ${
-          isDarkMode ? "bg-[#171717]" : "bg-white"
-        }`}
-      >
-        <div className={`text-[12px] ml-[10px]`}>
-          Showing {startIndex + 1}-
-          {Math.min(startIndex + itemsPerPage, sortedData?.length)} of{" "}
-          {sortedData?.length}
-        </div>
-        <div className="text-[13px] mr-5 flex items-center gap-3">
-          <button
-            onClick={handlePrevPage}
-            disabled={page === 1}
-            className={`w-[90px] p-2 rounded-xl ${
-              page === 1
-                ? "opacity-[0.5] text-gray-500 border border-gray-500"
-                : "border border-primary text-primary"
-            }`}
-          >
-            Previous
-          </button>
-          <button
-            onClick={handleNextPage}
-            disabled={page >= totalPages}
-            className={`w-[90px] p-2 rounded-xl ${
-              page >= totalPages
-                ? "opacity-[0.5] text-gray-500 border border-gray-500"
-                : "border border-primary text-primary"
-            }`}
-          >
-            Next
-          </button>
-        </div>
-      </div>
+      
     </div>
   );
 }

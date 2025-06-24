@@ -61,7 +61,7 @@ function TestimonyText() {
                 }
 
                 const response = await axios.get(
-                    "https://itestify-backend-38u1.onrender.com/testimonies/texts/",
+                    "https://itestify-backend-38u1.onrender.com/text-testimonies/",
                     {
                         headers: {
                             Authorization: `Bearer ${token}`,
@@ -119,7 +119,7 @@ function TestimonyText() {
         if (testimonies?.length > 0) {
             if (searchQuery.trim() !== "") {
                 return testimonies.filter(item => 
-                    item.full_name?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
+                    item.uploaded_by?.full_name?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
                     item.category?.toLowerCase()?.includes(searchQuery.toLowerCase()) ||
                     item.status?.toLowerCase()?.includes(searchQuery.toLowerCase())
                 );
@@ -535,11 +535,11 @@ function TestimonyText() {
                         <div className={`flex w-[110%] border-2 rounded-2xl border-gray-200 items-center justify-between h-[70px] m-[auto] ml-[-15px] mt-[20px]`}>
                             <div className='text-center  w-[33.33%] ml-5 opacity-[0.9] border-r h-[50px] pr-3 font-sans'>
                                 <p className='text-[10px]'>Name</p>
-                                <p className='text-[9px] font-extrabold'>{details?.uploaded_by.full_name || "N/A"}</p>
+                                <p className='text-[9px] font-bold'>{details?.uploaded_by.full_name || "N/A"}</p>
                             </div>
                             <div className='text-center ml-2 w-[33.33%] text-[12px] opacity-[0.9] h-[50px] m-[auto] border-r pr-3 font-sans'>
                                 <p>Email</p>
-                                <p className='font-extrabold'>{details.uploaded_by.email || "N/A"}</p>
+                                <p className='font-bold'>{details.uploaded_by.email || "N/A"}</p>
                             </div>
                             <div className='text-center w-[33.33%] text-[9px] opacity-[0.9] h-[45px] m-[auto] pr-4 font-sans'>
                                 <p className='mb-1'>Status</p>
@@ -556,8 +556,8 @@ function TestimonyText() {
                         </div>
 
                         <div className='mt-3 mb-7'>
-                            <h3 className={`font-sans font-extrabold text-[11px] ${isDarkMode && 'text-white'}`}>{details.title || "no title"}</h3>
-                            <p className={`text-[11px] pt-2 font-extrabold ${isDarkMode && 'text-white'}`}>
+                            <h3 className={`font-sans font-bold text-[11px] ${isDarkMode && 'text-white'}`}>{details.title || "no title"}</h3>
+                            <p className={`text-[11px] pt-2 font-bold ${isDarkMode && 'text-white'}`}>
                                 {details?.content?.slice(0, 500) + "..."}
                             </p>
                         </div>    
@@ -966,7 +966,7 @@ function TestimonyText() {
                                 handleDetail(controlDetail);
                                 setActionModal(false);
                             }} 
-                            className='pl-2 font-extrabold'
+                            className='pl-2 font-bold'
                         >
                             View
                         </button>
@@ -978,7 +978,7 @@ function TestimonyText() {
                                 setActionModal(false);
                                 showDeleteNotification();
                             }} 
-                            className='pl-2 pt-4 text-red font-extrabold'
+                            className='pl-2 pt-4 text-red font-bold'
                         >
                             {loading ? <ClipLoader size={15} color="#ff0000" /> : 'Delete'}
                         </button>
@@ -1061,7 +1061,7 @@ function TestimonyText() {
             </Modal>
             
             {/* Main Content */}
-            <div className={`${isDarkMode ? 'w-[98%]' : 'w-[100%]'} h-[430px] m-[auto] bg-[#171717] rounded-xl
+            <div className={`${isDarkMode ? 'w-[98%]' : 'w-[100%]'} h-[510px] m-[auto] bg-[#171717] rounded-xl
                 ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}>
                 <div className='flex items-center justify-between p-3'>
                     <h3 className={`text-[13px]`}>Testimonies</h3>
@@ -1088,7 +1088,7 @@ function TestimonyText() {
                 </div>
 
                 {/* Table Section */}
-                <div className='w-[100%] m-[auto] h-[auto]'>
+                <div className='w-[100%] m-[auto] h-[390px]'>
                     {/* Table Header */}
                     <div className={`w-[100%] h-[50px] text-[14px] m-[auto] bg-[#313131] grid grid-cols-9 items-center justify-between
                         ${isDarkMode ? "text-white" : "bg-slate-100 text-black border-b border-b-slate-200"}`}>
@@ -1227,7 +1227,7 @@ function TestimonyText() {
                                     {item.uploaded_by?.full_name || 'N/A'}
                                 </div>
                                 <div className='ml-[15px] mt-4'>{item.category}</div>
-                                <div className='ml-[10px] mt-4'>{formatDate(item.uploaded_by?.created_at)}</div>
+                                <div className='ml-[10px] mt-4'>{formatDate(item?.created_at)}</div>
                                 <div className='ml-[20px] mt-4'>{item?.likes || 0}</div>
                                 <div className='ml-[20px] mt-4'>{item?.comment || 0}</div>
                                 <div className='ml-[20px] mt-4'>{item?.shares || 0}</div>
@@ -1264,7 +1264,7 @@ function TestimonyText() {
                 </div>
 
                 {/* Pagination */}
-                <div className='flex justify-between items-center mt-10'>
+                <div className='flex justify-between items-center mt-4'>
                     <div className={`text-[12px] ml-[10px]
                     ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
                         Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, (getFilteredData.length > 0 ? getFilteredData : testimonies).length)} of {(getFilteredData.length > 0 ? getFilteredData : testimonies).length}
