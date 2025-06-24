@@ -51,6 +51,7 @@ function Reviews() {
   useEffect(() => {
     setPage(1);
   }, [getFilteredData, reviewData, searchQuery]);
+  
   const sortData = (key) => {
     let direction = "ascending";
     if (
@@ -62,31 +63,6 @@ function Reviews() {
     }
     setSortConfig({ key, direction });
   };
-
-  
-
-//   const searchedData = useMemo(() => {
- 
-//   // If filtered data is explicitly set to empty array (no matches), return empty
-//   if (Array.isArray(getFilteredData) && getFilteredData.length === null) {
-//     return [];
-//   }
-  
-//   // Otherwise use either filtered data or all review data
-//   const dataToSearch = getFilteredData?.length > 0 ? getFilteredData : reviewData;
-
-//   if (searchQuery.trim() !== "") {
-//     const searched = dataToSearch.filter(
-//       (item) =>
-//         item.user_full_name
-//           .toLowerCase()
-//           .includes(searchQuery.toLowerCase()) ||
-//         item.user_email.toLowerCase().includes(searchQuery.toLowerCase())
-//     );
-//     return searched?.length > 0 ? searched : [];
-//   }
-//   return dataToSearch;
-// }, [getFilteredData, reviewData, searchQuery]);
 
 const searchedData = useMemo(() => {
   // If we have active filters (rating or dates) and filtered data is empty, return empty
@@ -202,7 +178,6 @@ const searchedData = useMemo(() => {
     setFilterDate2(event.target.value);
   }
 
-
 function handleFiltering() {
   // If no filters are active, reset to show all data
   if (ratingType === 0 && !filterDate1 && !filterDate2) {
@@ -241,7 +216,6 @@ function handleFiltering() {
     setGetFilterData([]);
     setPage(1);
   }
-
 
   const fetchReviewData = async () => {
     try {
@@ -757,76 +731,71 @@ function handleFiltering() {
         </div>
       </Modal>
 
-      {loadingReviews ?(
+      {loadingReviews ?
         <LoadingState/>
-      ) : (
+      : 
           <>
             <div
-        className={`flex items-center justify-between p-3 ${
-          isDarkMode
-            ? "text-white"
-            : "bg-white text-black border-b border-b-slate-200"
-        }`}
-      >
-        <div className={`flex items-center gap-5 cursor-pointer`}>
-          <h3>Reviews</h3>
-        </div>
-        <div className="flex gap-2">
-          {hasCheckedItems && (
-            <button
-              onClick={() =>
-                allChecked
-                  ? setReviewDeleteAllModal(true)
-                  : setReviewDeleteModal(true)
-              }
-              className="p-2 text-[12px] rounded-xl w-[110px] cursor-pointer bg-red text-white"
-            >
-              Delete
-            </button>
-          )}
-          <div
-            className={`p-1 text-[12px] rounded-xl flex items-center gap-1 ${
+              className={`flex items-center justify-between p-3 ${
               isDarkMode
-                ? "bg-[#313131] text-white"
-                : "bg-white text-black border border-slate-200"
+                ? "text-white"
+                : "bg-white text-black border-b border-b-slate-200"
             }`}
-          >
-            <CiSearch size={20} />
-            <input
-<<<<<<< Updated upstream
-              disabled={sortedData.length === 0}
-              onChange={(e) => setSearchQuery(e.target.value)}
-=======
-              onChange={(e) => {
-                setSearchQuery(e.target.value)
-                setPage(1)
-              }}
->>>>>>> Stashed changes
-              value={searchQuery}
-              type="search"
-              placeholder="Search by name, Email Address"
-              className={`w-[187px] bg-transparent pl-[10px] p-1 outline-none border-none ${
-                isDarkMode ? "text-white" : "text-black"
-              }`}
-            />
-          </div>
-
-          <div
-            className="cursor-pointer flex items-center justify-center w-[60px] rounded border border-[#9966CC] text-[#9966CC]"
-            onClick={() => setReviewFilterModal(true)}
-          >
-            <IoFilterOutline />
-            <button
-              className="text-[12px] outline-none border-none"
-              disabled={sortedData.length === 0}
             >
-              Filter
-            </button>
-          </div>
-        </div>
+            <div className={`flex items-center gap-5 cursor-pointer`}>
+              <h3>Reviews</h3>
+            </div>
+            <div className="flex gap-2">
+              {hasCheckedItems && (
+                <button
+                  onClick={() =>
+                    allChecked
+                      ? setReviewDeleteAllModal(true)
+                      : setReviewDeleteModal(true)
+                  }
+                  className="p-2 text-[12px] rounded-xl w-[110px] cursor-pointer bg-red text-white"
+                >
+                  Delete
+                </button>
+              )}
+              <div
+                className={`p-1 text-[12px] rounded-xl flex items-center gap-1 ${
+                  isDarkMode
+                    ? "bg-[#313131] text-white"
+                    : "bg-white text-black border border-slate-200"
+                }`}
+              >
+                <CiSearch size={20} />
+                <input
+                  disabled={sortedData.length === 0}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value)
+                    setPage(1)
+                  }}
+                  value={searchQuery}
+                  type="search"
+                  placeholder="Search by name, Email Address"
+                  className={`w-[187px] bg-transparent pl-[10px] p-1 outline-none border-none ${
+                    isDarkMode ? "text-white" : "text-black"
+                  }`}
+                />
+              </div>
+
+              <div
+                className="cursor-pointer flex items-center justify-center w-[60px] rounded border border-[#9966CC] text-[#9966CC]"
+                onClick={() => setReviewFilterModal(true)}
+              >
+                <IoFilterOutline />
+                <button
+                  className="text-[12px] outline-none border-none"
+                  disabled={sortedData.length === 0}
+                >
+                  Filter
+                </button>
+              </div>
+            </div>
            </div>
 
-  
             <div>
               <div
                 className={`w-[100%] h-[240px] m-[auto] ${
@@ -1007,7 +976,6 @@ function handleFiltering() {
                     ))
                 ) : (
                   <div className="h-[240px] m-[auto] flex items-center justify-center">
-
                     {reviewData?.length === 0 ? (
                       <div className="p-2 flex items-center">No Data Available</div>
                     ) : (
@@ -1054,8 +1022,7 @@ function handleFiltering() {
               </div>
             </div>
           </>
-      )}
-      
+      }
     </div>
   );
 }
