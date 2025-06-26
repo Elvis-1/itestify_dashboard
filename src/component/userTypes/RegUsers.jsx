@@ -1,4 +1,4 @@
-import React, { useContext, useState, useMemo, useEffect } from "react";
+import { useContext, useState, useMemo, useEffect } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { MdOutlineMoreHoriz } from "react-icons/md";
 import { SearchOutlined } from "@ant-design/icons";
@@ -11,60 +11,48 @@ import NoDataComponent from "../NoDataComponent";
 import LoadingState from "../LoadingState.jsx";
 import axios from "axios";
 import { message } from "antd";
+import DeactivateAccountModal from "../Popups/DeactivateAccountModal.jsx";
 
 const RegUsers = () => {
   const { isDarkMode } = useContext(DarkModeContext);
-  const API_URL =
-    import.meta.env.VITE_API_URL ||
-    "https://itestify-backend-38u1.onrender.com";
+  const API_URL = import.meta.env.VITE_API_URL || "https://itestify-backend-38u1.onrender.com";
 
   const [registeredUsers, setRegisteredUsers] = useState([]);
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
   const [searchItem, setSearchItem] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [showDeactivateModal, setShowDeactivateModal] = useState(false);
+  const [selectedUserId, setSelectedUserId] = useState(null);
+  const [profile, setProfile] = useState(false);
+  const [eachUser, setEachUser] = useState(null);
 
   const tableHeaders = [
-    {
-      key: "serialno",
-      Label: "S/N",
-    },
-    {
-      key: "id",
-      Label: "User ID",
-    },
-    {
-      key: "full_name",
-      Label: "Name",
-    },
-    {
-      key: "email",
-      Label: "Email",
-    },
-    {
-      key: "created_at",
-      Label: "Registration Date",
-    },
-    {
-      key: "last_login",
-      Label: "Last Login",
-    },
+    { key: "serialno", Label: "S/N" },
+    { key: "id", Label: "User ID" },
+    { key: "full_name", Label: "Name" },
+    { key: "email", Label: "Email" },
+    { key: "created_at", Label: "Registration Date" },
+    { key: "last_login", Label: "Last Login" },
   ];
+
   const toggleOptions = (index) => {
     setIsOpenOptions(isOpenOptions === index ? -1 : index);
   };
-  //<--------------------User Profile dtails-------------------->
-  const [profile, setProfile] = useState(false);
-  const [eachUser, setEachUser] = useState(null);
+
   const openProfileModal = (id) => {
     const userProfileMatch = registeredUsers.find((user) => user.id === id);
     setIsOpenOptions(false);
     if (userProfileMatch) {
       setEachUser(userProfileMatch);
       setProfile(true);
-      console.log(userProfileMatch);
     } else {
       console.error("User not found");
     }
+  };
+
+  const handleDeactivate = (id) => {
+    setSelectedUserId(id);
+    setShowDeactivateModal(true);
   };
 
   useEffect(() => {
@@ -72,14 +60,11 @@ const RegUsers = () => {
       try {
         setIsLoading(true);
         const token = localStorage.getItem("token");
-        const response = await axios.get(
-          `${API_URL}/auths/users/all/?status=registered`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
-          }
-        );
+        const response = await axios.get(`${API_URL}/auths/users/all/?status=registered`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
         const sorted = (response?.data?.data?.data || []).sort(
           (a, b) => new Date(b.created_at) - new Date(a.created_at)
         );
@@ -105,37 +90,19 @@ const RegUsers = () => {
         item.id?.toLowerCase().includes(searchTerm)
     );
   }, [searchItem, registeredUsers]);
+
   const { sort, sortHeader, sortedData } = useSort(regUsersIndex);
-  const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } =
-    usePagination(sortedData);
+  const { currentPage, setCurrentPage, firstIndex, lastIndex, users, npage } = usePagination(sortedData);
 
   return (
     <div className="relative">
       {isLoading && <LoadingState />}
-      {/* <<----------------------------Profile Modal -------------------------->> */}
-      {profile && (
-        <UserRegProfile setProfile={setProfile} registeredUsers={eachUser} />
-      )}
-      <div
-        className={`flex justify-between items-center w-full mt-5 px-4 rounded-t-2xl ${
-          isDarkMode ? `bg-lightBlack dark-mode` : `bg-white `
-        }`}
-      >
+      {profile && <UserRegProfile setProfile={setProfile} registeredUsers={eachUser} />}
+      <div className={`flex justify-between items-center w-full mt-5 px-4 rounded-t-2xl ${isDarkMode ? `bg-lightBlack dark-mode` : `bg-white`}`}>
         <h3 className="py-5 text-lg">User Management</h3>
         <div className="flex items-center gap-4">
-          {/*---------------------------------------- Search Bar  ---------------------------------*/}
-          <div
-            className={`flex justify-left items-center gap-2  p-3 rounded-lg w-[300px] ${
-              isDarkMode ? `bg-off-black` : `bg-off-white`
-            } ]
-            `}
-          >
-            <SearchOutlined
-              style={{
-                fill: isDarkMode ? "black" : "white",
-                fontSize: "16px",
-              }}
-            />
+          <div className={`flex justify-left items-center gap-2 p-3 rounded-lg w-[300px] ${isDarkMode ? `bg-off-black` : `bg-off-white`}`}> 
+            <SearchOutlined style={{ fill: isDarkMode ? "black" : "white", fontSize: "16px" }} />
             <input
               className="border-none outline-none bg-transparent w-[200px] text-xs placeholder:text-xs"
               type="text"
@@ -144,83 +111,38 @@ const RegUsers = () => {
               placeholder="Search by name, email, userID"
               onChange={(e) => {
                 setSearchItem(e.target.value);
-                setCurrentPage(1)
+                setCurrentPage(1);
               }}
             />
           </div>
         </div>
       </div>
 
-      {/* --------------------------------Table Details ---------------------------------------- */}
-      <div
-        className={`h-[21rem] rounded-b-2xl overflow-hidden  ${
-          isDarkMode ? `bg-lightBlack` : `bg-white `
-        }`}
-      >
-        <table
-          className={`custom-table  font-sans text-[14px] ${
-            isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`
-          } `}
-        >
-          <thead
-            className={` text-xs ${
-              isDarkMode ? `bg-near-black` : `bg-off-white text-black`
-            }`}
-          >
-            <tr
-              className={` ${
-                isDarkMode
-                  ? `bg-off-black text-white hover:bg-[#313131]`
-                  : `bg-white text-black hover:bg-off-white`
-              }`}
-            >
+      <div className={`h-[21rem] rounded-b-2xl overflow-hidden ${isDarkMode ? `bg-lightBlack` : `bg-white`}`}>
+        <table className={`custom-table font-sans text-[14px] ${isDarkMode ? `bg-lightBlack dark-mode` : `light-mode`}`}>
+          <thead className={`text-xs ${isDarkMode ? `bg-near-black` : `bg-off-white text-black`}`}>
+            <tr className={`${isDarkMode ? `bg-off-black text-white hover:bg-[#313131]` : `bg-white text-black hover:bg-off-white`}`}>
               {tableHeaders.map((header, index) => (
                 <th
-                  className={`cursor-pointer ${
-                    isDarkMode
-                      ? `bg-off-black text-white`
-                      : `bg-off-white text-black`
-                  }`}
-                  onClick={() => {
-                    sortHeader(header);
-                  }}
+                  className={`cursor-pointer ${isDarkMode ? `bg-off-black text-white` : `bg-off-white text-black`}`}
+                  onClick={() => sortHeader(header)}
                   key={index}
                 >
                   <div className="flex items-center gap-1">
                     {header.Label}
                     <i>
-                      <LuChevronsUpDown
-                        direction={
-                          sort.keyToSort === header.key
-                            ? sort.direction
-                            : "ascending"
-                        }
-                      />
+                      <LuChevronsUpDown direction={sort.keyToSort === header.key ? sort.direction : "ascending"} />
                     </i>
                   </div>
                 </th>
               ))}
-              <th
-                className={`cursor-pointer ${
-                  isDarkMode
-                    ? `bg-off-black text-white`
-                    : `bg-off-white text-black`
-                }`}
-              >
-                Action
-              </th>
+              <th className={`cursor-pointer ${isDarkMode ? `bg-off-black text-white` : `bg-off-white text-black`}`}>Action</th>
             </tr>
           </thead>
           {regUsersIndex.length > 0 ? (
             users?.map((data, index) => (
               <tbody className="relative" key={data.id}>
-                <tr
-                  className={` ${
-                    isDarkMode
-                      ? `hover:bg-[#313131]`
-                      : `hover:bg-off-white text-black`
-                  }`}
-                >
+                <tr className={`${isDarkMode ? `hover:bg-[#313131]` : `hover:bg-off-white text-black`}`}>
                   <td>{firstIndex + index + 1}</td>
                   <td>{data.id?.slice(0, 6)}</td>
                   <td>{data.full_name || "Unknown user"}</td>
@@ -229,22 +151,23 @@ const RegUsers = () => {
                   <td>{new Date(data.last_login).toLocaleDateString()}</td>
                   <td>
                     {isOpenOptions === data.id && (
-                      <div
-                        onClick={() => openProfileModal(data.id)}
-                        className={`rounded-lg ${
-                          isDarkMode
-                            ? `text-white bg-[#292929]`
-                            : `text-black bg-white`
-                        }  w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
-                      >
-                        <p className="p-2 text-center">View profile</p>
+                      <div className={`rounded-lg ${isDarkMode ? `text-white bg-[#292929]` : `text-black bg-white`} w-[140px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}>
+                        <p
+                          className="p-2 mt-4 text-center cursor-pointer hover:bg-gray-100"
+                          onClick={() => openProfileModal(data.id)}
+                        >
+                          View profile
+                        </p>
+                        <hr className="border-t border-gray-300" />
+                        <p
+                          className="h-[50px] pt-3 text-center cursor-pointer hover:bg-gray-100"
+                          onClick={() => handleDeactivate(data.id)}
+                        >
+                          Deactivate account
+                        </p>
                       </div>
                     )}
-                    <i
-                      onClick={() => {
-                        toggleOptions(data.id);
-                      }}
-                    >
+                    <i onClick={() => toggleOptions(data.id)}>
                       <MdOutlineMoreHoriz />
                     </i>
                   </td>
@@ -254,17 +177,13 @@ const RegUsers = () => {
           ) : (
             <tbody>
               <tr className="border-b-0">
-                <td
-                  colSpan={8}
-                  className="hover:bg-transparent border-b-0 border-b-transparent"
-                >
+                <td colSpan={8} className="hover:bg-transparent border-b-0 border-b-transparent">
                   <NoDataComponent />
                 </td>
               </tr>
             </tbody>
           )}
         </table>
-        {/* ----------------------------------------PAgination-------------------------------------------- */}
         <Pagination
           data={regUsersIndex}
           currentPage={currentPage}
@@ -274,6 +193,23 @@ const RegUsers = () => {
           npage={npage}
         />
       </div>
+
+      {showDeactivateModal && (
+        <DeactivateAccountModal
+          userId={selectedUserId}
+          onClose={() => setShowDeactivateModal(false)}
+          onSuccess={() => {
+            setShowDeactivateModal(false);
+            const userToDeactivate = registeredUsers.find((user) => user.id === selectedUserId);
+            if (!userToDeactivate) return;
+
+            const previousDeactivated = JSON.parse(localStorage.getItem("deactivatedUsers")) || [];
+            const updatedDeactivated = [...previousDeactivated, userToDeactivate];
+            localStorage.setItem("deactivatedUsers", JSON.stringify(updatedDeactivated));
+            setRegisteredUsers((prev) => prev.filter((user) => user.id !== selectedUserId));
+          }}
+        />
+      )}
     </div>
   );
 };
