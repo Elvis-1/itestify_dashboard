@@ -33,6 +33,7 @@ import CheckMail from "./component/CheckMail";
 import ResetPassword from "./pages/ResetPassword";
 import AdminLoginInvite from "./component/AdminLoginInvite";
 import ManageUser from "./pages/ManageUser";
+import ManageSuperAdmin from "./pages/ManageSuperAdmin";
 
 function App() {
   return (
@@ -104,7 +105,7 @@ function App() {
                       />
                       <Route
                         path="general-settings/manage-admin"
-                        element={<ManageUser />}
+                        element={<ManageSuperAdmin />}
                       />
 
                       <Route path="profile" element={<Profile />} />

@@ -1,7 +1,13 @@
 import { useContext } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
+import { set } from "date-fns";
 
-const CreateRole = ({ setIsCreateRoleOpen, setSuccessCreateRole }) => {
+const CreateRole = ({
+  setIsCreateRoleOpen,
+  handleCreateRoleSubmit,
+  role,
+  setRole,
+}) => {
   const { isDarkMode } = useContext(DarkModeContext);
   const permissions = [
     "User Management",
@@ -9,6 +15,7 @@ const CreateRole = ({ setIsCreateRoleOpen, setSuccessCreateRole }) => {
     "Review Management",
     "Privacy and Security Management",
   ];
+
   return (
     <div>
       {" "}
@@ -29,14 +36,20 @@ const CreateRole = ({ setIsCreateRoleOpen, setSuccessCreateRole }) => {
             <h1 className="border-b-borderColor border-b-[1px] p-4">
               Create A Role
             </h1>
-            <form className="p-4">
+            <form action="" onSubmit={handleCreateRoleSubmit} className="p-4">
               <div className="flex flex-col gap-3">
                 <p className="text-sm">Name</p>
                 <input
+                  value={role.name}
                   className={`p-1 rounded-md ${
                     isDarkMode ? "bg-grayBlack" : "bg-off-white"
                   } placeholder:text-xs placeholder:pl-2`}
                   type="text"
+                  name="name"
+                  onChange={(event)=> setRole({
+                    ...role,
+                    name: event.target.value
+                  })}
                   placeholder="Enter Name"
                 />
               </div>
@@ -44,7 +57,25 @@ const CreateRole = ({ setIsCreateRoleOpen, setSuccessCreateRole }) => {
                 <h3 className="text-sm font-bold">Assign Permissions</h3>
                 {permissions.map((perm) => (
                   <div className="flex items-center justify-normal gap-4 pt-3">
-                    <input type="checkbox" />
+                    <input
+                      type="checkbox"
+                      checked={role.permissions.includes(perm)}
+                      onChange={(event) => {
+                        if (event.target.checked) {
+                          setRole({
+                            ...role,
+                            permissions: [...role.permissions, perm],
+                          });
+                        } else {
+                          setRole({
+                            ...role,
+                            permissions: role.permissions.filter(
+                              (p) => p !== perm
+                            ),
+                          });
+                        }
+                      }}
+                    />
                     <p className="text-xs">{perm}</p>
                   </div>
                 ))}
@@ -56,14 +87,7 @@ const CreateRole = ({ setIsCreateRoleOpen, setSuccessCreateRole }) => {
                 >
                   Cancel
                 </button>
-                <button
-                  type="submit"
-                  className="btn-primary"
-                  onClick={() => {
-                    setIsCreateRoleOpen(false);
-                    setSuccessCreateRole(true);
-                  }}
-                >
+                <button type="submit" className="btn-primary">
                   Create Role
                 </button>
               </div>

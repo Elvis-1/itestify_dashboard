@@ -18,7 +18,7 @@ import CreateRole from "../component/generalSettingsPopups/CreateRole";
 
 const GeneralSettings = () => {
   const { isDarkMode } = useContext(DarkModeContext);
-  const navigate = useNavigate()
+  const navigate = useNavigate();
 
   const token = localStorage.getItem("token");
   const API_URL =
@@ -44,6 +44,10 @@ const GeneralSettings = () => {
     email: "",
     role: "",
   });
+  const [role, setRole] = useState({
+    name: "",
+    permissions: [],
+  });
 
   const [isOpenOptions, setIsOpenOptions] = useState(-1);
   const [isEditing, setIsEditing] = useState(false);
@@ -53,9 +57,9 @@ const GeneralSettings = () => {
   const [memberToDelete, setMemberToDelete] = useState(null);
 
   const [isCreateRoleOpen, setIsCreateRoleOpen] = useState(false);
-  const toggleOptions = (index) => {
-    setIsOpenOptions(isOpenOptions === index ? -1 : index);
-  };
+  // const toggleOptions = (index) => {
+  //   setIsOpenOptions(isOpenOptions === index ? -1 : index);
+  // };
   const openConfirmModal = () => {
     setMemberModal(false);
     setConfirmAddAdmin(true);
@@ -183,7 +187,9 @@ const GeneralSettings = () => {
       }, 2000);
     }
     if (successCreateRole) {
-      setTimeout(() => setSuccessCreateRole(false));
+      setTimeout(() => {
+        setSuccessCreateRole(false);
+      }, 2000);
     }
   }, [
     successModal,
@@ -221,6 +227,16 @@ const GeneralSettings = () => {
       .split("_")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
+  };
+  const handleCreateRoleSubmit = (e) => {
+    e.preventDefault();
+    if (!role.name || role.permissions.length === 0) {
+      message.error("Please fill in all the required fields.");
+    }
+    setAdminDetails((prev) => [{ ...prev, role: role.name }]);
+
+    setIsCreateRoleOpen(false);
+    setSuccessCreateRole(true);
   };
 
   const SUCCESS_MESSAGES = {
@@ -298,8 +314,11 @@ const GeneralSettings = () => {
       )}
       {isCreateRoleOpen && (
         <CreateRole
+          handleCreateRoleSubmit={handleCreateRoleSubmit}
           setIsCreateRoleOpen={setIsCreateRoleOpen}
           setSuccessCreateRole={setSuccessCreateRole}
+          role={role}
+          setRole={setRole}
         />
       )}
       {successCreateRole && (
@@ -400,7 +419,9 @@ const GeneralSettings = () => {
 
                   <div className="relative">
                     <p
-                     onClick={()=> navigate('/dashboard/general-settings/manage-admin')}
+                      onClick={() =>
+                        navigate("/dashboard/general-settings/manage-admin")
+                      }
                       className="cursor-pointer text-primary font-bold text-xs"
                     >
                       Manage Role
