@@ -8,7 +8,7 @@ import { PiWarningCircleLight } from "react-icons/pi";
 import { IoMdArrowDropdown } from "react-icons/io";
 
 import { GiCheckMark } from "react-icons/gi";
-import Swal from "sweetalert2";
+import Swal from "sweetalert2"
 
 const DeactivateModal = ({ onClose, onSuccess }) => {
   const [reason, setReason] = useState("");
@@ -31,6 +31,8 @@ const DeactivateModal = ({ onClose, onSuccess }) => {
     "Requesting off-platform payments",
     "User impersonation",
     "Illegal content posted",
+    "Harassment or bullying",
+    "Harassment or bullying",
     "Harassment or bullying",
   ];
 
