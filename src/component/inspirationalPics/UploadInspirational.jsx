@@ -1,192 +1,254 @@
-import React, { useState } from 'react'
-import {Button, Upload} from 'antd'
-import { FaPlay } from "react-icons/fa";
-import { FaCaretDown, FaCaretUp} from "react-icons/fa6";
+import React, { useState } from 'react';
+import { Upload, Progress, Button, Radio } from 'antd';
+import { FaImage, FaTimes } from "react-icons/fa";
+import { FaCaretDown, FaCaretUp } from "react-icons/fa6";
+import '../../App.css'
 
-function  UploadInspirational() {
-  const [uploadStatus, setUploadStatus] = useState('Upload')
-  const [uploadType, setUploadType] = useState('')
-  const [timePeriod, setTimePeriod] = useState('PM')
-  const [showTimePeriod, setShowTimePeriod] = useState(false)
+function UploadInspirational() {
+  const [uploadStatus, setUploadStatus] = useState('Upload');
+  const [timePeriod, setTimePeriod] = useState('PM');
+  const [showTimePeriod, setShowTimePeriod] = useState(false);
+  const [dateScheduled, setDateSchedule] = useState('');
+  const [timeData, setTimeData] = useState('');
+  const [fileList, setFileList] = useState([]);
+  const [uploadProgress, setUploadProgress] = useState({});
 
-  const [dateScheduled, setDateSchedule] = useState('')
-  const [timeData, setTimeData] = useState('')
-
-  const [formData, setFormData] = useState({
-    source: '',
-  });
-
-  const [uploadedData, setUploadedData] = useState({})
-
-
-  function handleChange(e) {
-    setUploadStatus(e.target.value)
-  }
-
-
-  const handleInputChange = (e) => {
-    const {name, value} = e.target
-    setFormData((prevData) => ({...prevData, [name]: value}))
-    
+  const handleUploadChange = ({ fileList: newFileList }) => {
+    setFileList(newFileList);
+    const newProgress = { ...uploadProgress };
+    newFileList.forEach(file => {
+      if (!uploadProgress[file.uid] && !file.url) {
+        newProgress[file.uid] = 0;
+      }
+    });
+    setUploadProgress(newProgress);
   };
 
-  function handleSubmit(e) {
-    e.preventDefault()
-    if (uploadStatus === 'Schedule') {
-        let updated = ({...formData, uploadStatus, timeData, dateScheduled})
-        setUploadedData(updated)
-        console.log(uploadedData)
-    }else if(uploadStatus === 'Upload') {
-        setUploadedData({...formData, uploadStatus})
-        console.log(uploadedData)
-    }
+  const simulateUpload = (uid) => {
+    let progress = 0;
+    const interval = setInterval(() => {
+      progress += Math.floor(Math.random() * 10) + 5;
+      if (progress >= 100) {
+        progress = 100;
+        clearInterval(interval);
+      }
+      setUploadProgress(prev => ({
+        ...prev,
+        [uid]: progress
+      }));
+    }, 500);
+    return interval;
+  };
 
-    console.log(uploadedData)
-  }
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    const uploadData = {
+      uploadStatus,
+      files: fileList,
+      ...(uploadStatus === 'Schedule' && { timeData, dateScheduled, timePeriod })
+    };
+    
+    console.log('Upload data:', uploadData);
+    
+    fileList.forEach(file => {
+      if (!file.url && uploadProgress[file.uid] < 100) {
+        simulateUpload(file.uid);
+      }
+    });
+  };
+
+  const removeFile = (uid) => {
+    setFileList(prev => prev.filter(file => file.uid !== uid));
+    setUploadProgress(prev => {
+      const newProgress = { ...prev };
+      delete newProgress[uid];
+      return newProgress;
+    });
+  };
+
+  const uploadProps = {
+    multiple: true,
+    onChange: handleUploadChange,
+    beforeUpload: () => false,
+    fileList,
+    accept: "image/*",
+    showUploadList: false,
+    listType: "picture-card"
+  };
 
   return (
-    <div>
-      <div className='w-[90%] m-[auto] p-5 mt-4 flex items-center justify-between'>
-        <h2>Upload Pictures</h2>
-        <button onClick={handleSubmit}
-        className='bg-[#9966CC] border-none outline-none p-1 w-[120px] rounded-xl'>{uploadStatus}</button>
+    <div className="w-[90%] m-[auto]">
+      {/* Header with Upload Button */}
+      <div className="flex justify-between items-center mb-6">
+        <h2 className="text-xl font-semibold">Upload Pictures</h2>
+        <Button 
+          onClick={handleSubmit}
+          className="bg-[#b584e6] hover:bg-[#8a5ac4] border-none text-white"
+          size="large"
+        >
+          {uploadStatus}
+        </Button>
       </div>
 
-      <div className='flex items-center gap-24 w-[90%] m-[auto]'>
-        <div className='w-[450px] h-[auto] ml-5 rounded-2xl bg-[#171717]'>
-          <div className='w-[420px] h-[290px] m-[auto] mt-1 text-white rounded-xl'>
-            <Upload.Dragger style={{color: 'white'}}>
-              <div className='w-[35px] h-[35px] rounded-xl mb-2 m-[auto] p-2 bg-[#313131]'><FaPlay size={20} 
-              style={{color: '#9966CC', border: '2px solid #9966CC', padding: '2px'}}/></div>
-              Drag and drop or<span className='text-[#9966CC]'> choose file</span> here to upload
-              <p>MP4, Max size(200mb)</p>
-            </Upload.Dragger>
+      {/* Drag and Drop Area - Full Width */}
+      <div className="w-full mb-6">
+        <Upload.Dragger {...uploadProps} className="w-full h-64 bg-[#171717] rounded-xl flex flex-col items-center justify-center text-white">
+          <div className="flex flex-col items-center">
+            <FaImage size={48} className="text-[#9966CC] mb-4" />
+            <p className="text-lg">Drag and drop images here</p>
+            <p className="text-[#9966CC]">or click to browse files</p>
+            <p className="text-sm mt-2">Supports: JPG, PNG, GIF (Max 200MB each)</p>
           </div>
-         
-        </div>
+        </Upload.Dragger>
+      </div>
 
-        <div className='w-[450px] h-[auto] rounded-xl bg-[#171717]'>
-          
-            <div className='p-2 mt-2'>
-                <p className='text-[12px]'>Source</p>
-                <input 
-                className='w-[100%] p-1 rounded bg-[#292929] text-[12px] border-none outline-none'
-                name='source'
-                onChange={handleInputChange}
-                value={formData.source} 
-                type="text" placeholder='Enter Picture Source' />
-            </div>
-
-            <div className='mt-4 mb-2 pb-3'>
-                <p className='pl-2 pb-3'>Upload Status</p>
-                <div className='flex items-center gap-5'>
-                <div className='flex items-center text-[15px] ml-2 gap-2'>
-                    <div className={`w-[16px] h-[16px] rounded-full 
-                    border border-[#9966CC] mr-1 cursor-pointer
-                    ${uploadStatus === 'Upload' ? 
-                    'bg-[#9966CC]' : 'bg-transparent'}`}></div>
-                    <input type="radio" 
-                    name='status' 
-                    value='Upload'
-                    id='Upload'
-                    checked={uploadStatus === 'Upload'}
-                    onChange={handleChange}
-                    className='hidden peer' />
-                    <label 
-                    htmlFor='Upload' 
-                    className='cursor-pointer'
-                    onClick={() => setUploadStatus('Upload')}>Upload Now</label>
-                </div>
-
-                <div className='flex items-center text-[15px] ml-2 gap-2'>
-                <div className={`w-[16px] h-[16px] rounded-full 
-                    border border-[#9966CC] mr-1 cursor-pointer
-                    ${uploadStatus === 'Schedule' ? 
-                    'bg-[#9966CC]' : 'bg-transparent'}`}></div>
-                    <input type="radio" 
-                    name='status' 
-                    id='Schedule'
-                    value='Schedule'
-                    checked={uploadStatus === 'Schedule'}
-                    onChange={handleChange}
-                    className='hidden peer'
-                    />
-                    <label htmlFor='Schedule' 
-                    className='cursor-pointer'
-                    onClick={() => setUploadStatus('Schedule')}
-                    >Schedule For Later</label>
-                </div>
-
-                <div className='flex items-center text-[15px] ml-2 gap-2 cursor-pointer'>
-                <div className={`w-[16px] h-[16px] rounded-full 
-                    border border-[#9966CC] mr-1 cursor-pointer
-                    ${uploadStatus === 'Draft' ? 
-                    'bg-[#9966CC]' : 'bg-transparent'}`}></div>
-                    <input type="radio" 
-                    name='status'
-                    value="Draft"
-                    checked={uploadStatus === 'Draft'}
-                    onChange={handleChange}
-                    id='draft' 
-                    className='hidden peer'/>
-                    <label htmlFor='draft' 
-                    className='cursor-pointer'
-                    onClick={() => setUploadStatus('Draft')}>Draft</label>
-                </div>
-                </div>
-            </div>
- 
-            {uploadStatus === 'Schedule' &&
-                <>
-                    <div>
-                        <p className='mt-10 mb-3 ml-[8px]'>Schedule Date</p>
-                        <input
-                        type='date'
-                        value={dateScheduled} 
-                        placeholder=''
-                        onChange={(e)=> setDateSchedule(e.target.value)}
-                        className='bg-[#2D2D2D] mb-5 text-white 
-                        rounded-xl p-2 w-[94%] 
-                        ml-[15px] outline-none border-none'/>
+      {/* Upload Progress Section */}
+      {fileList.length > 0 && (
+        <div className="w-full mb-8">
+          <div className="space-y-4">
+            {fileList.map(file => (
+              <div key={file.uid} className="bg-[#171717] p-4 rounded-lg">
+                <div className="flex items-start mb-3">
+                  {file.type?.startsWith('image/') && (
+                    <div className="w-16 h-16 mr-4 flex-shrink-0">
+                      <img 
+                        src={file.thumbUrl || URL.createObjectURL(file.originFileObj)} 
+                        alt={file.name} 
+                        className="w-full h-full object-cover rounded"
+                      />
                     </div>
-                
-                    <div className='flex items-center justify-between'>
-                        <div className='bg-[#2D2D2D] overflow-hidden w-[40%] h-[30px] ml-[15px] mb-5 rounded'>
-                            <input type="time"
-                            value={timeData} 
-                            onChange={(e) => setTimeData(e.target.value)}
-                            className='text-white bg-[#2D2D2D] w-[100%] pt-1 p-1'/>
+                  )}
+                  
+                  <div className="flex-grow">
+                    <div className="flex justify-between items-start">
+                      <div>
+                        <p className="font-medium truncate max-w-[200px]">{file.name}</p>
+                        <div className='flex items-center justify-between w-[865px]'>
+                          <p className="text-sm text-gray-400">
+                            {Math.round(file.size / 1024)} KB • 
+                          </p>
+                          <p>{uploadProgress[file.uid] || 0}%</p>
                         </div>
-
-                        <div onClick={()=> setShowTimePeriod(!showTimePeriod)}
-                        className='bg-[#2D2D2D] w-[40%] h-[30px]
-                            mr-[15px] rounded mb-5'>
-                            <div className='pl-2 pt-1 flex items-center justify-between'>
-                            {timePeriod}
-                            {showTimePeriod ? <FaCaretUp/> : <FaCaretDown/>}
-                            
-                            </div>
-                            {showTimePeriod &&
-                            <div className='flex flex-col items-start mt-3 mb-5 rounded overflow-hidden '>
-                                <input type="button" 
-                                value="PM"
-                                onClick={()=> setTimePeriod("PM")}
-                                className='bg-[#2D2D2D] w-[100%] cursor-pointer'/>
-                                <input type="button" 
-                                value="AM"
-                                onClick={()=> setTimePeriod("AM")}
-                                className='bg-[#2D2D2D] w-[100%] cursor-pointer'/>
-                            </div>
-                            }
-                        </div>
-                        
-                    </div> 
-                </>
-            }
+                      </div>
+                      
+                      <button 
+                        onClick={() => removeFile(file.uid)}
+                        className="text-gray-400 ml-[-30px] hover:text-white"
+                      >
+                        <FaTimes color='red' />
+                      </button>
+                    </div>
+                    
+                    <Progress 
+                      percent={uploadProgress[file.uid] || 0} 
+                      strokeColor="#9966CC" 
+                      showInfo={false}
+                      className="mt-2"
+                    />
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
         </div>
+      )}
+
+      {/* Upload Options */}
+      <div className="w-full bg-[#171717] p-5 rounded-xl">
+        <Radio.Group 
+          value={uploadStatus} 
+          onChange={(e) => setUploadStatus(e.target.value)}
+          className="w-full"
+        >
+          <div className="space-y-4">
+            <Radio 
+              value="Upload" 
+              className="custom-radio"
+              style={{ '--radio-color': '#9966CC' }}
+            >
+              <span className={`ml-2 text-white`}>Upload Now</span>
+            </Radio>
+            
+            <Radio 
+              value="Schedule" 
+              className="custom-radio"
+              
+            >
+              <span className="ml-2 text-white">Schedule For Later</span>
+            </Radio>
+            
+            <Radio 
+              value="Draft" 
+              className="custom-radio"
+              style={{ '--radio-color': '#9966CC' }}
+            >
+              <span className="ml-2 text-white">Save as Draft</span>
+            </Radio>
+          </div>
+        </Radio.Group>
+
+        {uploadStatus === 'Schedule' && (
+          <div className="mt-6 space-y-4">
+            <div>
+              <label className="block text-sm mb-2">Schedule Date</label>
+              <input
+                type="date"
+                value={dateScheduled}
+                onChange={(e) => setDateSchedule(e.target.value)}
+                className="bg-[#2D2D2D] text-white rounded p-2 w-full outline-none border-none"
+              />
+            </div>
+            
+            <div className="flex gap-4">
+              <div className="flex-1">
+                <label className="block text-sm mb-2">Time</label>
+                <input
+                  type="time"
+                  value={timeData}
+                  onChange={(e) => setTimeData(e.target.value)}
+                  className="bg-[#2D2D2D] text-white rounded p-2 w-full outline-none border-none"
+                />
+              </div>
+              
+              <div className="flex-1 relative">
+                <label className="block text-sm mb-2">AM/PM</label>
+                <div 
+                  onClick={() => setShowTimePeriod(!showTimePeriod)}
+                  className="bg-[#2D2D2D] text-white rounded p-2 w-full flex justify-between items-center cursor-pointer"
+                >
+                  {timePeriod}
+                  {showTimePeriod ? <FaCaretUp /> : <FaCaretDown />}
+                </div>
+                
+                {showTimePeriod && (
+                  <div className="absolute z-10 w-full bg-[#2D2D2D] rounded mt-1 overflow-hidden">
+                    <div 
+                      className="p-2 hover:bg-[#3D3D3D] cursor-pointer"
+                      onClick={() => {
+                        setTimePeriod("AM");
+                        setShowTimePeriod(false);
+                      }}
+                    >
+                      AM
+                    </div>
+                    <div 
+                      className="p-2 hover:bg-[#3D3D3D] cursor-pointer"
+                      onClick={() => {
+                        setTimePeriod("PM");
+                        setShowTimePeriod(false);
+                      }}
+                    >
+                      PM
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+          </div>
+        )}
       </div>
     </div>
-  )
+  );
 }
 
-export default UploadInspirational
+export default UploadInspirational;
