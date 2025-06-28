@@ -48,6 +48,7 @@ function TestimonyText() {
     const [testimonies, setTestimonies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
+    const [operationLoading, setOperationLoading] = useState(false);
 
     useEffect(() => {
         const fetchTestimonies = async () => {
@@ -129,6 +130,10 @@ function TestimonyText() {
 
         return [];
     }, [getFilteredData, testimonies, searchQuery]);
+
+    useEffect(() => {
+        setCurrentPage(1); // Reset to first page on search
+    }, [searchQuery]);
 
     const sortedData = useMemo(() => {
         if (!sortConfig) return searchedData;
@@ -226,7 +231,9 @@ function TestimonyText() {
                 <button
                     key="approve"
                     onClick={async () => {
+                        setOperationLoading(true);
                         const success = await handleTestimonyStatus(controlDetail, "approve");
+                        setOperationLoading(false);
                         if (success) {
                             setIsApproved(true);
                             showStatusAlert();
@@ -234,14 +241,14 @@ function TestimonyText() {
                     }}
                     className='text-[12px] text-white bg-[#9966CC] p-1 w-[120px] rounded ml-2'
                 >
-                    Approve Testimony
+                    {operationLoading ? <ClipLoader size={15} color="#ffffff" /> : 'Approve Testimony'}
                 </button>
             ];
-        } else if (getStatus === 'Rejected') {
+        } else if (getStatus === 'rejected') {
             return [
                 <div key="reason" className='text-left'>
                     <h3 className='text-[13px]'>Reason For Rejection</h3>
-                    <p className='text-[11px] opacity-[0.7]'>Use of Foul Languages</p>
+                    <p className='text-[11px] opacity-[0.7]'>{details?.rejection_reason || 'No reason provided'}</p>
                 </div> 
             ];
         }
@@ -271,7 +278,11 @@ function TestimonyText() {
                 setTestimonies(prevTestimonies => 
                     prevTestimonies.map(testimony => 
                         testimony.id === id 
-                            ? { ...testimony, status: newStatus === 'approve' ? 'Approved' : 'Rejected' } 
+                            ? { 
+                                ...testimony, 
+                                status: newStatus === 'approve' ? 'approved' : 'rejected',
+                                rejection_reason: reason || testimony.rejection_reason
+                            } 
                             : testimony
                     )
                 );
@@ -304,7 +315,9 @@ function TestimonyText() {
                         alert('Please provide a rejection reason');
                         return;
                     }
+                    setOperationLoading(true);
                     const success = await handleTestimonyStatus(controlDetail, "reject", rejectionReason);
+                    setOperationLoading(false);
                     if (success) {
                         setIsApproved(false);
                         showStatusAlert();
@@ -312,7 +325,7 @@ function TestimonyText() {
                 }}
                 className='bg-[#9966CC] p-1 w-[80px] text-[#FFFFFF] rounded'
             >
-                Confirm
+                {operationLoading ? <ClipLoader size={15} color="#ffffff" /> : 'Confirm'}
             </button>
         ];
     }
@@ -410,6 +423,12 @@ function TestimonyText() {
     }
 
     function showDeleteNotification() {
+        const selectedTestimony = testimonies.find(item => item.id === controlDetail);
+        if (selectedTestimony?.status === 'pending') {
+            setDeleteStatus('pending');
+        } else {
+            setDeleteStatus('confirm');
+        }
         setDeleteAlert(true);
     }
 
@@ -430,13 +449,15 @@ function TestimonyText() {
                         Cancel
                     </button>
                     <button 
-                        onClick={() => {
-                            handleTestimonyDelete(controlDetail);
+                        onClick={async () => {
+                            setOperationLoading(true);
+                            await handleTestimonyDelete(controlDetail);
+                            setOperationLoading(false);
                             deleteSuccessFulModal();
                         }}
                         className='border-none outline-none bg-red w-[100px] rounded p-1 mr-2 pl-3'
                     >
-                        Yes delete
+                        {operationLoading ? <ClipLoader size={15} color="#ffffff" /> : 'Yes delete'}
                     </button>
                 </div> 
         ];
@@ -457,7 +478,6 @@ function TestimonyText() {
     async function handleTestimonyDelete(id) {
         const token = localStorage.getItem('token');
         try {
-            setLoading(true);
             await axios.delete(
                 `https://itestify-backend-38u1.onrender.com/testimonies/texts/${id}/`,
                 {
@@ -468,12 +488,8 @@ function TestimonyText() {
             );
             
             setTestimonies(prev => prev.filter(item => item.id !== id));
-            setDeleteSuccessful(true);
-            handleCloseModal();
         } catch (error) {
             console.error("Delete failed:", error);
-        } finally {
-            setLoading(false);
         }
     }
 
@@ -493,7 +509,6 @@ function TestimonyText() {
 
     if (loading) {
         return (
-            
             <LoadingState/>
         );
     }
@@ -550,7 +565,7 @@ function TestimonyText() {
                                         'text-green-500 border border-green-500' : 
                                         'text-red border border-red'
                                 }`}>
-                                    {details.status}
+                                    {details.status.charAt(0).toUpperCase() + details.status.slice(1)}
                                 </p>
                             </div>
                         </div>
@@ -920,7 +935,7 @@ function TestimonyText() {
                                         id="rejected"
                                         name="status"
                                         value="Rejected"
-                                        checked={ApprovalStatus === 'Rejected'}
+                                        checked={ApprovalStatus === 'rejected'}
                                         onChange={handleChange}
                                         className="hidden peer"
                                     />
@@ -980,7 +995,7 @@ function TestimonyText() {
                             }} 
                             className='pl-2 pt-4 text-red font-bold'
                         >
-                            {loading ? <ClipLoader size={15} color="#ff0000" /> : 'Delete'}
+                            Delete
                         </button>
                     </div>
                 </div>
@@ -1233,13 +1248,13 @@ function TestimonyText() {
                                 <div className='ml-[20px] mt-4'>{item?.shares || 0}</div>
                                 <div 
                                     className={`ml-[-5px] mt-3 w-[90%] m-[auto] text-center rounded-xl p-1 
-                                    ${item.status === 'Rejected' ? 
+                                    ${item.status === 'rejected' ? 
                                         'text-red border border-red' : 
                                         item.status === 'pending' ? 
                                         'text-yellow-400 border border-yellow-500' : 
                                         'text-green-700 border border-green-700'}`}
                                 >
-                                    {item.status}
+                                    {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
                                 </div>
                                 <div 
                                     onClick={() => {
@@ -1265,15 +1280,14 @@ function TestimonyText() {
 
                 {/* Pagination */}
                 <div className='flex justify-between items-center mt-4'>
-                    <div className={`text-[12px] ml-[10px]
-                    ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
-                        Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, (getFilteredData.length > 0 ? getFilteredData : testimonies).length)} of {(getFilteredData.length > 0 ? getFilteredData : testimonies).length}
+                    <div className={`text-[12px] ml-[10px] ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
+                        Showing {Math.min(startIndex + 1, searchedData.length)}-{Math.min(startIndex + itemsPerPage, searchedData.length)} of {searchedData.length}
                     </div>
                     <div className='text-[13px] mr-5 flex items-center gap-3'>
                         <button
                             onClick={handlePrevPage}
-                            disabled={currentPage === 1}
-                            className={`w-[90px] p-2 rounded-xl ${currentPage === 1 ? 
+                            disabled={currentPage === 1 || searchedData.length === 0}
+                            className={`w-[90px] p-2 rounded-xl ${currentPage === 1 || searchedData.length === 0 ? 
                                 'opacity-[0.5] text-gray-500 border border-gray-500' : 
                                 "border border-[#9966CC] text-[#9966CC]"}`}
                         >
@@ -1281,8 +1295,8 @@ function TestimonyText() {
                         </button>
                         <button
                             onClick={handleNextPage}
-                            disabled={currentPage === totalPages}
-                            className={`w-[90px] p-2 rounded-xl ${currentPage === totalPages ? 
+                            disabled={currentPage === Math.ceil(searchedData.length / itemsPerPage) || searchedData.length === 0}
+                            className={`w-[90px] p-2 rounded-xl ${currentPage === Math.ceil(searchedData.length / itemsPerPage) || searchedData.length === 0 ? 
                                 'opacity-[0.5] text-gray-500 border border-gray-500' : 
                                 "border border-[#9966CC] text-[#9966CC]"}`}
                         >
@@ -1295,4 +1309,4 @@ function TestimonyText() {
     );
 }
 
-export default TestimonyText
+export default TestimonyText;
