@@ -1,21 +1,16 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
 import { Modal } from "antd";
-
-import ReactDOMServer from "react-dom/server";
-
 import { PiWarningCircleLight } from "react-icons/pi";
 import { IoMdArrowDropdown } from "react-icons/io";
-
-import { GiCheckMark } from "react-icons/gi";
-import Swal from "sweetalert2";
-
+import { IoMdArrowDropup } from "react-icons/io";
 
 const DeactivateModal = ({ onClose, onSuccess }) => {
   const [reason, setReason] = useState("");
   const [showReasonList, setShowReasonList] = useState(false);
   const [additionalReason, setAdditionalReason] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
+  const [isChoosingReason, setIsChoosingReason] = useState(false);
 
   const reasons = [
     "Suspicious account activity",
@@ -39,44 +34,9 @@ const DeactivateModal = ({ onClose, onSuccess }) => {
 
   const handleConfirm = () => {
     if (reason) {
-      const iconMarkup = ReactDOMServer.renderToString(
-        <div
-          style={{
-            fontSize: "50px",
-            color: "#ffff",
-            width: "90px",
-            height: "90px",
-            borderRadius: "50%",
-            backgroundColor: "#9966CC",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-          }}
-        >
-          <GiCheckMark />
-        </div>
-      );
-
-      Swal.fire({
-        html: `
-        <div style="display: flex; flex-direction: column; align-items: center;">
-          ${iconMarkup}
-          <h2 style="margin-top: 15px; font-size: 20px; color: white; width:60%">Account Deactivated Successfully!</h2>
-        </div>
-      `,
-        showConfirmButton: true,
-        confirmButtonText: "Done",
-        confirmButtonColor: "#9966CC",
-        background: "#121212",
-        color: "#ffffff",
-        customClass: {
-          popup: "rounded-xl p-6",
-          confirmButton: "px-6 py-2 rounded text-sm",
-        },
-      }).then(() => {
-        onSuccess();
-        onClose();
-      });
+       setShowSuccessModal(true);
+      onSuccess();
+      onClose();
     }
   };
 
@@ -89,7 +49,7 @@ const DeactivateModal = ({ onClose, onSuccess }) => {
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div className="bg-[#0B0B0B] rounded-xl shadow-lg w-[30%] flex gap-2 flex-col relative size-[80%] p-6 justify-between">
+        <div className="bg-[#0B0B0B] rounded-xl shadow-lg w-[30%] flex gap-2 flex-col relative size-[90%] p-6 justify-between">
           <div className="flex justify-between items-center border-b pb-2">
             <h2 className="text-lg font-semibold">Deactivate Account</h2>
             <button
@@ -105,11 +65,18 @@ const DeactivateModal = ({ onClose, onSuccess }) => {
               Deactivate Reason
             </label>
             <div
-              onClick={() => setShowReasonList((prev) => !prev)}
+              onClick={() => {
+                setShowReasonList((prev) => !prev);
+                setIsChoosingReason(true);
+              }}
               className="w-full p-2 rounded bg-[#232323] text-white cursor-pointer select-none flex items-center justify-between"
             >
               <span>{reason || "Select a reason"}</span>
-              <IoMdArrowDropdown size={20} className="text-[#A8A8A8]" />
+              {showReasonList ? (
+                <IoMdArrowDropup size={20} className="text-[#A8A8A8]" />
+              ) : (
+                <IoMdArrowDropdown size={20} className="text-[#A8A8A8]" />
+              )}
             </div>
 
             {showReasonList && (
@@ -163,19 +130,25 @@ const DeactivateModal = ({ onClose, onSuccess }) => {
             </p>
           </div>
 
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-3 mt-10">
             <button
               onClick={onClose}
-              className="px-4 py-2 border border-[#684888] rounded hover:bg-gray-400 text-[#A8A8A8] hover:text-white disabled:opacity-50"
+              className="px-4 py-2 border border-[#684888] rounded hover:bg-gray-400 text-[#684888] hover:text-white disabled:opacity-50"
             >
               Cancel
             </button>
             <button
               onClick={handleConfirm}
               disabled={!reason}
-              className="px-4 py-2 bg-[#8B8B8B] text-white rounded hover:bg-red-600 disabled:opacity-50 hover:text-white disabled:hover:bg-[#8B8B8B] disabled:hover:text-[#A8A8A8] disabled:cursor-not-allowed"
+              className={`px-4 py-2 rounded text-white transition-colors duration-300 bg-[#8B8B8B]
+    ${
+      reason || isChoosingReason
+        ? "bg-[#E53935] hover:bg-red-700"
+        : "bg-[#8B8B8B] hover:bg-[#8B8B8B] text-[#A8A8A8] cursor-not-allowed"
+    }
+  `}
             >
-              Confirm Deactivate
+              Confirm Deactivation
             </button>
           </div>
         </div>
