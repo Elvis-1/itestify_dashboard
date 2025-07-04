@@ -18,10 +18,10 @@ const UserRegProfile = ({ registeredUsers, setProfile }) => {
       <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-md shadow-lg  size-[90%]">
         <div className="modal relative rounded-2xl overflow-hidden">
           {/* Close Icon */}
-          <div className="absolute top-2 right-2 cursor-pointer z-10">
+          <div className="absolute top-2 right-2 cursor-pointer z-10 ">
             <MdClose
               onClick={() => setProfile(false)}
-              className="text-2xl text-gray-600 hover:text-red-500"
+              className="text-2xl text-white hover:text-red-500"
             />
           </div>
 

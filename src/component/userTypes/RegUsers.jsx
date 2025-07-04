@@ -30,8 +30,8 @@ const RegUsers = () => {
   const [profile, setProfile] = useState(false);
   const [eachUser, setEachUser] = useState(null);
   const [open, setOpen] = useState(false);
-  const change = () => {
-    // setOpen(!open);
+const changeSuccess = () => {
+    setOpen(!open);
   };
 
   const tableHeaders = [
@@ -222,14 +222,14 @@ const RegUsers = () => {
                         } w-[140px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
                       >
                         <p
-                          className="p-2 mt-4 text-start cursor-pointer "
+                          className="p-2 mt-4 text-start cursor-pointer hover:bg-[#575757]"
                           onClick={() => openProfileModal(data.id)}
                         >
                           View profile
                         </p>
                         <hr className="border-t border-gray-300" />
                         <p
-                          className="h-[50px] pt-3 text-center cursor-pointer text-red-500 hover:underline"
+                          className="h-[50px] pt-3 text-center cursor-pointer text-red-500 hover:bg-[#575757] rounded-lg"
                           onClick={() => {
                             setSelectedUserId(data.id); 
                             setShowDeactivateModal(true);
@@ -269,7 +269,7 @@ const RegUsers = () => {
         />
       </div>
 
-      <Dialog open={open} onOpenChange={change()}>
+      <Dialog open={open} onOpenChange={changeSuccess}>
         <DialogContent className="flex justify-center items-center rounded-xl border-none">
           <div className=" h-[18rem] w-[20rem] bg-[#171717] flex justify-center items-center rounded-xl">
             <div
@@ -295,7 +295,6 @@ const RegUsers = () => {
           userId={selectedUserId}
           onClose={() => {
             setShowDeactivateModal(false);
-            change();
           }}
           onSuccess={() => {
             setShowDeactivateModal(false);
@@ -315,6 +314,8 @@ const RegUsers = () => {
               JSON.stringify(updatedDeactivated)
             );
            setRegisteredUsers((prev) => prev.filter((user) => user.id !== selectedUserId));
+           
+            changeSuccess();
 
           }}
         />

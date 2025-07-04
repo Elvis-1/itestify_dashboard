@@ -10,7 +10,7 @@ const DeactivateModal = ({ onClose, onSuccess }) => {
   const [showReasonList, setShowReasonList] = useState(false);
   const [additionalReason, setAdditionalReason] = useState("");
   const [showSuccessModal, setShowSuccessModal] = useState(false);
-  const [isChoosingReason, setIsChoosingReason] = useState(false);
+  // const [isChoosingReason, setIsChoosingReason] = useState(true);
 
   const reasons = [
     "Suspicious account activity",
@@ -54,7 +54,7 @@ const DeactivateModal = ({ onClose, onSuccess }) => {
             <h2 className="text-lg font-semibold">Deactivate Account</h2>
             <button
               onClick={onClose}
-              className="text-xl font-bold text-gray-600"
+              className="text-xl font-bold text-white"
             >
               &times;
             </button>
@@ -67,15 +67,15 @@ const DeactivateModal = ({ onClose, onSuccess }) => {
             <div
               onClick={() => {
                 setShowReasonList((prev) => !prev);
-                setIsChoosingReason(true);
+                // setIsChoosingReason(true);
               }}
               className="w-full p-2 rounded bg-[#232323] text-white cursor-pointer select-none flex items-center justify-between"
             >
               <span>{reason || "Select a reason"}</span>
               {showReasonList ? (
-                <IoMdArrowDropup size={20} className="text-[#A8A8A8]" />
+                <IoMdArrowDropup size={20} fill="white" className="text-[#A8A8A8]" />
               ) : (
-                <IoMdArrowDropdown size={20} className="text-[#A8A8A8]" />
+                <IoMdArrowDropdown size={20} fill="white" className="text-[#A8A8A8]" />
               )}
             </div>
 
@@ -142,7 +142,7 @@ const DeactivateModal = ({ onClose, onSuccess }) => {
               disabled={!reason}
               className={`px-4 py-2 rounded text-white transition-colors duration-300 bg-[#8B8B8B]
     ${
-      reason || isChoosingReason
+      reason
         ? "bg-[#E53935] hover:bg-red-700"
         : "bg-[#8B8B8B] hover:bg-[#8B8B8B] text-[#A8A8A8] cursor-not-allowed"
     }

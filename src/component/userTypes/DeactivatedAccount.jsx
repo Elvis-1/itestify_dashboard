@@ -22,7 +22,7 @@ const DeactivatedAccount = ({ onReactivate }) => {
   const [showProfile, setShowProfile] = useState(false);
   const [searchItem, setSearchItem] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
-  const [open, setOpen] = useState(false)
+  const [open, setOpen] = useState(false);
 
   useEffect(() => {
     const loadDeactivatedUsers = () => {
@@ -37,16 +37,13 @@ const DeactivatedAccount = ({ onReactivate }) => {
         loadDeactivatedUsers();
       }
     };
- 
-
-
 
     window.addEventListener("storage", handleStorageChange);
     return () => {
       window.removeEventListener("storage", handleStorageChange);
     };
   }, []);
-       const changeSuccess = () => {
+  const changeSuccess = () => {
     setOpen(!open);
   };
 
@@ -63,16 +60,23 @@ const DeactivatedAccount = ({ onReactivate }) => {
   const handleReactivationComplete = () => {
     const updatedDeactivatedUsers = deactivatedUsers.filter(
       (u) => u.id !== selectedUser.id
+      
     );
+
     setDeactivatedUsers(updatedDeactivatedUsers);
-    localStorage.setItem("deactivatedUsers", JSON.stringify(updatedDeactivatedUsers));
+    localStorage.setItem(
+      "deactivatedUsers",
+      JSON.stringify(updatedDeactivatedUsers)
+    );
 
     if (typeof onReactivate === "function") {
-      onReactivate(selectedUser); // Notify parent to add user back to registered list
+      onReactivate(selectedUser); 
     }
 
     setSelectedUser(null);
     setShowReactivateModal(false);
+            changeSuccess();
+
   };
 
   const handleViewProfile = (user) => {
@@ -92,7 +96,10 @@ const DeactivatedAccount = ({ onReactivate }) => {
   }, [searchItem, deactivatedUsers]);
 
   const { sort, sortHeader, sortedData } = useSort(filteredUsers);
-  const { firstIndex, lastIndex, users, npage } = usePagination(sortedData, currentPage);
+  const { firstIndex, lastIndex, users, npage } = usePagination(
+    sortedData,
+    currentPage
+  );
 
   return (
     <div className="relative">
@@ -144,7 +151,9 @@ const DeactivatedAccount = ({ onReactivate }) => {
         >
           <thead
             className={`text-xs ${
-              isDarkMode ? "bg-near-black text-white" : "bg-off-white text-black"
+              isDarkMode
+                ? "bg-near-black text-white"
+                : "bg-off-white text-black"
             }`}
           >
             <tr>
@@ -163,7 +172,11 @@ const DeactivatedAccount = ({ onReactivate }) => {
                   <div className="flex items-center gap-1">
                     {header.Label}
                     <LuChevronsUpDown
-                      direction={sort.keyToSort === header.key ? sort.direction : "ascending"}
+                      direction={
+                        sort.keyToSort === header.key
+                          ? sort.direction
+                          : "ascending"
+                      }
                     />
                   </div>
                 </th>
@@ -174,7 +187,10 @@ const DeactivatedAccount = ({ onReactivate }) => {
           <tbody>
             {users.length === 0 ? (
               <tr>
-                <td colSpan={6} className="p-4 text-center text-white text-[16px] italic">
+                <td
+                  colSpan={6}
+                  className="p-4 text-center text-white text-[16px] italic"
+                >
                   <NoDataComponent />
                 </td>
               </tr>
@@ -182,12 +198,22 @@ const DeactivatedAccount = ({ onReactivate }) => {
               users.map((user, index) => (
                 <tr
                   key={user.id}
-                  className={`${isDarkMode ? "hover:bg-[#313131]" : "hover:bg-off-white"}`}
+                  className={`${
+                    isDarkMode ? "hover:bg-[#313131]" : "hover:bg-off-white"
+                  }`}
                 >
-                  <td className="p-3 border-t border-b border-gray-300">{firstIndex + index + 1}</td>
-                  <td className="p-3 border-t border-b border-gray-300">{user.id?.slice(0, 6)}</td>
-                  <td className="p-3 border-t border-b border-gray-300">{user.full_name || "Unknown"}</td>
-                  <td className="p-3 border-t border-b border-gray-300">{user.email}</td>
+                  <td className="p-3 border-t border-b border-gray-300">
+                    {firstIndex + index + 1}
+                  </td>
+                  <td className="p-3 border-t border-b border-gray-300">
+                    {user.id?.slice(0, 6)}
+                  </td>
+                  <td className="p-3 border-t border-b border-gray-300">
+                    {user.full_name || "Unknown"}
+                  </td>
+                  <td className="p-3 border-t border-b border-gray-300">
+                    {user.email}
+                  </td>
                   <td className="p-3 border-t border-b border-gray-300">
                     {new Date(user.created_at).toLocaleDateString()}
                   </td>
@@ -199,22 +225,24 @@ const DeactivatedAccount = ({ onReactivate }) => {
                     />
                     {openOptionsIndex === index && (
                       <div
-                        className={`absolute top-8 right-0 z-20 w-40 rounded-lg shadow-lg ${
-                          isDarkMode ? "bg-[#292929] text-white" : "border-[1px] border-white bg-white text-black"
-                        }`}
+                        className={`absolute top-8 right-0 z-20 w-[120px] rounded-lg shadow-lg ${
+                          isDarkMode
+                            ? "bg-[#292929] text-white"
+                            : "border-[1px] border-white bg-white text-black"
+                        }w-[120px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
                       >
                         <p
-                          className="p-2 pl-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 text-start"
+                          className="p-2 pl-4 cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700 text-start rounded-t-lg"
                           onClick={() => handleViewProfile(user)}
                         >
                           View Profile
                         </p>
                         <hr className="border-t border-gray-300" />
                         <p
-                          className="p-2 pl-4 cursor-pointer text-white text-start"
+                          className="p-2 pl-4 cursor-pointer text-white text-start hover:bg-[#575757] rounded-b-lg"
                           onClick={() => handleReactivate(user)}
                         >
-                          Reactivate 
+                          Reactivate
                         </p>
                       </div>
                     )}
@@ -234,35 +262,31 @@ const DeactivatedAccount = ({ onReactivate }) => {
         />
       </div>
 
-        <Dialog
-              open={open}
-              onOpenChange={() => changeSuccess()}
+      <Dialog open={open} onOpenChange={() => changeSuccess()}>
+        <DialogContent className="flex justify-center items-center rounded-xl border-none">
+          <div className="h-[18rem] w-[20rem] bg-[#171717] flex justify-center items-center rounded-xl">
+            <div
+              className={`flex flex-col items-center justify-center text-center h-[90%] w-[90%] ${
+                isDarkMode ? "text-white" : "text-black"
+              }`}
             >
-              <DialogContent className="flex justify-center items-center rounded-xl border-none">
-                <div className="h-[18rem] w-[20rem] bg-[#171717] flex justify-center items-center rounded-xl">
-                  <div
-                    className={`flex flex-col items-center justify-center text-center h-[90%] w-[90%] ${
-                      isDarkMode ? "text-white" : "text-black"
-                    }`}
-                  >
-                    <div className="h-[90px] w-[90px] bg-[#9966CC] rounded-full flex justify-center items-center">
-                      <IoMdCheckmark size={50} fill="white" />
-                    </div>
-                    <div className="text-[20px] font-semibold mt-6">
-                      Account Reactivated Successfully!
-                    </div>
-                
-                  
-                  </div>
-                </div>
-              </DialogContent>
-            </Dialog>
+              <div className="h-[90px] w-[90px] bg-[#9966CC] rounded-full flex justify-center items-center">
+                <IoMdCheckmark size={50} fill="white" />
+              </div>
+              <div className="text-[20px] font-semibold mt-6">
+                Account Reactivated Successfully!
+              </div>
+            </div>
+          </div>
+        </DialogContent>
+      </Dialog>
 
       {showReactivateModal && selectedUser && (
         <ReactivateModal
-         onClose={() => {
-          setShowReactivateModal(false)
-         }}
+          onClose={() => {
+            setShowReactivateModal(false);
+            
+          }}
           onSuccess={handleReactivationComplete}
         />
       )}

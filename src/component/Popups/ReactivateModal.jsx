@@ -1,22 +1,17 @@
-import { useState, useContext } from "react";
+import { useState } from "react";
 import PropTypes from "prop-types";
 import { PiWarningCircleLight } from "react-icons/pi";
 import {
   IoMdArrowDropdown,
-  IoMdCheckmark,
   IoMdArrowDropup,
 } from "react-icons/io";
-import { Dialog, DialogContent } from "../ui/dialog";
-import { DarkModeContext } from "../../context/DarkModeContext";
 
 const ReactivateModal = ({ onClose, onSuccess }) => {
   const [reason, setReason] = useState("");
   const [showReasonList, setShowReasonList] = useState(false);
   const [additionalReason, setAdditionalReason] = useState("");
-  const [open, setOpen] = useState(false);
-  const [isChoosingReason, setIsChoosingReason] = useState(false);
+  const [isChoosingReason, setIsChoosingReason] = useState(true);
 
-  const { isDarkMode } = useContext(DarkModeContext);
 
   const reasons = [
     "User resolved previous issues",
@@ -26,15 +21,11 @@ const ReactivateModal = ({ onClose, onSuccess }) => {
     "User met reactivation criteria",
     "Manual reactivation decision",
   ];
-
-  const changeSuccess = () => {
-    setOpen(!open);
-  };
   const handleConfirm = () => {
     if (reason) {
       onSuccess();
-      // onClose();
-      changeSuccess();
+      onClose();
+      // changeSuccess();
       console.log(open);
     }
   };
@@ -42,15 +33,16 @@ const ReactivateModal = ({ onClose, onSuccess }) => {
   return (
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div className="bg-[#0B0B0B] rounded-xl size-[90%] shadow-lg w-[30%] flex flex-col relative p-6 justify-between overflow-y-auto hide-scrollbar">
+        <div className="bg-[#0B0B0B] rounded-xl size-[93%] shadow-lg w-[30%] flex flex-col relative p-6 justify-between">
+          {/* bg-[#0B0B0B] rounded-xl shadow-lg w-[30%] flex gap-2 flex-col relative size-[90%] p-6 justify-between */}
            <button
               onClick={onClose}
-              className="text-xl font-bold text-white absolute top-4 right-4 hover:text-red-500 transition-colors duration-300 flex h-10 w-[10%] bg-blue-500 "
+              className="text-xl font-bold text-white absolute top-4 right-4 hover:text-red-500 transition-colors duration-300 flex h-10 w-[10%] justify-end"
             >
               &times;
             </button>
-          <div className="flex justify-between items-center border-b pb-2 mt-10">
-            <h2 className="text-[16px] font-medium text-center">
+          <div className="flex justify-between items-center border-b pb-2 mt-5">
+            <h2 className="text-[14px] font-medium text-center">
               Are you sure you want to reactivate this account? Please select a reason for reactivation to help us keep accurate records.
             </h2>
            
@@ -65,13 +57,13 @@ const ReactivateModal = ({ onClose, onSuccess }) => {
                 setShowReasonList((prev) => !prev);
                 setIsChoosingReason(true);
               }}
-              className="w-full p-2 rounded bg-[#232323] text-white cursor-pointer select-none flex items-center justify-between"
+              className="w-full p-2 rounded bg-[#232323] text-white cursor-pointer select-none flex items-center justify-between text-[14px]"
             >
               <span>{reason || "Select a reason"}</span>
               {showReasonList ? (
-                <IoMdArrowDropup size={20} className="text-[#A8A8A8]" />
+                <IoMdArrowDropup size={20} fill="white" className="text-[#A8A8A8]" />
               ) : (
-                <IoMdArrowDropdown size={20} className="text-[#A8A8A8]" />
+                <IoMdArrowDropdown size={20} fill="white" className="text-[#A8A8A8]" />
               )}
             </div>
 
@@ -105,15 +97,15 @@ const ReactivateModal = ({ onClose, onSuccess }) => {
               value={additionalReason}
               onChange={(e) => setAdditionalReason(e.target.value)}
               maxLength={200}
-              className="w-full h-[90%] rounded-[13px] bg-[#232323] text-white p-2 outline-none"
+              className="w-full h-[80%] rounded-[13px] bg-[#232323] text-white p-2 outline-none"
               placeholder="Type here..."
             />
-            <p className="text-right mt-2 text-sm text-gray-400">
+            <p className="text-right mt-2 text-sm text-gray-400" >
               {additionalReason.length}/200
             </p>
           </div>
 
-          <div className="text-[14px] p-4 mt-10 min-h-[30px] rounded shadow-inner bg-[#232323] text-white flex gap-3">
+          <div className="text-[14px] p-2 mt-10 min-h-[25px] rounded shadow-inner bg-[#232323] text-white flex gap-3">
             <PiWarningCircleLight size={30} />
             <p>
               The selected reason and additional reason will be sent to the
@@ -133,8 +125,8 @@ const ReactivateModal = ({ onClose, onSuccess }) => {
               disabled={!reason}
               className={`px-4 py-2 rounded text-white transition-colors duration-300 bg-[#8B8B8B]
     ${
-      reason || isChoosingReason
-        ? "bg-[#E53935] hover:bg-red-700"
+      reason || !isChoosingReason
+        ? "bg-[#9966CC] hover:bg-red-700"
         : "bg-[#8B8B8B] hover:bg-[#8B8B8B] text-[#A8A8A8] cursor-not-allowed"
     }
   `}
@@ -145,24 +137,6 @@ const ReactivateModal = ({ onClose, onSuccess }) => {
         </div>
       </div>
 
-      <Dialog open={open} onOpenChange={() => changeSuccess()}>
-        <DialogContent className="flex justify-center items-center rounded-xl border-none">
-          <div className="h-[18rem] w-[20rem] bg-[#171717] flex justify-center items-center rounded-xl">
-            <div
-              className={`flex flex-col items-center justify-center text-center h-[90%] w-[90%] ${
-                isDarkMode ? "text-white" : "text-black"
-              }`}
-            >
-              <div className="h-[90px] w-[90px] bg-[#9966CC] rounded-full flex justify-center items-center">
-                <IoMdCheckmark size={50} fill="white" />
-              </div>
-              <div className="text-[20px] font-semibold mt-6">
-                Account Reactivated Successfully!
-              </div>
-            </div>
-          </div>
-        </DialogContent>
-      </Dialog>
     </>
   );
 };
