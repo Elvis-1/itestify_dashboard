@@ -1,16 +1,18 @@
 import { useState } from "react";
 import PropTypes from "prop-types";
-import { Modal } from "antd"; // Ant Design Modal
 import { PiWarningCircleLight } from "react-icons/pi";
-import { IoMdArrowDropdown } from "react-icons/io";
-import { GiCheckMark } from "react-icons/gi";
-import Swal from "sweetalert2"; // SweetAlert2
+import {
+  IoMdArrowDropdown,
+  IoMdArrowDropup,
+} from "react-icons/io";
 
 const ReactivateModal = ({ onClose, onSuccess }) => {
   const [reason, setReason] = useState("");
   const [showReasonList, setShowReasonList] = useState(false);
   const [additionalReason, setAdditionalReason] = useState("");
-  const [showSuccessModal, setShowSuccessModal] = useState(false); 
+  const [isChoosingReason, setIsChoosingReason] = useState(true);
+
+
   const reasons = [
     "User resolved previous issues",
     "Mistakenly deactivated",
@@ -19,61 +21,31 @@ const ReactivateModal = ({ onClose, onSuccess }) => {
     "User met reactivation criteria",
     "Manual reactivation decision",
   ];
-
   const handleConfirm = () => {
     if (reason) {
-     
-      Swal.fire({
-        title: "Confirm Reactivation?",
-        text: "Are you sure you want to reactivate this account with the selected reason?",
-        icon: "question",
-        showCancelButton: true,
-        confirmButtonColor: "#9966CC",
-        cancelButtonColor: "#d33",
-        confirmButtonText: "Yes, Reactivate!",
-        background: "#121212",
-        color: "#ffffff",
-        customClass: {
-          popup: " p-6",
-          confirmButton: "px-6 py-2 rounded text-sm",
-          cancelButton: "px-6 py-2 rounded text-sm",
-        },
-      }).then((result) => {
-        if (result.isConfirmed) {
-          
-          setShowSuccessModal(true);
-          
-        }
-      });
+      onSuccess();
+      onClose();
+      // changeSuccess();
+      console.log(open);
     }
-  };
-
-  const handleSuccessOk = () => {
-   
-    setShowSuccessModal(false); 
-
-
-    onSuccess();
-
-
-    onClose();
   };
 
   return (
     <>
-   
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-        <div className="bg-[#0B0B0B] rounded-xl shadow-lg w-[30%] flex gap-2 flex-col relative size-[80%] p-6 justify-between">
-          <div className="flex justify-between items-center border-b pb-2">
-            <h2 className="text-lg font-semibold">
-              Are you sure you want to reactivate this account?
-            </h2>
-            <button
+        <div className="bg-[#0B0B0B] rounded-xl size-[93%] shadow-lg w-[30%] flex flex-col relative p-6 justify-between">
+          {/* bg-[#0B0B0B] rounded-xl shadow-lg w-[30%] flex gap-2 flex-col relative size-[90%] p-6 justify-between */}
+           <button
               onClick={onClose}
-              className="text-xl font-bold text-gray-600"
+              className="text-xl font-bold text-white absolute top-4 right-4 hover:text-red-500 transition-colors duration-300 flex h-10 w-[10%] justify-end"
             >
               &times;
             </button>
+          <div className="flex justify-between items-center border-b pb-2 mt-5">
+            <h2 className="text-[14px] font-medium text-center">
+              Are you sure you want to reactivate this account? Please select a reason for reactivation to help us keep accurate records.
+            </h2>
+           
           </div>
 
           <div className="mt-4 relative">
@@ -81,18 +53,22 @@ const ReactivateModal = ({ onClose, onSuccess }) => {
               Reactivate Reason
             </label>
             <div
-              onClick={() => setShowReasonList((prev) => !prev)}
-              className="w-full p-2 rounded bg-[#232323] text-white cursor-pointer select-none flex items-center justify-between"
+              onClick={() => {
+                setShowReasonList((prev) => !prev);
+                setIsChoosingReason(true);
+              }}
+              className="w-full p-2 rounded bg-[#232323] text-white cursor-pointer select-none flex items-center justify-between text-[14px]"
             >
               <span>{reason || "Select a reason"}</span>
-              <IoMdArrowDropdown size={20} className="text-[#A8A8A8]" />
+              {showReasonList ? (
+                <IoMdArrowDropup size={20} fill="white" className="text-[#A8A8A8]" />
+              ) : (
+                <IoMdArrowDropdown size={20} fill="white" className="text-[#A8A8A8]" />
+              )}
             </div>
 
             {showReasonList && (
-              <div
-                className="absolute z-10 w-full max-h-[284px] overflow-y-auto bg-[#232323] rounded-[10px] text-white border border-[#444] mt-1"
-                style={{ scrollbarWidth: "none", msOverflowStyle: "none" }}
-              >
+              <div className="absolute z-10 w-full max-h-[284px] overflow-y-auto bg-[#232323] rounded-[10px] text-white border border-[#444] mt-1">
                 {reasons.map((item, index) => (
                   <div
                     key={index}
@@ -121,34 +97,39 @@ const ReactivateModal = ({ onClose, onSuccess }) => {
               value={additionalReason}
               onChange={(e) => setAdditionalReason(e.target.value)}
               maxLength={200}
-              className="w-full h-[90%] rounded-[13px] bg-[#232323] text-white p-2 outline-none"
+              className="w-full h-[80%] rounded-[13px] bg-[#232323] text-white p-2 outline-none"
               placeholder="Type here..."
             />
-            <p className="text-right mt-2 text-sm text-gray-400">
+            <p className="text-right mt-2 text-sm text-gray-400" >
               {additionalReason.length}/200
             </p>
           </div>
 
-          <div className="text-[14px] p-4 mt-10 min-h-[30px] rounded shadow-inner bg-[#232323] text-white outline-none flex gap-3 justify-start items-start">
+          <div className="text-[14px] p-2 mt-10 min-h-[25px] rounded shadow-inner bg-[#232323] text-white flex gap-3">
             <PiWarningCircleLight size={30} />
-            <p className="w-[77%]">
-              The selected reason as well as the additional reason will be sent
-              to the user&apos;s email to inform them of their account
-              reactivation.
+            <p>
+              The selected reason and additional reason will be sent to the
+              user&#39;s email to inform them of their account reactivation.
             </p>
           </div>
 
-          <div className="flex justify-end gap-3">
+          <div className="flex justify-end gap-3 mt-10">
             <button
               onClick={onClose}
-              className="px-4 py-2 border border-[#684888] rounded hover:bg-gray-400 text-[#A8A8A8] hover:text-white disabled:opacity-50"
+              className="px-4 py-2 border border-[#684888] rounded text-[#684888] hover:bg-gray-400 hover:text-white"
             >
               Cancel
             </button>
             <button
               onClick={handleConfirm}
               disabled={!reason}
-              className="px-4 py-2 bg-[#8B8B8B] text-white rounded hover:bg-green-600 disabled:opacity-50 hover:text-white disabled:hover:bg-[#8B8B8B] disabled:hover:text-[#A8A8A8] disabled:cursor-not-allowed"
+              className={`px-4 py-2 rounded text-white transition-colors duration-300 bg-[#8B8B8B]
+    ${
+      reason || !isChoosingReason
+        ? "bg-[#9966CC] hover:bg-red-700"
+        : "bg-[#8B8B8B] hover:bg-[#8B8B8B] text-[#A8A8A8] cursor-not-allowed"
+    }
+  `}
             >
               Reactivate
             </button>
@@ -156,53 +137,6 @@ const ReactivateModal = ({ onClose, onSuccess }) => {
         </div>
       </div>
 
-    
-      <Modal
-        open={showSuccessModal}
-        onOk={handleSuccessOk}
-        onCancel={handleSuccessOk} 
-        centered
-        closable={false}
-        footer={null}
-        className="ant-modal-no-header"
-        width={400}
-        bodyStyle={{
-          backgroundColor: '#0B0B0B',
-          borderRadius: '12px',
-          padding: '24px',
-          color: 'white',
-        }}
-        maskStyle={{ backgroundColor: 'rgba(0, 0, 0, 0.7)' }}
-      >
-        <div className="text-center py-6">
-          <div
-            style={{
-              fontSize: "50px",
-              color: "#ffff",
-              width: "90px",
-              height: "90px",
-              borderRadius: "50%",
-              backgroundColor: "#9966CC",
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "center",
-              margin: "0 auto 15px",
-            }}
-          >
-            <GiCheckMark />
-          </div>
-          <h2 className="text-xl font-bold text-white mb-2">
-            Account Reactivated Successfully!
-          </h2>
-          <p className="text-[#A8A8A8]">The user has been notified via email.</p>
-          <button
-            onClick={handleSuccessOk}
-            className="mt-6 px-6 py-2 bg-[#9966CC] text-white rounded hover:bg-[#8040B0]"
-          >
-            Done
-          </button>
-        </div>
-      </Modal>
     </>
   );
 };
@@ -213,4 +147,3 @@ ReactivateModal.propTypes = {
 };
 
 export default ReactivateModal;
-
