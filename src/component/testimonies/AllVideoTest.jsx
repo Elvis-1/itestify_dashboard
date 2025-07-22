@@ -19,6 +19,7 @@ import { DarkModeContext } from '../../context/DarkModeContext';
 import axios from 'axios';
 import { notification } from 'antd';
 import { uploadTestContext } from '../../context/UploadTestimonyContext';
+import LoadingState from '../LoadingState';
 
 
 function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setScheduled, draft, setDraft}) {
@@ -61,42 +62,34 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
 
 
     async function fetchAllVideos() {
-    const token = localStorage.getItem('token');
-    setLoading(true);
-    setError(null);
+        const token = localStorage.getItem('token');
+        setLoading(true);
+        setError(null);
 
-    try {
-        const types = ['drafts', 'upload_now'];
-        const responses = await Promise.all(
-            types.map(type => 
-                axios.get(
-                    `https://itestify-backend-38u1.onrender.com/testimonies/videos/?type=${type}`,
-                    { 
-                        headers: { 
-                            'Authorization': `Bearer ${token}` 
-                        },
-                        timeout: 10000
-                    }
-                ).catch(e => {
-                    console.error(`Error fetching ${type} videos:`, e);
-                    return { data: { data: { data: [] } } };
-                })
-            )
-        );
-        
-        const allVideos = responses.flatMap(res => 
-            res?.data?.data?.data || []
-        );
-        
-        setAllVideo(allVideos);
-    } catch (error) {
-        console.error("Fetch error:", error);
-        setError("Failed to fetch videos");
-        setAllVideo([]);
-    } finally {
-        setLoading(false);
+        try {
+            const res = await axios.get(
+            'https://itestify-backend-38u1.onrender.com/testimonies/videos/',
+            {
+                headers: {
+                Authorization: `Bearer ${token}`,
+                },
+                timeout: 10000,
+            }
+            );
+
+            // Extract the video list safely
+            const videos = res?.data?.data?.data || [];
+
+            setAllVideo(videos);
+        } catch (error) {
+            console.error('Fetch error:', error);
+            setError('Failed to fetch videos');
+            setAllVideo([]);
+        } finally {
+            setLoading(false);
+        }
     }
-    }
+
     
     useEffect(() => {
         fetchAllVideos();
@@ -120,7 +113,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
     }, [editDetails, openEditModal]);
 
 
-    const itemsPerPage = 3;
+    const itemsPerPage = 6;
 
     const startIndex = (page - 1) * itemsPerPage;
     AllVideo?.slice(startIndex, startIndex + itemsPerPage) || []
@@ -555,7 +548,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
             </Button>
           </div>
         );
-      }
+    }
 
 
     function handleDeleteSuccessful() {
@@ -596,9 +589,10 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
           dateInputRef2.current.showPicker(); 
         }
     };
-    
+
+        
     return (
-        <div className={`${!isDarkMode ? 'border h-[350px] rounded-xl' : 'border-none'}`}> 
+        <div className={`${!isDarkMode ? 'border  rounded-xl w-[98%] m-[auto]' : 'border-none'}`}> 
             {/* all video filter modal */}
             <Modal
                 open={filterModal}
@@ -947,22 +941,22 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 closeIcon={null}
                 styles={{
                     content: {
-                        backgroundColor: '#0B0B0B',
+                        backgroundColor: `${isDarkMode ? '#171717' : '#fff'}`,
                         width: '150px',
                         height: '130px',
-                        color: 'white',
+                        color: `${isDarkMode ? '#fff' : 'black'}`,
                         margin: '0 auto',
                         borderRadius: '8px',
-                        marginLeft: '133%',
-                        marginTop: '120px'
+                        marginLeft: '143%',
+                        marginTop: '180px',
+                        fontWeight: 'semi-bold'
                     },
                     body: {
-                        backgroundColor: '#1717171',
-                        color: 'white',
+                        color: `${isDarkMode ? '#fff' : 'black'}`,
                     },
                 }}>
                 <div className='flex flex-col'>
-                    <div className='border-b w-[150%] ml-[-25px] pb-2 opacity-[0.6]'>
+                    <div className='border-b w-[150%] ml-[-25px] pb-2'>
                         <button onClick={() => {
                             handleDetail(details)
                             setVideoActionModal(false)
@@ -972,10 +966,10 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                         className='pl-2'>View</button>
                     </div>
 
-                    <div className='border-b w-[150%] ml-[-25px] pt-2 pb-2 opacity-[0.6]'>
+                    <div className='border-b w-[150%] ml-[-25px] pt-2 pb-2'>
                         <button 
                         onClick={() => {
-                            handleDetail(editDetails) // Pass just the ID here
+                            handleDetail(editDetails)
                             setOpenEditModal(true)
                             setVideoActionModal(false)
                             setVideoViewModal(false)
@@ -983,7 +977,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                         className='pl-2'>Edit</button>
                     </div>
 
-                    <div className='w-[150%] ml-[-25px] pb-2 opacity-[0.6] cursor-pointer'>
+                    <div className='w-[150%] ml-[-25px] pb-2 cursor-pointer'>
                         <button onClick={() => {
                             setDeleteVideoTest(true)
                             setVideoActionModal(false)
@@ -1262,8 +1256,11 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
     
             </Modal>
     
-            
-            <div className={`flex items-center justify-between p-3
+            <div className={`${isDarkMode ? 'w-[100%]' : 'w-[100%]'} h-[510px] m-[auto] bg-[#171717] rounded-xl
+                ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}>
+
+
+                <div className={`flex items-center justify-between p-3
                 ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}>
                 <div className={`flex items-center gap-5 cursor-pointer`}>
                     <h3 onClick={() => {
@@ -1320,9 +1317,9 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                     className='text-[12px] outline-none border-none'>Filter</button>
                 </div>
                </div>    
-            </div>
-    
-             <div className='w-[100%] m-[auto] h-[220px]'> 
+                </div>
+
+                <div className='w-[98%] m-[auto] h-[360px]'> 
                 {/* Table Header Section */}
                 <div className={`w-[100%] h-[50px] text-[11px] m-[auto] bg-[#313131] grid grid-cols-4
                     ${isDarkMode ? "text-white" : "bg-slate-100 text-black border-b border-b-slate-200"}`
@@ -1516,22 +1513,26 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 
     
                  {/* Data Rows */}
-               {Array.isArray(sortedData) && sortedData.length > 0 ? (
+              {loading ? (
+                 <LoadingState />
+                ) : Array.isArray(sortedData) && sortedData.length > 0 ? (
                 sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => {
                     if (!item || !item.id) return null;
                     return (
-                    <div className={`border-b border-white text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] flex items-center ${
+                    <div 
+                        key={item.id}
+                        className={`border-b border-white text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] flex items-center ${
                         isDarkMode
                             ? "text-white"
-                            : "bg-white text-black border-b border-b-slate-200"}`}>
-                        <div
-                        className="flex items-center w-[260px]"
-                        >
+                            : "bg-white text-black border-b border-b-slate-200"
+                        }`}
+                    >
+                        <div className="flex items-center w-[260px]">
                         <div className="p-2 flex w-[60px] h-[50px] items-center">
                             {startIndex + index + 1}
                         </div>
 
-                        <div className="p-2 flex w-[103px] h-[50px] items-center">
+                        <div className="p-2 flex w-[60px] h-[60px] items-center">
                             {item.thumbnail ? (
                             <img
                                 src={item.thumbnail}
@@ -1544,7 +1545,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                             </div>
                             )}
                         </div>
-                        <div className="pl-2 flex w-[150px] h-[50px] items-center">
+                        <div className="pl-2 ml-2 flex w-[100px] h-[50px] items-center">
                             {item.title
                             ? item.title.length > 12
                                 ? `${item.title.slice(0, 12)}...`
@@ -1557,10 +1558,14 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                         <div className="p-2 flex w-[150px] ml-[-15px] h-[50px] items-center">
                             {item.category || "N/A"}
                         </div>
-                        <div className="p-2 flex w-[153px] h-[50px] items-center">
-                            {item.source || "N/A"}
+                        <div className="p-2 flex w-[151px] h-[50px] items-center">
+                            {item.source
+                            ? item.source.length > 12
+                                ? `${item.source.slice(0, 12)}...`
+                                : item.source
+                            : "No source"}
                         </div>
-                        <div className="pl-1 flex text-[11px] w-[205px] h-[50px] items-center">
+                        <div className="pl-2 flex text-[11px] w-[205px] h-[50px] items-center">
                             {item.created_at
                             ? new Date(item.created_at).toLocaleDateString("en-US", {
                                 year: "numeric",
@@ -1573,9 +1578,9 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
 
                         <div className="flex items-center w-[216px]">
                         <div className="p-2 ml-[-5px] flex flex-[2] w-[50px] h-[50px] items-center">
-                            {item.uploaded_by?.full_name ? item.uploaded_by?.full_name?.slice(0,8) + '...' :
-                            item.uploaded_by?.email?.slice(0,11) + '...' ||
-                            "N/A"}
+                            {item.uploaded_by?.full_name 
+                            ? item.uploaded_by.full_name.slice(0,8) + '...'
+                            : item.uploaded_by?.email?.slice(0,11) + '...' || "N/A"}
                         </div>
                         <div className="p-2 ml-[5px] flex flex-1 w-[130px] h-[50px] items-center">
                             {item.views ?? 0}
@@ -1611,9 +1616,9 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                         <div
                             onClick={(e) => {
                             e.stopPropagation();
-                            setDetails(item.id)
-                            setEditDetails(item.id)
-                            setDeleteDetails(item)
+                            setDetails(item.id);
+                            setEditDetails(item.id);
+                            setDeleteDetails(item);
                             setVideoActionModal(true);
                             }}
                             className="p-2 flex w-[90px] h-[50px] pl-10 items-center"
@@ -1622,45 +1627,41 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                         </div>
                         </div>
                     </div>
-                    
-                    
                     );
                 })
-                ) : (
-                <div className="w-full text-center p-4">
-                    {loading ? "Loading..." : "No data available"}
-                </div>
-                )}
+                ) : <div className='flex items-center justify-center mt-[15%]'>{error}</div>
+             }
                 {/* end of Data row */}
-            </div>
-    
-              {/* Pagination */}
-              <div className='flex justify-between items-center mt-6'>
-                <div className={`text-[12px] ml-[10px] ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
-                    Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, AllVideo?.length ?? 0)} of {AllVideo?.length ?? 0}
                 </div>
-                <div className='text-[13px] mr-5 flex items-center gap-3'>
-                    <button
-                        onClick={handlePrevPage}
-                        disabled={page === 1}
-                        className={`w-[90px] p-2 rounded-xl ${page === 1 ? 
-                            'opacity-[0.5] text-gray-500 border border-gray-500' : 
-                            "border border-[#9966CC] text-[#9966CC]"}`}
-                    >
-                        Previous
-                    </button>
-                    <button
-                        onClick={handleNextPage}
-                        disabled={page === totalPages}
-                        className={`w-[90px] p-2 rounded-xl ${page === totalPages ? 
-                            'opacity-[0.5] text-gray-500 border border-gray-500' : 
-                            "border border-[#9966CC] text-[#9966CC]"}`}
-                    >
-                        Next
-                    </button>
+
+                {/* Pagination */}
+                <div className='flex justify-between items-center mt-6'>
+                    <div className={`text-[12px] ml-[10px] ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
+                        Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, AllVideo?.length ?? 0)} of {AllVideo?.length ?? 0}
+                    </div>
+                    <div className='text-[13px] mr-5 flex items-center gap-3'>
+                        <button
+                            onClick={handlePrevPage}
+                            disabled={page === 1}
+                            className={`w-[90px] p-2 rounded-xl ${page === 1 ? 
+                                'opacity-[0.5] text-gray-500 border border-gray-500' : 
+                                "border border-[#9966CC] text-[#9966CC]"}`}
+                        >
+                            Previous
+                        </button>
+                        <button
+                            onClick={handleNextPage}
+                            disabled={page === totalPages}
+                            className={`w-[90px] p-2 rounded-xl ${page === totalPages ? 
+                                'opacity-[0.5] text-gray-500 border border-gray-500' : 
+                                "border border-[#9966CC] text-[#9966CC]"}`}
+                        >
+                            Next
+                        </button>
+                    </div>
                 </div>
-              </div>
-              {/* end of Pagination */}
+                {/* end of Pagination */}
+            </div>  
         </div>
     )
 }

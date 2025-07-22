@@ -1,49 +1,95 @@
 import React, { useState, useContext, useEffect } from 'react'
 import { DarkModeContext } from '../../context/DarkModeContext';
-import { IoIosArrowDown, IoIosArrowUp } from 'react-icons/io'
+import { IoIosArrowDown, IoIosArrowUp, IoIosMore } from 'react-icons/io'
 
 import picturesData from '../../data/picsData'
 import picBackground from '../../assets/images/picBackground.png'
+import { CheckOutlined } from '@ant-design/icons';
 import { FaCaretDown, FaCaretUp } from "react-icons/fa6";
 import { Modal } from 'antd';
+import axios from 'axios';
+import LoadingState from '../LoadingState';
 
 
 
-function Draft({searchQuery, setSearchQuery}) {
+function Draft() {
 
     const {isDarkMode} = useContext(DarkModeContext)
 
-
+    const [searchQuery, setSearchQuery] = useState("");
     const [sortConfig, setSortConfig] = useState(null);
     const [page, setPage] = useState(1)
-    const [getFilteredData, setGetFilterData] = useState([{}])
+    const [getFilteredData, setGetFilterData] = useState([])
+    const [loading, setLoading] = useState(false);
+    const [error, setError] = useState(null);
 
     const [draftPicActionModal, setDraftPicActionModal] = useState(false)
     const [draftPicViewModal, setDraftPicViewModal] = useState(false)
     const [draftPicEditModal, setDraftPicEditModal] = useState(false)
     const [draftPicUploadModal, setDraftPicUploadModal] = useState(false)
     const [draftPicDeleteModal, setDraftPicDeletModal] = useState(false)
+    const [draftPicData, setDraftPicData] = useState([])
     const [draftDetails, setDraftDetails] = useState('')
+    const [buttonLoading, setButtonLoading] = useState(false)
+    const [editSuccessfully, setEditSuccessfully] = useState(false)
+    const [deleteSuccessfully, setDeleteSuccessfully] = useState(false)
 
-    const [showRole, setShowRole] = useState(false)
-    const [role, setRole] = useState('Admin')
+    // const [showRole, setShowRole] = useState(false)
+    // const [role, setRole] = useState('Admin')
+
 
     useEffect(() => {
-        let draftData = picturesData.filter((item) => {
-            return item.status === 'Draft'
-        })
-        setGetFilterData(draftData)
-    },[])
-
-    const itemsPerPage = 3;
-
-    const startIndex = (page - 1) * itemsPerPage;
-    getFilteredData.slice(startIndex, startIndex + itemsPerPage)
-    const totalPages = Math.ceil(getFilteredData.length / itemsPerPage)
+        if (draftPicEditModal && draftDetails) {
+            setFormData({
+            source: draftDetails.source || '',
+            // date_scheduled: allDetails.date_scheduled || '',
+            // time: allDetails.time || ''
+            });
+        }
+    }, [draftPicEditModal, draftDetails])
 
     const [formData, setFormData] = useState({
         source: '',
     });
+
+    const fetchDraftedPics = async () => {
+        setLoading(true);
+        setError(null);
+        const token = localStorage.getItem('token');
+        try {
+            if(!token) {
+                console.error('No token found in localStorage');
+                return;
+            }
+             const response = await axios.get(`https://itestify-backend-38u1.onrender.com/get-inspirational-by-status/?status=drafts`,
+                {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+                }
+             )
+             console.log('API Response:', response.data);
+             setDraftPicData(response?.data?.data?.data || response?.data || []);
+        } catch (error) {
+            console.log('Error fetching inspirational pictures:', error);
+            setError('Failed to fetch drafted inspirational pictures');
+            setDraftPicData([]);
+        }finally {
+            setLoading(false);
+        }
+    }
+    useEffect(()=> {
+        fetchDraftedPics()
+    }, [])
+
+    const itemsPerPage = 6;
+
+      const startIndex = (page - 1) * itemsPerPage;
+   const currentPageData = Array.isArray(draftPicData) 
+    ? draftPicData.slice(startIndex, startIndex + itemsPerPage) 
+    : [];
+   const totalPages = Math.ceil((Array.isArray(draftPicData) ? draftPicData.length : 0) / itemsPerPage);
+
 
      //sort data logic
     const sortData = (key) => {
@@ -55,39 +101,45 @@ function Draft({searchQuery, setSearchQuery}) {
     };
 
     // search Data logic
-    const searchedData = React.useMemo(() => {
-        const dataToSearch = getFilteredData?.length > 0 ? getFilteredData : picturesData;
-
+   const searchedData = React.useMemo(() => {
+        const dataToSearch = Array.isArray(getFilteredData) && getFilteredData.length > 0 
+            ? getFilteredData 
+            : Array.isArray(draftPicData) 
+                ? draftPicData
+                : [];
+    
         if (searchQuery.trim() !== "") {
-            const filteredData = dataToSearch.filter((item) => {
+            return dataToSearch.filter((item) => {
                 const lowerCaseQuery = searchQuery.toLowerCase();
                 return (
-                    item.source.toLowerCase().includes(lowerCaseQuery)
+                    item?.source?.toLowerCase().includes(lowerCaseQuery)
                 );
             });
-            return filteredData;
         }
-
+      
         return dataToSearch;
-    }, [getFilteredData, searchQuery]);
-
+    }, [getFilteredData, draftPicData, searchQuery]);
+          
+          
+    //sorted data logic
     const sortedData = React.useMemo(() => {
-        const dataToSort = searchedData;
-
+        const dataToSort = Array.isArray(searchedData) ? searchedData : [];
+    
         if (sortConfig !== null) {
-        const sorted = [...dataToSort].sort((a, b) => {
-            if (a[sortConfig.key] < b[sortConfig.key]) {
-            return sortConfig.direction === 'ascending' ? -1 : 1;
-            }
-            if (a[sortConfig.key] > b[sortConfig.key]) {
-            return sortConfig.direction === 'ascending' ? 1 : -1;
-            }
-            return 0;
-        });
-        return sorted;
+            const sorted = [...dataToSort].sort((a, b) => {
+                if (a[sortConfig.key] < b[sortConfig.key]) {
+                    return sortConfig.direction === 'ascending' ? -1 : 1;
+                }
+                if (a[sortConfig.key] > b[sortConfig.key]) {
+                    return sortConfig.direction === 'ascending' ? 1 : -1;
+                }
+                return 0;
+            });
+            return sorted;
         }
         return dataToSort;
     }, [searchedData, sortConfig]);
+
 
     const handleNextPage = () => {
         if (page < totalPages) {
@@ -110,12 +162,19 @@ function Draft({searchQuery, setSearchQuery}) {
         setDraftPicActionModal(false)
     }
 
-    function handleDetail(id) {
-        const videoDetail = getFilteredData.find((item) => item.id === id)
-        if(videoDetail) {
-            setDraftDetails(videoDetail)    
+    const handleDetail = async (id) => {
+        try {
+            const response = await axios.get(`https://itestify-backend-38u1.onrender.com/inspirational/${id}/`, {
+                headers: {
+                    Authorization: `Bearer ${localStorage.getItem('token')}`,
+                }
+            });
+            setDraftDetails(response.data);
+            console.log('Details fetched:', response.data);
+        } catch (error) {
+            setError('Failed to fetch details');
+            console.error('Error fetching details:', error);
         }
-       
     }
 
     const handleInputChange = (e) => {
@@ -123,17 +182,118 @@ function Draft({searchQuery, setSearchQuery}) {
         setFormData((prevData) => ({...prevData, [name]: value}))
     };
 
-   const handleSaveEdit = (e) => {
-    e.preventDefault()
-    console.log(formData);
-   };
+   const handleSaveEdit = async (e) => {
+    e.preventDefault();
+        
+        if (!draftDetails?.id) {
+            console.error('No ID found for the item to edit');
+            return;
+        }
+
+    setButtonLoading(true);
+    try {
+        const token = localStorage.getItem('token');
+        if (!token) {
+        throw new Error('No authentication token found');
+        }
+
+        // Prepare the data to send
+        const requestData = {
+        source: formData.source,
+        uploaded_by: formData.uploaded_by,
+        // ...(allDetails.status === 'Schedule' && {
+        //     date_scheduled: formData.date_scheduled,
+        //     time: formData.time + ' ' + timePeriod // Combine time and period
+        // })
+        };
+
+        const response = await axios.put(
+        `https://itestify-backend-38u1.onrender.com/inspirational/${draftDetails.id}/`,
+        requestData,
+        {
+            headers: {
+            "Authorization": `Bearer ${token}`,
+            "Content-Type": "application/json"
+            }
+        }
+        );
+
+        console.log('Update successful:', response.data);
+        handleEditSuccessful();
+        fetchDraftedPics() // Refresh the data
+        handleCloseModal();
+
+    } catch (error) {
+        console.error('Update error:', error);
+        let errorMessage = 'Failed to update inspirational picture';
+        if (error.response) {
+        errorMessage = error.response.data.message || 
+                    error.response.data.detail || 
+                    JSON.stringify(error.response.data);
+        }
+        // You might want to show this error to the user
+        alert(errorMessage);
+    } finally {
+      setButtonLoading(false);
+    }
+    };
+
+    const handleDelete = async (id) => {
+            const token = localStorage.getItem('token');
+            if (!token) {
+                console.error('No token found in localStorage');
+                return;
+            }
+            setButtonLoading(true);
+            try {
+                const response = await axios.delete(`https://itestify-backend-38u1.onrender.com/inspirational/${id}/`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    }
+               })
+               setDraftPicDeletModal(false);
+               handleDeleteSuccessful()
+               fetchDraftedPics(); // Refresh the data after deletion
+            } catch (error) {
+                setError('Failed to delete inspirational picture');
+            }finally {
+                setButtonLoading(false);
+                setDraftPicDeletModal(false)
+            }
+          
+            
+    }
+
+    function handleEditSuccessful() {
+        setDraftPicEditModal(false)
+        setEditSuccessfully(true)
+            let successTimer = setTimeout(() => {
+                setEditSuccessfully(false)
+            },2000)
+
+            return () => {
+                clearTimeout(successTimer)
+            }
+    }
+
+    function handleDeleteSuccessful() {
+        setDraftPicDeletModal(false)
+        setDeleteSuccessfully(true)
+        let successTimer = setTimeout(() => {
+            setDeleteSuccessfully(false)
+        },2000)
+
+        return () => {
+            clearTimeout(successTimer)
+        }
+    }
 
    const handleUploadSubmit = (e) => {
     e.preventDefault()
     setRole(e.target.value)
     setDraftPicUploadModal(false)
-    setRole("Admin")
-    console.log(`Role: ${role}`)
+    // setRole("Admin")
+    // console.log(`Role: ${role}`)
    }
 
   return (
@@ -147,17 +307,16 @@ function Draft({searchQuery, setSearchQuery}) {
             closeIcon={null}
             styles={{
                 content: {
-                    backgroundColor: '#0B0B0B',
+                    backgroundColor: '#131313',
                     width: '150px',
-                    height: '130px',
+                    height: 'auto',
                     color: 'white',
                     margin: '0 auto',
                     borderRadius: '8px',
-                    marginLeft: '94%',
-                    marginTop: '120px'
+                    marginLeft: '100%',
+                    marginTop: '170px'
                 },
                 body: {
-                    backgroundColor: '#1717171',
                     color: 'white',
                     
                 },
@@ -196,13 +355,13 @@ function Draft({searchQuery, setSearchQuery}) {
                     className='pl-2'>Upload</button>
                 </div>
 
-                <div className='w-[150%] ml-[-25px] pb-2 opacity-[0.6] cursor-pointer'>
+                <div className='w-[150%] ml-[-25px] pb-[-2px] opacity-[0.6] cursor-pointer'>
                     <button onClick={() => {
                         handleDetail(draftDetails)
                         setDraftPicDeletModal(true)
                         setDraftPicActionModal(false)
                     }}
-                    className='pl-2 pt-4 text-red'>Delete</button>
+                    className='pl-2 pt-1 text-red'>Delete</button>
                 </div>
             </div>
         
@@ -237,8 +396,9 @@ function Draft({searchQuery, setSearchQuery}) {
                     <h2 className='mt-[-10px] text-[20px] font-sans pb-2'>Pictures Details</h2>
                     <hr className='opacity-[0.6] w-[113%] ml-[-23px] '/> 
 
-                    <div className='mt-10'>
-                        <img src={picBackground} alt="" />
+                    <div className='mt-5'>
+                        <img className='w-[400px] h-[300px]'
+                        src={draftDetails.thumbnail_url || picBackground} alt="" />
                     </div>
 
                     <div>
@@ -271,7 +431,6 @@ function Draft({searchQuery, setSearchQuery}) {
                 marginTop: '50px'
             },
             body: {
-                backgroundColor: '#1717171',
                 color: 'white',
                 
             },
@@ -306,7 +465,9 @@ function Draft({searchQuery, setSearchQuery}) {
                         <button type='submit' className='border border-[#9966CC] 
                         outline-none p-3 
                         rounded w-[130px] text-[#9966CC]
-                        hover:bg-[#9966CC] hover:text-white'>Save Changes</button>
+                        hover:bg-[#9966CC] hover:text-white'>
+                            {buttonLoading ? 'Saving...' : 'Save Changes'}
+                        </button>
                     </div>
                     </form>
                 </div>
@@ -315,7 +476,7 @@ function Draft({searchQuery, setSearchQuery}) {
         </Modal>
 
          {/*draft inspirational  pictures Upload modal */}
-         <Modal
+         {/* <Modal
             open={draftPicUploadModal}
             onCancel={handleCloseModal}
             footer={null}
@@ -394,7 +555,7 @@ function Draft({searchQuery, setSearchQuery}) {
                 </div>
             </div>
 
-        </Modal>
+        </Modal> */}
 
         {/* draft Inspirational pictures delete  modal */}
         <Modal
@@ -429,16 +590,86 @@ function Draft({searchQuery, setSearchQuery}) {
                         This action cannot be undone 
                     </p>
                     <button onClick={handleCloseModal} className='border border-[#9966CC] mt-3 rounded text-[#9966CC] p-2 w-[120px]'>Cancel</button>
-                    <button
-                        className='mt-3 rounded bg-[#E53935] p-2 w-[120px] ml-2'>Yes delete</button>
+                    <button onClick={() => handleDelete(draftDetails.id)}
+                        className='mt-3 rounded bg-[#E53935] p-2 w-[120px] ml-2'>
+                            {buttonLoading ? 'Deleting...' : 'Yes Delete'}
+                        </button>
                     </>
                 </div>
             </div>
 
         </Modal>
+
+        {/* all pictures Edit success modal*/}
+        <Modal
+            open={editSuccessfully}
+            closeIcon={null}
+            footer={null}
+            styles={{
+            content: {
+                backgroundColor: 'black',
+                width: '200px',
+                height: '200px',
+                color: 'white',
+                margin: '0 auto',
+                borderRadius: '8px',
+                marginTop: '50px'
+            },
+            body: {
+                backgroundColor: '#1717171',
+                color: 'white',
+                
+            },
+            }}>
+            <div className='flex flex-col w-[128%] ml-[-20px] mt-5 items-center justify-center'>
+                <div className='bg-[#9966CC] w-[50px] h-[50px] 
+                rounded-full flex items-center justify-center'>
+                    <CheckOutlined style={{color: 'white', fontSize: '30px'}}/>
+                </div>
+                <div>
+                    <p className='text-[20px] text-center pt-3'>Changes Save successfully!</p>
+                </div>
+            </div> 
+
+        </Modal>
+
+         {/* all pictures delete success modal*/}
+        <Modal
+            open={deleteSuccessfully}
+            closeIcon={null}
+            footer={null}
+            styles={{
+            content: {
+                backgroundColor: 'black',
+                width: '200px',
+                height: '200px',
+                color: 'white',
+                margin: '0 auto',
+                borderRadius: '8px',
+                marginTop: '50px'
+            },
+            body: {
+                backgroundColor: '#1717171',
+                color: 'white',
+                
+            },
+            }}>
+            <div className='flex flex-col w-[128%] ml-[-20px] mt-5 items-center justify-center'>
+                <div className='bg-[#9966CC] w-[50px] h-[50px] 
+                rounded-full flex items-center justify-center'>
+                    <CheckOutlined style={{color: 'white', fontSize: '30px'}}/>
+                </div>
+                <div>
+                    <p className='text-[20px] text-center pt-3'>Deleted successfully!</p>
+                </div>
+            </div> 
+
+        </Modal>
         
-        <div>
-            <div className='w-[100%] h-[240px] m-[auto]'>
+        <div className={`${isDarkMode ? 'w-[100%]' : 'w-[100%]'} h-[450px] m-[auto] bg-[#171717] rounded-xl
+            ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}>
+
+            <div className='w-[100%] h-[400px] m-[auto]'>
             {/* table header begins */}
             <div className={` h-10 grid grid-cols-4 text-[11px]
                 ${isDarkMode ? "bg-[#313131] text-white" : "bg-slate-100 text-black border-b border-b-slate-200"}`}>
@@ -493,56 +724,68 @@ function Draft({searchQuery, setSearchQuery}) {
 
 
             {/* Data Rows */}
-            {sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => (
+            {loading ? (
+                <LoadingState/>
+            ):
+            Array.isArray(sortedData) && sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => (
                 <div onClick={() => {
-                    setDraftPicActionModal(true)
-                    setDraftDetails(item.id)
+                    setDraftDetails(item)
                 }}
                 key={item.id}
                 className={`border-b border-white  text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-4
                     ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}
                 >
-                    <div className='p-2 flex items-center'>{item.id}</div>
-                    <div className='p-2 flex items-center ml-[-10px]'>
-                        <img src={item.thumbnail} alt="" />
+                    <div className='p-2 flex items-center'>{startIndex + index + 1}</div>
+                    <div className="p-2 flex items-center justify-center w-[50px] h-[50px] overflow-hidden rounded">
+                        <img className="w-full h-full object-cover"
+                        src={item.thumbnail_url} alt="" />
                     </div>
                     <div className='pl-2 flex items-center'>{item.source}</div>
-                    <div
-                    className='p-2 flex items-center ml-3'>{item.action}</div>
+
+                    <div onClick={() => {
+                         setDraftPicActionModal(true)
+                    }}
+                    className='p-2 flex items-center ml-3'>
+                        <IoIosMore />
+                    </div>
                 </div>
             ))}
+
+            {error && <div className='flex items-center justify-center mt-[15%]'>{error}</div>}
             {/* end of Data row */}
             </div> 
+
+            {/* Pagination */}
+            <div className='flex justify-between items-center mt-1'>
+                <div className={`text-[12px] ml-[10px]
+                    ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
+                  showing  {startIndex + 1} - {Math.min(startIndex + itemsPerPage, Array.isArray(draftPicData) ? draftPicData.length : 0)} of {Array.isArray(draftPicData) ? draftPicData.length : 0}
+                </div>
+                <div className='text-[13px] mr-5 flex items-center gap-3'>
+                    <button
+                        onClick={handlePrevPage}
+                        disabled={page === 1}
+                        className={`w-[90px] p-2 rounded-xl ${page === 1 ? 
+                            'opacity-[0.5] text-gray-500 border border-gray-500' : 
+                            "border border-[#9966CC] text-[#9966CC]"}`}
+                    >
+                        Previous
+                    </button>
+                    <button
+                        onClick={handleNextPage}
+                        disabled={page === totalPages}
+                        className={`w-[90px] p-2 rounded-xl ${page === totalPages ? 
+                            'opacity-[0.5] text-gray-500 border border-gray-500' : 
+                            "border border-[#9966CC] text-[#9966CC]"}`}
+                    >
+                        Next
+                    </button>
+                </div>
+            </div>
+            {/* end of Pagination */}
         </div>
 
-        {/* Pagination */}
-        <div className='flex justify-between items-center mt-1'>
-        <div className={`text-[12px] ml-[10px]
-            ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
-            Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, getFilteredData.length)} of {getFilteredData.length}
-        </div>
-        <div className='text-[13px] mr-5 flex items-center gap-3'>
-            <button
-                onClick={handlePrevPage}
-                disabled={page === 1}
-                className={`w-[90px] p-2 rounded-xl ${page === 1 ? 
-                    'opacity-[0.5] text-gray-500 border border-gray-500' : 
-                    "border border-[#9966CC] text-[#9966CC]"}`}
-            >
-                Previous
-            </button>
-            <button
-                onClick={handleNextPage}
-                disabled={page === totalPages}
-                className={`w-[90px] p-2 rounded-xl ${page === totalPages ? 
-                    'opacity-[0.5] text-gray-500 border border-gray-500' : 
-                    "border border-[#9966CC] text-[#9966CC]"}`}
-            >
-                Next
-            </button>
-        </div>
-        </div>
-        {/* end of Pagination */}
+      
     </>
   )
 }

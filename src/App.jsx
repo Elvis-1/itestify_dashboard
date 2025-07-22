@@ -33,8 +33,7 @@ import HomeManagement from "./pages/HomeManagement";
 import CheckMail from "./component/CheckMail";
 import ResetPassword from "./pages/ResetPassword";
 import AdminLoginInvite from "./component/AdminLoginInvite";
-import ManageUser from "./pages/ManageUser";
-import ManageSuperAdmin from "./pages/ManageSuperAdmin";
+import TextTesActivityLog from "./pages/TextTesActivitylog";
 
 function App() {
   return (
@@ -55,19 +54,12 @@ function App() {
                   <Route element={<ProtectedRoute />}>
                     <Route path="/dashboard" element={<Dashboard />}>
                       <Route path="" element={<Overview />} />
-                      <Route
-                        path="home-management"
-                        element={<HomeManagement />}
-                      />
+                      <Route path="home-management" element={<HomeManagement />}/>
 
-                      <Route
-                        path="all-testimonies"
-                        element={<AllTestimonies />}
-                      />
-                      <Route
-                        path="upload-testimonies"
-                        element={<UploadTestimonies />}
-                      />
+                      <Route path="all-testimonies" element={<AllTestimonies />}/>
+                      <Route path="upload-testimonies" element={<UploadTestimonies />}/>
+                      <Route path="activity-log" element={<TextTesActivityLog />} />
+
                       <Route path="users" element={<Users />} />
                       <Route path="donations" element={<Donations />} />
                       <Route path="notifications" element={<Notifications />} />
