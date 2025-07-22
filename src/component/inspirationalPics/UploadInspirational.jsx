@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
-import { Upload, Progress, Button, Radio } from 'antd';
+import { Upload, Progress, Button, Radio, message } from 'antd';
 import { FaImage, FaTimes } from "react-icons/fa";
 import { FaCaretDown, FaCaretUp } from "react-icons/fa6";
+import axios from 'axios';
+
 import '../../App.css'
 
 function UploadInspirational() {
@@ -40,22 +42,89 @@ function UploadInspirational() {
     return interval;
   };
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    const uploadData = {
-      uploadStatus,
-      files: fileList,
-      ...(uploadStatus === 'Schedule' && { timeData, dateScheduled, timePeriod })
-    };
-    
-    console.log('Upload data:', uploadData);
-    
-    fileList.forEach(file => {
-      if (!file.url && uploadProgress[file.uid] < 100) {
-        simulateUpload(file.uid);
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  const token = localStorage.getItem('token');
+  console.log("Token:", token);
+  
+  if (fileList.length === 0) {
+    message.error("Please select files to upload.");
+    return;
+  }
+
+  try {
+    if (!token) {
+      message.error("You must be logged in to upload files.");
+      return;
+    }
+
+    const uploadedFiles = [];
+    for (const file of fileList) {
+      try {
+        const progressInterval = simulateUpload(file.uid);
+
+        const formData = new FormData();
+        formData.append('thumbnail', file.originFileObj);
+
+        let backendStatus;
+        switch(uploadStatus) {
+          case 'Upload': 
+            backendStatus = 'upload_now';
+            break;
+          case 'Draft': 
+            backendStatus = 'drafts';
+            break;
+          case 'Schedule': 
+            backendStatus = 'scheduled';
+            formData.append('date_scheduled', dateScheduled);
+            formData.append('time_scheduled', `${timeData} ${timePeriod}`);
+            break;
+          default:
+            backendStatus = 'drafts';
+        }
+        
+        formData.append('status', backendStatus);
+        formData.append('source', 'web_uploader');
+
+
+        const response = await axios.post(
+          'https://itestify-backend-38u1.onrender.com/inspirational/create_pic/',
+          formData,
+          {
+            headers: {
+              'Authorization': `Bearer ${token}`,
+            },
+          }
+        );
+
+        clearInterval(progressInterval);
+        setUploadProgress(prev => ({ ...prev, [file.uid]: 100 }));
+
+        uploadedFiles.push(response.data);
+        console.log('Upload successful:', response.data);
+
+      } catch (error) {
+        console.error('Upload failed:', error.response?.data || error.message);
+        setUploadProgress(prev => ({ ...prev, [file.uid]: 0 }));
+        message.error(`Failed to upload ${file.name}: ${error.response?.data?.detail || error.message}`);
+        clearInterval(simulateUpload(file.uid));
       }
-    });
-  };
+    }
+
+    if (uploadedFiles.length > 0) {
+      message.success("Files uploaded successfully!");
+      setFileList([]);
+      setUploadProgress({});
+    }
+
+  } catch (error) {
+    console.error("System error:", error);
+    message.error("An error occurred while uploading files. Please try again.");
+  }
+};
+
 
   const removeFile = (uid) => {
     setFileList(prev => prev.filter(file => file.uid !== uid));

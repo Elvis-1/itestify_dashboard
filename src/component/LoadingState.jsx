@@ -11,12 +11,20 @@ const LoadingState = () => {
       />
 
       <div
-        className="flex items-center justify-center w-full"
+        className="flex items-center justify-center w-full mt-[150px]"
         style={{ marginLeft: "270px" }}
       >
         <div className="relative z-10 w-24 h-24">
-          {/* Spinner ring */}
-          <div className="absolute inset-0 rounded-full border-[10px] border-t-primary border-primary animate-spin " ></div>
+          {/* Full static border */}
+          <div className="absolute inset-0 rounded-full border-[10px] border-gray-300"></div>
+          
+          {/* Spinning half-circle progress indicator */}
+          <div
+            className="absolute inset-0 rounded-full border-[10px] border-transparent border-t-primary animate-spin origin-center"
+            style={{
+              clipPath: 'polygon(0 0, 100% 0, 100% 50%, 0 50%)'
+            }}
+          ></div>
 
           {/* Static logo */}
           <img

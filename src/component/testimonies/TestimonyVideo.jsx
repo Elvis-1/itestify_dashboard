@@ -27,7 +27,7 @@ function TestimonyVideo() {
     
   return (
     
-    <div className={`w-[98%] h-[350px] m-[auto] bg-[#171717] rounded-xl
+    <div className={`w-[98%] m-auto
     ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}>
        {all &&
         <AllVideoTest all={all}

@@ -6,6 +6,7 @@ import { CiSettings } from "react-icons/ci"
 import TestimonyVideo from "./TestimonyVideo";
 import { Modal, Switch } from "antd";
 import { DarkModeContext } from "../../context/DarkModeContext";
+import { Link } from "react-router-dom";
 
 
 
@@ -227,7 +228,7 @@ function AllTestimonies() {
 
          {/* all testimonies header */}
          <div className='p-3 flex items-center justify-between'>
-         <div className={`rounded overflow-hidden text-[12px] p-1 h-[45px] w-[147px] ${isDarkMode ? 'bg-[#787878]' : 'bg-white border border-[#9966CC]' }`}>
+         <div className={`rounded overflow-hidden text-[12px] p-1 h-[45px] w-[147px] ${isDarkMode ? 'bg-[#787878]' : 'bg-white' }`}>
             <div className={`rounded w-[100%] overflow-hidden ${!isDarkMode ? 'mt-[-0.5px]' : ' mt-[-0.5px]'}`}>
                 <button 
                     onClick={() => setShowVideoTestimonies(false)}
@@ -250,12 +251,17 @@ function AllTestimonies() {
          </div>
 
          <div className='flex items-center gap-5'>
-             <div 
-             className='flex items-center p-1 rounded bg-[#9966CC] text-white'>
+            <div className='flex items-center p-1 rounded border border-[#9966CC] text-white'>
                  <CiSettings />
                  <button onClick={settingModal}
                   className='text-[12px] border-none outline-none'>Manage Settings</button>
-             </div>
+            </div>
+
+            <Link to='/dashboard/activity-log' className='flex items-center gap-2 p-1 rounded text-white'>
+                <div className="bg-[#9966CC] text-white p-1 rounded flex items-center justify-center gap-2 w-[120px]">
+                    <button className="text-white border-none outline-none text-[12px]">View Activity log</button>
+                </div>
+            </Link>
          </div>
      </div>
      {/* all testimonies header ends here */}

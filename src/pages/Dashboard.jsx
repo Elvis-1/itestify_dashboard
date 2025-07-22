@@ -37,6 +37,7 @@ function Dashboard() {
   const [isNotifModal, setIsNotifModal] = useState(false);
   const [userFullname, setUserFullName] = useState("");
   const [userRole, setUserRole] = useState("");
+  const [activeTab, setActiveTab] = useState(false);
 
   const { isDarkMode, toggleTheme } = useContext(DarkModeContext);
 
@@ -343,7 +344,8 @@ function Dashboard() {
                     type="button"
                     value={"All Testimonies"}
                     placeholder="All Testimonies"
-                    className=" border-none outline-none p-2 bg-transparent cursor-pointer "
+                    className={`border-none outline-none p-2 bg-transparent cursor-pointer
+                      ${location.pathname === "/dashboard/all-testimonies" ? " text-primary" : ""}`}
                     onClick={handleTestimonies}
                   />
                 </Link>
@@ -352,7 +354,8 @@ function Dashboard() {
                     type="button"
                     value={"Upload Testimonies"}
                     placeholder="upload Testimonies"
-                    className=" border-none outline-none p-2 bg-transparent cursor-pointer"
+                     className={`border-none outline-none p-2 bg-transparent cursor-pointer
+                      ${location.pathname === "/dashboard/upload-testimonies" ? " text-primary" : ""}`}
                     onClick={handleTestimonies}
                   />
                 </Link>
@@ -388,14 +391,16 @@ function Dashboard() {
                   <input
                     type="button"
                     value={"All Pictures"}
-                    className="border-none outline-none p-2 bg-transparent cursor-pointer "
+                    className={`border-none outline-none p-2 bg-transparent cursor-pointer
+                      ${location.pathname === "/dashboard/inspirational-pictures" ? " text-primary" : ""}`}
                   />
                 </Link>
                 <Link to="upload-inspirational-pictures">
                   <input
                     type="button"
                     value={"Upload Pictures"}
-                    className="border-none outline-none p-2 bg-transparent cursor-pointer"
+                    className={`border-none outline-none p-2 bg-transparent cursor-pointer
+                      ${location.pathname === "/dashboard/upload-inspirational-pictures" ? " text-primary" : ""}`}
                   />
                 </Link>
               </div>

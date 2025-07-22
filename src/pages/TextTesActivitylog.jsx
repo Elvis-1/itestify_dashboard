@@ -3,14 +3,15 @@ import { CiSearch } from "react-icons/ci";
 import { IoFilterOutline } from "react-icons/io5";
 import { CheckOutlined } from "@ant-design/icons";
 import { CalendarOutlined } from '@ant-design/icons';
-import { FaCaretDown, FaCaretUp } from "react-icons/fa6";
+import { FaCaretDown, FaCaretUp, FaChevronLeft } from "react-icons/fa6";
 import { IoIosArrowDown, IoIosArrowUp, IoIosMore } from 'react-icons/io';
 import { Modal } from 'antd';
-import modalpic from '../../assets/images/modalPic.png';
-import { DarkModeContext } from '../../context/DarkModeContext';
+import modalpic from '../assets/images/modalPic.png';
+import { DarkModeContext } from '../context/DarkModeContext';
 import { ClipLoader } from "react-spinners";
 import axios from 'axios';
-import LoadingState from '../LoadingState';
+import LoadingState from '../component/LoadingState';
+import { FaArrowRight } from 'react-icons/fa';
 
 const formatDate = (isoDateString) => {
     const date = new Date(isoDateString);
@@ -21,7 +22,7 @@ const formatDate = (isoDateString) => {
     });
 };
 
-function TestimonyText() {
+function TextTesActivityLog() {
     const { isDarkMode } = useContext(DarkModeContext);
     const [currentPage, setCurrentPage] = useState(1);
     const [sortConfig, setSortConfig] = useState(null);
@@ -37,14 +38,8 @@ function TestimonyText() {
     const [selectTestType, setSelectTestType] = useState('Select');
     const [filterDate1, setFilterDate1] = useState('');
     const [filterDate2, setFilterDate2] = useState('');
-    const [actionModal, setActionModal] = useState(false);
-    const [controlDetail, setControlDetail] = useState(false);
     const [getFilteredData, setGetFilterData] = useState([]);
     const [searchQuery, setSearchQuery] = useState("");
-    const [deleteAlert, setDeleteAlert] = useState(false);
-    const [deleteStatus, setDeleteStatus] = useState(false);
-    const [deleteSuccessful, setDeleteSuccessful] = useState(false);
-    const [rejectionReason, setRejectionReason] = useState('');
     const [testimonies, setTestimonies] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -132,7 +127,7 @@ function TestimonyText() {
     }, [getFilteredData, testimonies, searchQuery]);
 
     useEffect(() => {
-        setCurrentPage(1); // Reset to first page on search
+        setCurrentPage(1);
     }, [searchQuery]);
 
     const sortedData = useMemo(() => {
@@ -161,204 +156,10 @@ function TestimonyText() {
         }
     };
 
-    async function handleDetail(id) {
-        try {
-            const token = localStorage.getItem("token");
-            if (!token) {
-                console.error("No token found. Please log in.");
-                return;
-            }
-
-            const response = await axios.get(
-                `https://itestify-backend-38u1.onrender.com/testimonies/texts/${id}/`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-
-            if (response.data) {
-                const testimonyDetails = response?.data?.data;
-
-                if (!testimonyDetails) {
-                    console.error("No testimony details found in the response.");
-                    return;
-                }
-
-                if (!testimonyDetails.uploaded_by) {
-                    testimonyDetails.uploaded_by = {
-                        full_name: "N/A",
-                        email: "N/A",
-                    };
-                }
-
-                setDetails(testimonyDetails);
-                setOpenModal(true);
-                setGetStatus(testimonyDetails.status);
-                setActionModal(false);
-            } else {
-                console.error("No data found in the response.");
-            }
-        } catch (error) {
-            console.error("Failed to fetch testimony details:", error.response ? error.response.data : error.message);
-        }
-    }
-
     const handleCloseModal = () => {
-        setOpenModal(false);
-        setRejectionReasonModal(false);
-        setStatusAlert(false);
-        setFilterModal(false);
-        setActionModal(false);
-        setDeleteAlert(false);
-        setDeleteSuccessful(false);
+        setFilterModal(false); 
     };
 
-    function handleModalFooterButton() {
-        if (getStatus === 'pending') {
-            return [
-                <button
-                    key="reject"
-                    onClick={() => {
-                        setRejectionReason('');
-                        handleRejectionReason();
-                    }}
-                    className='text-[12px] border border-red-600 text-red p-1 w-[100px] rounded 
-                    hover:text-[13px] hover:w-[110px] transition-all duration-200'
-                >
-                    Reject Testimony
-                </button>,
-                <button
-                    key="approve"
-                    onClick={async () => {
-                        setOperationLoading(true);
-                        const success = await handleTestimonyStatus(controlDetail, "approve");
-                        setOperationLoading(false);
-                        if (success) {
-                            setIsApproved(true);
-                            showStatusAlert();
-                        }
-                    }}
-                    className='text-[12px] text-white bg-[#9966CC] p-1 w-[120px] rounded ml-2
-                     hover:text-[13px] hover:w-[130px] transition-all duration-200'
-                >
-                    {operationLoading ? 
-                    <div className='flex items-center gap-2'>
-                        <ClipLoader size={14} color="#ffffff" /> 
-                        <span className='text-[12px] p-1'>Approving...</span>
-                    </div>
-                     : 'Approve Testimony'}
-                </button>
-            ];
-        } else if (getStatus === 'rejected') {
-            return [
-                <div key="reason" className='text-left'>
-                    <h3 className='text-[13px]'>Reason For Rejection</h3>
-                    <p className='text-[11px] opacity-[0.7]'>{details?.rejection_reason || 'No reason provided'}</p>
-                </div> 
-            ];
-        }
-        return null;
-    }
-
-    async function handleTestimonyStatus(id, newStatus, reason = '') {
-        const token = localStorage.getItem('token');
-        try {
-            const payload = { action: newStatus };
-            if (newStatus === 'reject') {
-                payload.rejection_reason = reason;
-            }
-
-            const response = await axios.post(
-                `https://itestify-backend-38u1.onrender.com/text-testimonies/${id}/review/`,
-                payload,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                        'Content-Type': 'application/json'
-                    }
-                }
-            );
-
-            if (response.status === 200) {
-                setTestimonies(prevTestimonies => 
-                    prevTestimonies.map(testimony => 
-                        testimony.id === id 
-                            ? { 
-                                ...testimony, 
-                                status: newStatus === 'approve' ? 'approved' : 'rejected',
-                                rejection_reason: reason || testimony.rejection_reason
-                            } 
-                            : testimony
-                    )
-                );
-                return true;
-            }
-            return false;
-        } catch (error) {
-            console.error('Error updating testimony status:', error);
-            return false;
-        }
-    }
-
-    function handleRejectionReason() {
-        setRejectionReasonModal(true);
-        setOpenModal(false);
-    }
-
-    function RejectionModalFooterButton() {
-        return [
-            <button 
-                onClick={handleCloseModal}
-                className='border border-[#9966CC] p-1 w-[80px] text-[#9966CC] rounded mr-4
-                 hover:text-[15px] hover:w-[90px] transition-all duration-200'
-            >
-                Cancel
-            </button>,
-            <button 
-                key='Rejected' 
-                onClick={async () => {
-                    if (!rejectionReason.trim()) {
-                        alert('Please provide a rejection reason');
-                        return;
-                    }
-                    setOperationLoading(true);
-                    const success = await handleTestimonyStatus(controlDetail, "reject", rejectionReason);
-                    setOperationLoading(false);
-                    if (success) {
-                        setIsApproved(false);
-                        showStatusAlert();
-                    }
-                }}
-                className='bg-[#9966CC] p-1 w-[80px] text-[#FFFFFF] rounded
-                hover:text-[15px] hover:w-[90px] transition-all duration-200'
-            >
-                {operationLoading ? 
-                <div className='flex items-center gap-2'>
-                    <ClipLoader size={14} color="#ffffff" /> 
-                    <span className='text-[12px] p-1'>Rejecting...</span>
-                </div>
-                
-                : 'Confirm'}
-            </button>
-        ];
-    }
-
-    function showStatusAlert() {
-        setStatusAlert(true);
-        setOpenModal(false);
-        setRejectionReasonModal(false);
-        setRejectionReason('');
-
-        const alertTimer = setTimeout(() => {
-            handleCloseModal();
-        }, 2000);
-
-        return () => {
-            clearTimeout(alertTimer);
-        };
-    }
 
     function showFilterModal() {
         setFilterModal(true);
@@ -437,84 +238,6 @@ function TestimonyText() {
         setCurrentPage(1);
     }
 
-    function showDeleteNotification() {
-        const selectedTestimony = testimonies.find(item => item.id === controlDetail);
-        if (selectedTestimony?.status === 'pending') {
-            setDeleteStatus('pending');
-        } else {
-            setDeleteStatus('confirm');
-        }
-        setDeleteAlert(true);
-    }
-
-    function handleDeleteAlertFooterButton() {
-        return [
-            deleteStatus === 'pending' ? 
-                <button 
-                    onClick={() => setDeleteAlert(false)}
-                    className='mr-[110px] mt-3 bg-[#9966CC] border-none outline-none rounded w-[80px] p-1
-                    hover:text-[15px] hover:w-[90px] transition-all duration-200'
-                >
-                    Okay
-                </button> :
-                <div className='w-[335px] ml-[-15px] pr-3'>
-                    <button 
-                        onClick={handleCloseModal}
-                        className='border border-[#9966CC] outline-none text-[#9966CC] w-[100px] p-1 rounded ml-[-20px] mr-2
-                        hover:text-[15px] hover:w-[110px] transition-all duration-200'
-                    >
-                        Cancel
-                    </button>
-                    <button 
-                        onClick={async () => {
-                            setOperationLoading(true);
-                            await handleTestimonyDelete(controlDetail);
-                            setOperationLoading(false);
-                            deleteSuccessFulModal();
-                        }}
-                        className='border-none hover:p-2 outline-none bg-red w-[100px] rounded p-1 mr-2 pl-3
-                        hover:text-[13px] hover:w-[110px] transition-all duration-200'
-                    >
-                        {operationLoading ? 
-                        <div className='flex items-center gap-2'>
-                            <ClipLoader size={14} color="#ffffff" />
-                            <span className='text-[12px] p-1'>Deleting...</span>
-                        </div>
-                         : 'Yes delete'}
-                    </button>
-                </div> 
-        ];
-    }
-
-    function deleteSuccessFulModal() {
-        setDeleteSuccessful(true);
-        setDeleteAlert(false);
-        const alertTimer = setTimeout(() => {
-            handleCloseModal();
-        }, 2000);
-
-        return () => {
-            clearTimeout(alertTimer);
-        };
-    }
-
-    async function handleTestimonyDelete(id) {
-        const token = localStorage.getItem('token');
-        try {
-            await axios.delete(
-                `https://itestify-backend-38u1.onrender.com/testimonies/texts/${id}/`,
-                {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                }
-            );
-            
-            setTestimonies(prev => prev.filter(item => item.id !== id));
-        } catch (error) {
-            console.error("Delete failed:", error);
-        }
-    }
 
     const dateInputRef1 = useRef(null);
     const dateInputRef2 = useRef(null);
@@ -530,112 +253,18 @@ function TestimonyText() {
         }
     };
 
-    
+    if (loading) {
+        return (
+            <LoadingState/>
+        );
+    }
+
+    if (error) {
+        return <div>{error}</div>;
+    }
+
     return (
         <div className={`${!isDarkMode ? 'border h-[400px] rounded-xl w-[98%] m-[auto]' : 'border-none'}`}>
-            {/* Testimony Details Modal */}
-            <Modal
-                open={openModal}
-                onCancel={handleCloseModal}
-                footer={handleModalFooterButton()}
-                closable={true}
-                closeIcon={<span style={{ color: `${isDarkMode ? '#fff' : 'black'}`, fontSize: '12px', marginTop: '-30px' }}>X</span>}
-                styles={{
-                    content: {
-                        backgroundColor: `${isDarkMode ? 'black' : 'white'}`,
-                        width: '400px',
-                        height: 'auto',
-                        color: `${isDarkMode ? '#fff' : 'black'}`,
-                        margin: '0 auto',
-                        borderRadius: '8px',
-                        marginLeft: '200px'
-                    },
-                    body: {
-                        color: `${isDarkMode ? '#fff' : 'black'}`,
-                    },
-                }}
-            >
-                {details ? (
-                    <div>
-                        <div className={`w-[400px] h-[50px] ml-[-24px] mt-[-22px] rounded-tl-xl rounded-tr-xl ${isDarkMode ? 'bg-[#313131]' : 'bg-gray-200'}`}></div>
-                        <div className='w-[50px] h-[50px] m-[auto] z-[1000]'>
-                            <img className='w-[50px] h-[50px] m-[auto] mt-[-25px]' src={modalpic} alt="" />
-                        </div>
-
-                        <div className="rounded-3xl px-5 py-4 overflow-hidden border border-gray-600 w-[110%] m-auto ml-[-17px] h-auto mt-6">
-                            <div className="mb-2">
-                            <h3>Name</h3>
-                            <p> {details?.uploaded_by.full_name || "N/A"} </p>
-                            </div>
-        
-                            <div className="mb-2">
-                            <h3>Email</h3>
-                            <p> {details.uploaded_by.email || "N/A"} </p>
-                            </div>
-
-                            <div className='flex  items-center gap-3 text-[14px] h-[45px] font-sans'>
-                                <p className='mb-1'>Status</p>
-                                <p className={`w-[100px] text-center  p-[3px] rounded ${
-                                    details.status === 'pending' ? 
-                                        'text-yellow-400 border border-yellow-500' :
-                                    details.status === 'approved' ? 
-                                        'text-green-500 border border-green-500' : 
-                                        'text-red border border-red'
-                                }`}>
-                                    {details.status.charAt(0).toUpperCase() + details.status.slice(1)}
-                                </p>
-                            </div>
-        
-                        </div>
-
-                        <div className='mt-3 mb-7'>
-                            <h3 className={`font-sans text-[11px] ${isDarkMode && 'text-white'}`}>{details.title || "no title"}</h3>
-                            <p className={`text-[11px] pt-2 ${isDarkMode && 'text-white'}`}>
-                                {details?.content?.slice(0, 500) + "..."}
-                            </p>
-                        </div>    
-                    </div>
-                ) : (
-                    <p>No details available</p>
-                )}
-            </Modal>
-
-            {/* Rejection Reason Modal */}
-            <Modal
-                open={rejectionReasonModal}
-                onCancel={handleCloseModal}
-                closeIcon={<span style={{ color: `${isDarkMode ? 'white' : 'black'}`, fontSize: '12px', marginTop: '-30px' }}>X</span>}
-                footer={RejectionModalFooterButton()}
-                styles={{
-                    content: {
-                        backgroundColor: `${isDarkMode ? 'black' : 'white'}`,
-                        width: '340px',
-                        height: '420px',
-                        color: `${isDarkMode ? 'white' : 'black'}`,
-                        margin: '0 auto',
-                        borderRadius: '8px',
-                    },
-                    body: {
-                        color: `${isDarkMode ? 'white' : 'black'}`,
-                    },
-                }}
-            >
-                <div>
-                    <h3 className={`text-[18px] font-sans pb-2${isDarkMode && 'text-white'}`}>Reject Testimony</h3>
-                    <hr className='opacity-[0.2] text-gray-300 w-[117%] ml-[-25px] '/>
-                    <div className='h-[210px] mt-3'>
-                        <h3 className='text-[12px] opacity-[0.5]'>Reason for rejection</h3>
-                        <div className='mt-2'>
-                            <textarea 
-                                className={`rounded-xl w-[100%] h-[180px] indent-2 p-1 text-[12px] ${isDarkMode ? 'bg-[#313131]' : 'bg-white border border-[#9966CC]'}`} 
-                                placeholder='Type here...'
-                                value={rejectionReason}
-                                onChange={(e) => setRejectionReason(e.target.value)}
-                            />
-                        </div>
-                    </div>
-                </div>
-            </Modal>
 
             {/* Status Alert Modal */}
             <Modal
@@ -969,135 +598,18 @@ function TestimonyText() {
                     </div>
                 </div>
             </Modal>
-
-            {/* Action Modal */}
-            <Modal
-                open={actionModal}
-                onCancel={handleCloseModal}
-                footer={null}
-                closeIcon={null}
-                styles={{
-                    content: {
-                        backgroundColor: `${isDarkMode ? '#171717' : '#fff'}`,
-                        width: '170px',
-                        height: '100px',
-                        color: `${isDarkMode ? '#fff' : 'black'}`,
-                        margin: '0 auto',
-                        borderRadius: '8px',
-                        marginLeft: '130%',
-                        marginTop: '180px'
-                    },
-                    body: {
-                        color: `${isDarkMode ? '#fff' : 'black'}`,
-                    },
-                }}
-            >
-                <div className='flex flex-col'>
-                    <div className='border-b-2 w-[140%] ml-[-25px] pb-2 opacity-[0.9]'>
-                        <button 
-                            onClick={() => {
-                                handleDetail(controlDetail);
-                                setActionModal(false);
-                            }} 
-                            className='pl-2 font-bold'
-                        >
-                            View
-                        </button>
-                    </div>
-
-                    <div className='w-[150%] ml-[-25px] pb-2 opacity-[0.9] cursor-pointer'>
-                        <button 
-                            onClick={() => {
-                                setActionModal(false);
-                                showDeleteNotification();
-                            }} 
-                            className='pl-2 pt-4 text-red font-bold'
-                        >
-                            Delete
-                        </button>
-                    </div>
-                </div>
-            </Modal>
-
-            {/* Delete Alert Modal */}
-            <Modal
-                open={deleteAlert}
-                onCancel={handleCloseModal}
-                closeIcon={<span style={{ color: `${isDarkMode ? '#fff' : 'black'}`, fontSize: '12px', marginTop: '-30px' }}>X</span>}
-                footer={handleDeleteAlertFooterButton()}
-                styles={{
-                    content: {
-                        backgroundColor: `${isDarkMode ? 'black' : 'white'}`,
-                        width: '350px',
-                        height: '200px',
-                        color: `${isDarkMode ? '#fff' : 'black'}`,
-                        margin: '0 auto',
-                        borderRadius: '8px',
-                        marginTop: '50px'
-                    },
-                    body: {
-                        color: `${isDarkMode ? '#fff' : 'black'}`,
-                    },
-                }}
-            >
-                {deleteStatus === 'pending' ? 
-                    <div className='flex flex-col w-[128%] ml-[-20px] mt-5 items-center justify-center'>
-                        <div className='w-[80%] ml-[-45px]'>
-                            <p className='text-[15px] text-center pt-3'>Unable to delete Pending Testimonies!</p>
-                            <p className='text-[12px] opacity-[0.6] mt-5'>
-                                This Testimony is pending and cannot be deleted. 
-                                Please approve or reject it first then proceed with deletion
-                            </p>
-                        </div>
-                    </div> :  
-                    <div className='flex flex-col w-[128%] ml-[-20px] mt-5 items-center justify-center'>
-                        <div>
-                            <p className='text-[20px] text-center pt-1'>Delete testimony?</p>
-                            <p className='text-[12px] opacity-[0.6] mt-2 text-center w-[300px] ml-[-45px]'>
-                                Are you sure you want to delete this testimony? 
-                                Once deleted the testimony will be removed from the system, This action cannot be undone
-                            </p>
-                        </div>
-                    </div> 
-                }
-            </Modal>
-
-            {/* Delete Successful Modal */}
-            <Modal
-                open={deleteSuccessful}
-                closeIcon={null}
-                footer={null}
-                styles={{
-                    content: {
-                        backgroundColor: 'black',
-                        width: '200px',
-                        height: '200px',
-                        color: 'white',
-                        margin: '0 auto',
-                        borderRadius: '8px',
-                        marginTop: '50px'
-                    },
-                    body: {
-                        backgroundColor: '#1717171',
-                        color: 'white',
-                    },
-                }}
-            >
-                <div className='flex flex-col w-[128%] ml-[-20px] mt-5 items-center justify-center'>
-                    <div className='bg-[#9966CC] w-[50px] h-[50px] rounded-full flex items-center justify-center'>
-                        <CheckOutlined style={{color: 'white', fontSize: '30px'}}/>
-                    </div>
-                    <div>
-                        <p className='text-[20px] text-center pt-3'>Testimony Deleted Successfully!</p>
-                    </div>
-                </div> 
-            </Modal>
             
             {/* Main Content */}
+            <div className='flex items-center mb-6 ml-3 gap-2 text-[20px]'>
+                <FaChevronLeft/>
+                <h1 className='text-[18px]'>Activity Log for Text Testimony</h1>
+            </div>
+             
             <div className={`${isDarkMode ? 'w-[98%]' : 'w-[100%]'} h-[510px] m-[auto] bg-[#171717] rounded-xl
                 ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}>
+                     
                 <div className='flex items-center justify-between p-3'>
-                    <h3 className={`text-[13px]`}>Testimonies</h3>
+                    <h3 className={`text-[13px]`}>Activity Log</h3>
                     <div className='flex gap-2'>
                         <div className={`p-1 text-[12px] rounded-xl flex items-center gap-1
                             ${isDarkMode ? "bg-[#313131] text-white" : "bg-white text-black border border-slate-200"}`}>
@@ -1123,7 +635,7 @@ function TestimonyText() {
                 {/* Table Section */}
                 <div className='w-[100%] m-[auto] h-[390px]'>
                     {/* Table Header */}
-                    <div className={`w-[100%] h-[50px] text-[14px] m-[auto] bg-[#313131] grid grid-cols-9 items-center justify-between
+                    <div className={`w-[100%] h-[50px] text-[14px] m-[auto] bg-[#313131] grid grid-cols-6 items-center justify-between
                         ${isDarkMode ? "text-white" : "bg-slate-100 text-black border-b border-b-slate-200"}`}>
                         <div className='p-2 flex items-center'>
                             S/N
@@ -1141,7 +653,7 @@ function TestimonyText() {
                             </div>
                         </div>
                         <div className='p-2 flex items-center ml-[-20px]'>
-                            Name
+                            Admin Name
                             <div className='flex flex-col'>
                                 <IoIosArrowUp
                                     onClick={() => sortData('full_name')}
@@ -1156,7 +668,7 @@ function TestimonyText() {
                             </div>
                         </div>
                         <div className='p-2 flex items-center'>
-                            Category
+                            Admin Role
                             <div className='flex flex-col'>
                                 <IoIosArrowUp
                                     onClick={() => sortData('category')}
@@ -1171,7 +683,7 @@ function TestimonyText() {
                             </div>
                         </div>
                         <div className='p-2 flex items-center ml-2'>
-                            Date
+                            Timestamp
                             <div className='flex flex-col'>
                                 <IoIosArrowUp
                                     onClick={() => sortData('created_at')}
@@ -1186,7 +698,7 @@ function TestimonyText() {
                             </div>
                         </div>
                         <div className='p-2 flex items-center'>
-                            Likes
+                            Testimony
                             <div className='flex flex-col'>
                                 <IoIosArrowUp
                                     onClick={() => sortData('likes')}
@@ -1201,40 +713,19 @@ function TestimonyText() {
                             </div>
                         </div>
                         <div className='p-2 flex items-center ml-[-15px]'>
-                            Comments
-                            <div className='flex flex-col'>
-                                <IoIosArrowUp
-                                    onClick={() => sortData('comments')}
-                                    size={10}
-                                    className='ml-2 cursor-pointer'
-                                />
-                                <IoIosArrowDown
-                                    onClick={() => sortData('comments')}
-                                    size={10}
-                                    className='ml-2 cursor-pointer'
-                                />
-                            </div>
-                        </div>
-                        <div className='p-2 flex items-center'>
-                            Shares
-                            <div className='flex flex-col'>
-                                <IoIosArrowUp
-                                    onClick={() => sortData('shares')}
-                                    size={10}
-                                    className='ml-2 cursor-pointer'
-                                />
-                                <IoIosArrowDown
-                                    onClick={() => sortData('shares')}
-                                    size={10}
-                                    className='ml-2 cursor-pointer'
-                                />
-                            </div>
-                        </div>
-                        <div className='p-2 flex items-center'>
-                            Status
-                        </div>
-                        <div className='p-2 flex items-center'>
                             Action
+                            <div className='flex flex-col'>
+                                <IoIosArrowUp
+                                    onClick={() => sortData('comments')}
+                                    size={10}
+                                    className='ml-2 cursor-pointer'
+                                />
+                                <IoIosArrowDown
+                                    onClick={() => sortData('comments')}
+                                    size={10}
+                                    className='ml-2 cursor-pointer'
+                                />
+                            </div>
                         </div>
                     </div>
 
@@ -1244,45 +735,15 @@ function TestimonyText() {
                     ) : sortedData?.length > 0 ? (
                         sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => (
                             <div
-                                key={item.id}
-                                className={`text-[13px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-9
+                                className={`text-[13px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-6
                                 ${isDarkMode ? "text-white border-b border-b-slate-200" : "bg-white text-black border-b border-b-slate-200"}`}
                             >
-                                <div 
-                                    onClick={() => handleDetail(item.id)} 
-                                    className='ml-[15px] mt-4'
-                                >
-                                    {(currentPage - 1) * itemsPerPage + index + 1}
-                                </div>
-                                <div 
-                                    className='ml-[-15px] text-[12px] w-[200px] mt-4'
-                                >
-                                    {item.uploaded_by?.full_name || 'N/A'}
-                                </div>
-                                <div className='ml-[15px] mt-4'>{item.category}</div>
-                                <div className='ml-[10px] mt-4'>{formatDate(item?.created_at)}</div>
-                                <div className='ml-[20px] mt-4'>{item?.likes || 0}</div>
-                                <div className='ml-[20px] mt-4'>{item?.comment || 0}</div>
-                                <div className='ml-[20px] mt-4'>{item?.shares || 0}</div>
-                                <div 
-                                    className={`ml-[-5px] mt-3 w-[90%] m-[auto] text-center rounded-xl p-1 
-                                    ${item.status === 'rejected' ? 
-                                        'text-red border border-red' : 
-                                        item.status === 'pending' ? 
-                                        'text-yellow-400 border border-yellow-500' : 
-                                        'text-green-700 border border-green-700'}`}
-                                >
-                                    {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
-                                </div>
-                                <div 
-                                    onClick={() => {
-                                        setControlDetail(item.id);
-                                        setActionModal(true);
-                                    }} 
-                                    className='ml-[30px] mt-4 cursor-pointer'
-                                >
-                                    <IoIosMore />
-                                </div>
+                                <div className='ml-[15px] mt-4'></div>
+                                <div className='ml-[-15px] text-[12px] w-[200px] mt-4'></div>
+                                <div className='ml-[15px] mt-4'></div>
+                                <div className='ml-[10px] mt-4'></div>
+                                <div className='ml-[20px] mt-4'></div>
+                                <div className='ml-[20px] mt-4'></div>
                             </div>
                         ))
                     ) : (
@@ -1327,4 +788,4 @@ function TestimonyText() {
     );
 }
 
-export default TestimonyText;
+export default TextTesActivityLog;
