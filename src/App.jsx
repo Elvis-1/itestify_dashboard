@@ -34,6 +34,7 @@ import CheckMail from "./component/CheckMail";
 import ResetPassword from "./pages/ResetPassword";
 import AdminLoginInvite from "./component/AdminLoginInvite";
 import TextTesActivityLog from "./pages/TextTesActivitylog";
+import ManageSuperAdmin from "./pages/ManageSuperAdmin"
 
 function App() {
   return (
