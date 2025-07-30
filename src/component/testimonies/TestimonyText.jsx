@@ -271,7 +271,7 @@ function TestimonyText() {
             }
 
             const response = await axios.post(
-                `https://itestify-backend-38u1.onrender.com/text-testimonies/${id}/review/`,
+                `https://itestify-backend-38u1.onrender.com/testimonies/texts/${id}/review/`,
                 payload,
                 {
                     headers: {
@@ -596,21 +596,21 @@ function TestimonyText() {
                             </div>
                             </div>
 
-                            {details === 'approved' &&
-                                <div className='border rounded-lg'>
-                                    <h3>Engagement Analytics</h3>
-                                    <div>
-                                        <div>
+                            {details.status.toLowerCase() === 'approved' &&
+                                <div className='border border-gray-600 rounded-xl mt-5 p-3'>
+                                    <h3 className='text-[13px]'>Engagement Analytics</h3>
+                                    <div className='flex items-center gap-16 text-[11px] mt-2'>
+                                        <div className='max-w-fit text-center p-1.5'>
                                             <p>Likes</p>
-                                            <p>12</p>
+                                            <p>{details.likes || 0 }</p>
                                         </div>
-                                        <div>
+                                        <div className='max-w-fit text-center p-1.5'>
                                             <p>Comments</p>
-                                            <p>12</p>
+                                            <p>{details.comments || 0}</p>
                                         </div>
-                                        <div>
+                                        <div className='max-w-fit text-center p-1.5'>
                                             <p>Shares</p>
-                                            <p>12</p>
+                                            <p>{details.shares || 0}</p>
                                         </div>
                                     </div>
                                 </div>
