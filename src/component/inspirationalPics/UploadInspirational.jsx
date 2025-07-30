@@ -14,6 +14,7 @@ function UploadInspirational() {
   const [timeData, setTimeData] = useState('');
   const [fileList, setFileList] = useState([]);
   const [uploadProgress, setUploadProgress] = useState({});
+  const [sourceInput, setSourceInput] = useState('')
 
   const handleUploadChange = ({ fileList: newFileList }) => {
     setFileList(newFileList);
@@ -86,7 +87,7 @@ const handleSubmit = async (e) => {
         }
         
         formData.append('status', backendStatus);
-        formData.append('source', 'web_uploader');
+        formData.append('source', sourceInput);
 
 
         const response = await axios.post(
@@ -150,13 +151,14 @@ const handleSubmit = async (e) => {
       {/* Header with Upload Button */}
       <div className="flex justify-between items-center mb-6">
         <h2 className="text-xl font-semibold">Upload Pictures</h2>
-        <Button 
+        <button 
           onClick={handleSubmit}
-          className="bg-[#b584e6] hover:bg-[#8a5ac4] border-none text-white"
+          className="bg-[#b584e6] hover:bg-[#8a5ac4] border-none text-white w-[100px]
+          p-2 rounded"
           size="large"
         >
           {uploadStatus}
-        </Button>
+        </button>
       </div>
 
       {/* Drag and Drop Area - Full Width */}
@@ -171,59 +173,67 @@ const handleSubmit = async (e) => {
         </Upload.Dragger>
       </div>
 
+      
+      
       {/* Upload Progress Section */}
-      {fileList.length > 0 && (
-        <div className="w-full mb-8">
-          <div className="space-y-4">
-            {fileList.map(file => (
-              <div key={file.uid} className="bg-[#171717] p-4 rounded-lg">
-                <div className="flex items-start mb-3">
-                  {file.type?.startsWith('image/') && (
-                    <div className="w-16 h-16 mr-4 flex-shrink-0">
-                      <img 
-                        src={file.thumbUrl || URL.createObjectURL(file.originFileObj)} 
-                        alt={file.name} 
-                        className="w-full h-full object-cover rounded"
-                      />
-                    </div>
-                  )}
-                  
-                  <div className="flex-grow">
-                    <div className="flex justify-between items-start">
-                      <div>
-                        <p className="font-medium truncate max-w-[200px]">{file.name}</p>
-                        <div className='flex items-center justify-between w-[865px]'>
-                          <p className="text-sm text-gray-400">
-                            {Math.round(file.size / 1024)} KB • 
-                          </p>
-                          <p>{uploadProgress[file.uid] || 0}%</p>
-                        </div>
-                      </div>
-                      
-                      <button 
-                        onClick={() => removeFile(file.uid)}
-                        className="text-gray-400 ml-[-30px] hover:text-white"
-                      >
-                        <FaTimes color='red' />
-                      </button>
-                    </div>
-                    
-                    <Progress 
-                      percent={uploadProgress[file.uid] || 0} 
-                      strokeColor="#9966CC" 
-                      showInfo={false}
-                      className="mt-2"
-                    />
+{fileList.length > 0 && (
+  <div className="flex h-[60px] mb-8">
+    <div className="bg-[#171717] rounded-lg p-5 mr-4">
+      <input onChange={(e)=> setSourceInput(e.target.value)}
+        type="text" 
+        placeholder="Enter source" 
+        className="bg-transparent outline-none text-white w-full"
+      />
+    </div>
+    
+    <div className="flex-1 space-y-4">
+      {fileList.map(file => (
+        <div key={file.uid} className="bg-[#171717] p-4 rounded-lg">
+          <div className="flex items-start">
+            {file.type?.startsWith('image/') && (
+              <div className="w-10 h-10 mr-4 flex-shrink-0">
+                <img 
+                  src={file.thumbUrl || URL.createObjectURL(file.originFileObj)} 
+                  alt={file.name} 
+                  className="w-full h-full object-cover rounded"
+                />
+              </div>
+            )}
+            
+            <div className="flex-grow">
+              <div className="flex justify-between items-center mb-2">
+                <div className="flex-grow min-w-0">
+                  <p className="font-medium truncate">{file.name}</p>
+                  <div className="flex justify-between text-sm text-gray-400 mt-1">
+                    <span>{Math.round(file.size / 1024)} KB</span>
+                    <span>{uploadProgress[file.uid] || 0}%</span>
                   </div>
                 </div>
+                
+                <button 
+                  onClick={() => removeFile(file.uid)}
+                  className="text-gray-400 hover:text-white ml-4"
+                >
+                  <FaTimes color="red" />
+                </button>
               </div>
-            ))}
+              
+              <Progress 
+                percent={uploadProgress[file.uid] || 0} 
+                strokeColor="#9966CC" 
+                showInfo={false}
+                className="mt-2"
+              />
+            </div>
           </div>
         </div>
-      )}
+      ))}
+    </div>
+  </div>
+)}
 
       {/* Upload Options */}
-      <div className="w-full bg-[#171717] p-5 rounded-xl">
+      <div className="w-full mt-20 bg-[#171717] p-5 rounded-xl">
         <Radio.Group 
           value={uploadStatus} 
           onChange={(e) => setUploadStatus(e.target.value)}

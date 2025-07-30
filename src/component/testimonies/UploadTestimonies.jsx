@@ -13,30 +13,30 @@ const { Dragger } = Upload;
 function UploadTestimonies() {
   // Form state
   const [uploadStatus, setUploadStatus] = useState('drafts');
-  const [uploadCategory, setUploadCategory] = useState('Select Category');
   const [uploadDropDown, setUploadDropDown] = useState(false);
   const [scheduleDate, setScheduleDate] = useState(null);
   const [scheduleTime, setScheduleTime] = useState(null);
   const [autoGenerate, setAutoGenerate] = useState('');
   
   // Videos state
-  const [videos, setVideos] = useState([
-    { 
-      id: 1, 
-      title: '', 
-      source: '', 
-      file: null, 
-      thumbnail: {
-        file: null,
-        url: null
-      },
-      uploadType: '',
-      error: null,
-      progress: 0,
-      isUploading: false,
-      isGeneratingThumbnail: false
-    }
-  ]);
+ const [videos, setVideos] = useState([
+  { 
+    id: 1, 
+    title: '', 
+    source: '', 
+    file: null, 
+    thumbnail: {
+      file: null,
+      url: null
+    },
+    category: 'Select Category', // Add this
+    uploadType: '',
+    error: null,
+    progress: 0,
+    isUploading: false,
+    isGeneratingThumbnail: false
+  }
+]);
   
   // Upload state
   const [loading, setLoading] = useState(false);
@@ -291,8 +291,8 @@ function UploadTestimonies() {
         message.error(`Source is required for Video ${video.id}`);
         return;
       }
-      if (uploadCategory === 'Select Category') {
-        message.error('Please select a category');
+      if (video.category === 'Select Category') {
+        message.error(`Please select a category for Video ${video.id}`);
         return;
       }
       if (!video.file) {
@@ -337,7 +337,7 @@ function UploadTestimonies() {
           const formData = new FormData();
           formData.append('title', video.title.trim());
           formData.append('source', video.source.trim());
-          formData.append('category', uploadCategory);
+          formData.append('category', video.category);
           formData.append('upload_status', uploadStatus);
           formData.append('video_file', video.file);
           formData.append('thumbnail', video.thumbnail.file || '');
@@ -357,8 +357,8 @@ function UploadTestimonies() {
           
           const timeoutId = setTimeout(() => {
             controller.abort();
-            throw new Error('Upload timed out after 2 minutes');
-          }, 120000);
+            throw new Error('Upload timed out after 4 minutes');
+          }, 4000000);
 
           const response = await axios.post(
             'https://itestify-backend-38u1.onrender.com/testimonies/videos/create_video/',
@@ -384,7 +384,12 @@ function UploadTestimonies() {
           delete abortControllers.current[video.id];
 
           if (response.data?.success) {
-            message.success(`Video ${video.id} uploaded successfully!`);
+            if(uploadStatus === 'drafts'){
+              message.success(`Video ${video.id} Uploaded as Draft Successfully!`);
+            }else if(uploadStatus === 'upload_now') {
+              message.success(`Video ${video.id} uploaded successfully!`);
+            }
+            
           } else {
             throw new Error(response.data?.message || 'Unexpected response format');
           }
@@ -434,6 +439,7 @@ function UploadTestimonies() {
           file: null,
           url: null
         },
+        category: 'Select Category',
         uploadType: '',
         error: null,
         progress: 0,
@@ -443,7 +449,6 @@ function UploadTestimonies() {
     });
 
     setVideos(cleanedVideos.length > 1 ? [cleanedVideos[0]] : cleanedVideos);
-    setUploadCategory('Select Category');
     setUploadStatus('drafts');
     setScheduleDate(null);
     setScheduleTime(null);
@@ -466,6 +471,7 @@ function UploadTestimonies() {
         file: null,
         url: null
       },
+      category: 'Select Category',
       uploadType: '',
       error: null,
       progress: 0,
@@ -636,16 +642,16 @@ function UploadTestimonies() {
                     className="relative cursor-pointer"
                     onClick={() => !(video.isUploading || video.isGeneratingThumbnail) && setUploadDropDown(!uploadDropDown)}
                   >
-                    <div className={`flex items-center justify-between bg-[#292929] p-2 rounded hover:bg-[#333] transition-colors ${(video.isUploading || video.isGeneratingThumbnail) ? 'opacity-70 cursor-not-allowed' : ''}`}>
-                      <span className={uploadCategory === 'Select Category' ? 'text-gray-400' : 'text-white'}>
-                        {uploadCategory}
-                      </span>
-                      {uploadDropDown ? 
-                        <FaCaretUp className="text-gray-400 transition-transform" /> : 
-                        <FaCaretDown className="text-gray-400 transition-transform" />
-                      }
-                    </div>
-                    
+                  <div className={`flex items-center justify-between bg-[#292929] p-2 rounded hover:bg-[#333] transition-colors ${(video.isUploading || video.isGeneratingThumbnail) ? 'opacity-70 cursor-not-allowed' : ''}`}>
+                    <span className={video.category === 'Select Category' ? 'text-gray-400' : 'text-white'}>
+                      {video.category}
+                    </span>
+                    {uploadDropDown ? 
+                      <FaCaretUp className="text-gray-400 transition-transform" /> : 
+                      <FaCaretDown className="text-gray-400 transition-transform" />
+                    }
+                  </div>
+                  
                     {uploadDropDown && !(video.isUploading || video.isGeneratingThumbnail) && (
                       <div className="absolute z-10 w-full mt-1 bg-[#292929] rounded-lg shadow-lg border border-[#444] overflow-hidden">
                         {['Marriage Restoration', "Breakthrough", "Career", "Financial", 'Healing', 'Deliverance', 'Faith', 'Salvation'].map((category) => (
@@ -653,7 +659,7 @@ function UploadTestimonies() {
                             key={category}
                             className="px-3 py-2 hover:bg-[#9966CC] hover:text-white cursor-pointer transition-colors"
                             onClick={() => {
-                              setUploadCategory(category);
+                              updateVideoField(video.id, 'category', category);
                               setUploadDropDown(false);
                             }}
                           >

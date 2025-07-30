@@ -12,8 +12,9 @@ import { CheckOutlined } from '@ant-design/icons';
 import { set } from 'date-fns';
 
 function All({sortedData, sortData, itemsPerPage, startIndex, 
-    page, handleNextPage, handlePrevPage, allInspirationalPicsData, 
-    setAllInspirationalPicsData, totalPages, loading, error, fetchInspirationalPics}) {
+    page, handleNextPage, handlePrevPage, selectTestType, allInspirationalPicsData,
+    loading, fetchInspirationalPics,
+   filterDate1, filterDate2, ApprovalStatus, searchQuery, searchedData}) {
 
     const {isDarkMode} = useContext(DarkModeContext)
 
@@ -30,6 +31,7 @@ function All({sortedData, sortData, itemsPerPage, startIndex,
 
     const [timePeriod, setTimePeriod] = useState('PM')
     const [showTimePeriod, setShowTimePeriod] = useState(false)
+    
     
 
     useEffect(() => {
@@ -734,72 +736,77 @@ function All({sortedData, sortData, itemsPerPage, startIndex,
 
 
             {/* Data Rows */}
-            {loading ? (
-                <LoadingState />
-            ):
-            Array.isArray(sortedData) && sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => (
-                <div
-                onClick={() => {
-                    setAllDetails(item)
-                    
-                }}
-                key={item.id}
-                className={`border-b border-white  text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-9
-                    ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}
-                >
-                    <div className='p-2 flex items-center'>
-                        {startIndex + index + 1}
-                    </div>
-                    <div className="p-2 flex items-center justify-center w-[50px] h-[50px] overflow-hidden rounded">
-                        <img 
-                            className="w-full h-full object-cover"
-                            src={item.thumbnail_url || '/path/to/default-image.jpg'} 
-                            alt={item.title || 'image'}
-                        />
-                    </div>
-                    <div className='pl-2 flex items-center'>{item.source}</div>
+                {loading ? (
+                    <LoadingState />
+                ) : Array.isArray(sortedData) && sortedData.length > 0 ?  (
+                    sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => (
+                        <div
+                            onClick={() => {
+                                setAllDetails(item)
+                            }}
+                            key={item.id}
+                            className={`border-b border-white text-[11px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-9
+                                ${isDarkMode ? "text-white" : "bg-white text-black border-b border-b-slate-200"}`}
+                        >
+                            <div className='p-2 flex items-center'>
+                                {startIndex + index + 1}
+                            </div>
+                            <div className="p-2 flex items-center justify-center w-[50px] h-[50px] overflow-hidden rounded">
+                                <img 
+                                    className="w-full h-full object-cover"
+                                    src={item.thumbnail || '/path/to/default-image.jpg'} 
+                                    alt={item.title || 'image'}
+                                />
+                            </div>
+                           <div className="pl-2 mt-4 truncate max-w-[100px]">{item.source || '...'}</div>
 
-                    <div className='p-2 flex items-center'>{item.created_at
-                        ? new Date(item.created_at).toLocaleDateString('en-Us',{
-                            year: 'numeric',
-                            month: '2-digit',
-                            day: '2-digit'
-                        }) : 'N/A'
-                        }
+                            <div className='p-2 flex items-center'>
+                                {item.created_at
+                                    ? new Date(item.created_at).toLocaleDateString('en-Us',{
+                                        year: 'numeric',
+                                        month: '2-digit',
+                                        day: '2-digit'
+                                    }) : 'N/A'
+                                }
+                            </div>
+                            <div className='p-2 flex items-center'>{item.uploaded_by?.role}</div>
+                            <div className='pl-1 flex items-center ml-3'>{item.downloads_count}</div>
+
+                            <div className='p-2 flex items-center ml-3'>{item.shares_count}</div>
+
+                            <div
+                                className={`p-2 flex w-[100px] h-[30px] mt-3 ml-[-10px] pl-2 items-center justify-center font-semibold ${
+                                item.status === "upload_now"
+                                    ? "border border-green-500 text-green-700 rounded-xl p-1 pl-3 outline-none"
+                                    : item.status === "schedule_for_later"
+                                    ? "border w-[120px] border-yellow-500 text-yellow-500 rounded-xl p-1"
+                                    : "border border-gray-500 text-gray-500 rounded-xl"
+                                }`}
+                            >
+                                {item.status
+                                    ? item.status
+                                        .split("_")
+                                        .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+                                        .join(" ")
+                                    : "N/A"}
+                            </div>
+
+                            <div onClick={() => {
+                                setAllPicActionModal(true)
+                            }} className='p-2 flex items-center ml-3'>
+                                <IoIosMore />
+                            </div>
+                        </div>
+                    ))
+                ) : (
+                    <div className='flex items-center justify-center mt-24'>
+                        {(selectTestType !== 'Select' || filterDate1 || filterDate2 || ApprovalStatus || searchQuery) ? (
+                            <div className="p-2 flex items-center">No Matching Results Found</div>
+                        ) : (
+                            <div className="p-2 flex items-center">No Data Available</div>
+                        )}
                     </div>
-                    <div className='p-2 flex items-center'>{item.uploaded_by}</div>
-                    <div className='pl-1 flex items-center ml-3'>{item.downloads_count}</div>
-
-            
-                    <div className='p-2 flex items-center ml-3'>{item.shares_count}</div>
-
-                   <div
-                        className={`p-2 flex w-[100px] h-[30px] mt-3 ml-[-10px] pl-2 items-center justify-center font-semibold ${
-                        item.status === "upload_now"
-                            ? "border border-green-500 text-green-700 rounded-xl p-1 pl-3 outline-none"
-                            : item.status === "schedule_for_later"
-                            ? "border w-[120px] border-yellow-500 text-yellow-500 rounded-xl p-1"
-                            : "border border-gray-500 text-gray-500 rounded-xl"
-                        }`}
-                    >
-                            {item.status
-                            ? item.status
-                                .split("_")
-                                .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-                                .join(" ")
-                            : "N/A"}
-                    </div>
-
-                    <div onClick={() => {
-                        setAllPicActionModal(true)
-                        
-                    }} className='p-2 flex items-center ml-3'>
-                         <IoIosMore />
-                    </div>
-                </div>
-            ))}
-
-            {error && <div className='flex items-center justify-center mt-[15%]'>{error}</div>}
+                )}
             {/* end of Data row */}
             </div> 
 
@@ -807,14 +814,13 @@ function All({sortedData, sortData, itemsPerPage, startIndex,
             <div className='flex justify-between items-center mt-1'>
                 <div className={`text-[12px] ml-[10px]
                     ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
-                    Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, Array.isArray(allInspirationalPicsData) ? allInspirationalPicsData.length : 0)} of 
-                    {Array.isArray(allInspirationalPicsData) ? allInspirationalPicsData.length : 0}
+                    Showing {Math.min(startIndex + 1, searchedData.length)}-{Math.min(startIndex + itemsPerPage, searchedData.length)} of {searchedData.length}
                 </div>
                 <div className='text-[13px] mr-5 flex items-center gap-3'>
                     <button
                         onClick={handlePrevPage}
-                        disabled={page === 1}
-                        className={`w-[90px] p-2 rounded-xl ${page === 1 ? 
+                        disabled={page === 1 || searchedData.length === 0}
+                        className={`w-[90px] p-2 rounded-xl ${page === 1 || searchedData.length === 0  ? 
                             'opacity-[0.5] text-gray-500 border border-gray-500' : 
                             "border border-[#9966CC] text-[#9966CC]"}`}
                     >
@@ -822,8 +828,8 @@ function All({sortedData, sortData, itemsPerPage, startIndex,
                     </button>
                     <button
                         onClick={handleNextPage}
-                        disabled={page === totalPages}
-                        className={`w-[90px] p-2 rounded-xl ${page === totalPages ? 
+                        disabled={page === Math.ceil(searchedData.length / itemsPerPage) || searchedData.length === 0}
+                        className={`w-[90px] p-2 rounded-xl ${page === Math.ceil(searchedData.length / itemsPerPage) || searchedData.length === 0 ? 
                             'opacity-[0.5] text-gray-500 border border-gray-500' : 
                             "border border-[#9966CC] text-[#9966CC]"}`}
                     >

@@ -129,22 +129,46 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
     };
 
     // search Data logic
+    // const searchedData = React.useMemo(() => {
+    //     const dataToSearch = getFilteredData.length > 0 ? getFilteredData : AllVideo;
+
+    //     if (searchQuery.trim() !== "") {
+    //         const filteredData = dataToSearch.filter((item) => {
+    //             const lowerCaseQuery = searchQuery.toLowerCase();
+    //             return (
+    //                 item.title.toLowerCase().includes(lowerCaseQuery) ||
+    //                 item.category.toLowerCase().includes(lowerCaseQuery) ||
+    //                 item.upload_status.toLowerCase().includes(lowerCaseQuery)
+    //             );
+    //         });
+    //         return filteredData;
+    //     }
+
+    //     return dataToSearch;
+    // }, [getFilteredData, AllVideo, searchQuery]);
+
+
     const searchedData = React.useMemo(() => {
-        const dataToSearch = getFilteredData.length > 0 ? getFilteredData : AllVideo;
+    // Use filtered data if filters are active, otherwise use all data
+    const dataToSearch = (getFilteredData.length > 0 || 
+                         selectTestType !== 'Select' || 
+                         filterDate1 || 
+                         filterDate2 || 
+                         ApprovalStatus) ? getFilteredData : AllVideo;
 
-        if (searchQuery.trim() !== "") {
-            const filteredData = dataToSearch.filter((item) => {
-                const lowerCaseQuery = searchQuery.toLowerCase();
-                return (
-                    item.title.toLowerCase().includes(lowerCaseQuery) ||
-                    item.category.toLowerCase().includes(lowerCaseQuery) ||
-                    item.upload_status.toLowerCase().includes(lowerCaseQuery)
-                );
-            });
-            return filteredData;
-        }
+    if (searchQuery.trim() !== "") {
+        const filteredData = dataToSearch.filter((item) => {
+            const lowerCaseQuery = searchQuery.toLowerCase();
+            return (
+                item.title.toLowerCase().includes(lowerCaseQuery) ||
+                (item.category && item.category.toLowerCase().includes(lowerCaseQuery)) ||
+                (item.upload_status && item.upload_status.toLowerCase().includes(lowerCaseQuery))
+            );
+        });
+        return filteredData;
+    }
 
-        return dataToSearch;
+    return dataToSearch;
     }, [getFilteredData, AllVideo, searchQuery]);
 
 
@@ -240,10 +264,11 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
     
     // function for filtering fields reset
     function handleReset() {
-        setSelectTestType('Select')
-        setApprovalStatus('')
-        setFilterDate1('')
-        setFilterDate2('')
+    setSelectTestType('Select');
+    setApprovalStatus('');
+    setFilterDate1('');
+    setFilterDate2('');
+    setGetFilterData([]); // Clear filtered data
     }
 
     const handleSelectCategory = (category) => {
@@ -466,42 +491,41 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
     }
 
      //function handling the filtering logic
-     function handleFiltering() {
-        const getFilterData = AllVideo.filter((item) => {
-            const itemDate = new Date(item.date_uploaded);
-         
-            if(filterDate1 !== "" && filterDate2 !== "" 
-                && selectTestType !== "" && ApprovalStatus !== "") {
-    
-                const isWithinDateRange =
-                (!filterDate1 || itemDate >= new Date(filterDate1)) &&
-                (!filterDate2 || itemDate <= new Date(filterDate2));
-    
-                const matchesCategory =
-                !selectTestType || item.category === selectTestType;
-    
-                const matchesStatus =
-                !ApprovalStatus || item.status === ApprovalStatus;
-    
-                return (
-                    isWithinDateRange &&
-                    matchesCategory &&
-                    matchesStatus
-                );
-    
-            }else{
-                return (item.date_uploaded === filterDate1 || item.date_uploaded === filterDate2
-                    || item.category === selectTestType || item.status === ApprovalStatus
-                )
-            }
-           
-        });
-    
-        setGetFilterData(getFilterData); // Update filtered data
-        setFilterModal(false); // Close filter modal
+    function handleFiltering() {
+    // If all filters are empty/reset, show all data
+    if (selectTestType === 'Select' && !filterDate1 && !filterDate2 && !ApprovalStatus) {
+        setGetFilterData([]); // Empty array means show all data
+        setFilterModal(false);
+        setPage(1);
+        return;
     }
 
-    
+    const filteredData = AllVideo.filter((item) => {
+        // Date filtering
+        const itemDate = new Date(item.created_at);
+        const startDate = filterDate1 ? new Date(filterDate1) : null;
+        const endDate = filterDate2 ? new Date(filterDate2) : null;
+
+        // Check if item is within date range
+        const isWithinDateRange =
+            (!startDate || itemDate >= startDate) &&
+            (!endDate || itemDate <= new Date(endDate.setHours(23, 59, 59, 999)));
+
+        // Category filtering
+        const matchesCategory = selectTestType === 'Select' || 
+                              item.category.toLowerCase() === selectTestType.toLowerCase();
+
+        // Status filtering
+        const matchesStatus = !ApprovalStatus || 
+                            item.upload_status.toLowerCase() === ApprovalStatus.toLowerCase();
+
+        return isWithinDateRange && matchesCategory && matchesStatus;
+    });
+
+    setGetFilterData(filteredData);
+    setFilterModal(false);
+    setPage(1);
+    }
     
      //function fo filter modal footer button
      function filterModalFooterButton() {
@@ -509,12 +533,13 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
             <div className='mt-[50px]'>
                 <button 
                 onClick={handleReset}
-                className='border border-[#9966CC]outline-none p-1 rounded w-[100px] text-[#9966CC]'>Clear All</button>
+                className='border border-[#9966CC]outline-none p-1 rounded w-[100px] text-[#9966CC] hover:bg-[#8a5ac4]
+                hover:text-white'>Clear All</button>
                 <button
                 onClick={handleFiltering}
                 className='bg-[#9966CC] ml-2 
                 border-none outline-none 
-                rounded p-1 w-[100px]'>Apply</button>
+                rounded p-1 w-[100px] hover:bg-[#8a5ac4]'>Apply</button>
             </div>
         ]
     }
@@ -684,28 +709,40 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                         {filterDropDown ? 
                         <div className='flex flex-col rounded-xl cursor-pointer p-1 opacity-[0.6] mt-3 border overflow-hidden w-[110%] ml-[-13px]'>
                             <div 
-                                onClick={() => setSelectTestType('Healing')}
+                                onClick={() => {
+                                    setSelectTestType('Healing')
+                                    setFilterDropDown(false)
+                                }}
                                 className='w-[110%] ml-[-15px] border-b pl-5 pb-1'>
                                 <input type='button' 
                                 value='Healing'
                                 onClick={() => setSelectTestType('Healing')} />
                             </div>
                             <div 
-                                onClick={() => setSelectTestType('Deliverance')}
+                                onClick={() => {
+                                    setSelectTestType('Deliverance')
+                                    setFilterDropDown(false)
+                                }}
                                 className='w-[110%] ml-[-15px] border-b pl-5 pb-1 cursor-pointer'>
                                 <input  type='button' 
                                 value='Deliverance'
                                 onClick={() => setSelectTestType('Deliverance')} />
                             </div>
                             <div
-                                onClick={() => setSelectTestType('Faith')}
+                                onClick={() => {
+                                    setSelectTestType('Faith')
+                                    setFilterDropDown(false)
+                                }}
                                 className='w-[110%] ml-[-15px] border-b pl-5 pb-1'>
                                 <input type='button' 
                                 value='Faith'
                                 onClick={() => setSelectTestType('Faith')} />
                             </div>
                             <div 
-                                onClick={() => setSelectTestType('Salvation')}
+                                onClick={() => {
+                                    setSelectTestType('Salvation')
+                                    setFilterDropDown(false)
+                                }}
                                 className='w-[110%] ml-[-15px] pl-5 pb-1'>
                                 <input type='button' 
                                 value='Salvation' 
@@ -723,14 +760,14 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                                 <div className="flex items-center cursor-pointer">
                                     <div className={`w-[16px] h-[16px] rounded-full 
                                         border border-[#9966CC] mr-1
-                                        ${ApprovalStatus === 'Uploaded' ? 
+                                        ${ApprovalStatus === 'upload_now' ? 
                                         'bg-[#9966CC]' : 'bg-transparent'}`}></div>
                                     <input
                                     type="radio"
                                     id="uploaded"
                                     name="status"
-                                    value="Uploaded"
-                                    checked={ApprovalStatus === 'Uploaded'}
+                                    value="upload_now"
+                                    checked={ApprovalStatus === 'upload_now'}
                                     onChange={handleChange}
                                     className="hidden peer cursor-pointer"
                                     />
@@ -1150,14 +1187,15 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                                 testimony will be remove from the platform and will no longer be visible to users.
                                 This action cannot be undone 
                             </p>
-                            <button onClick={handleCloseModal} className='border border-[#9966CC] mt-3 rounded text-[#9966CC] p-2 w-[120px]'>Cancel</button>
+                            <button onClick={handleCloseModal} className='border border-[#9966CC] mt-3 
+                            rounded text-[#9966CC] p-2 w-[120px] hover:bg-[#8a5ac4] hover:text-white'>Cancel</button>
                             <button 
                                 onClick={(e) => {
                                     e.stopPropagation()
                                     handleDeleteVideoTest(deleteDetails?.id, e)
                                 }}
                                 disabled={isDeleting}
-                                className={`mt-3 rounded bg-[#E53935] p-2 w-[120px] ml-2 ${isDeleting ? 'opacity-50' : ''}`}
+                                className={`mt-3 rounded bg-[#E53935] hover:bg-[#c45a5a] hover:text-white p-2 w-[120px] ml-2 ${isDeleting ? 'opacity-50' : ''}`}
                             >
                                 {isDeleting ? 'Deleting...' : 'Yes delete'}
                             </button>
@@ -1171,14 +1209,15 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                                 Are you sure you want to delete this draft? This action will permernently remove this 
                                 testimony from your drafts and cannot be undone 
                             </p>
-                            <button onClick={handleCloseModal} className='border border-[#9966CC] mt-3 rounded text-[#9966CC] p-2 w-[120px]'>Cancel</button>
+                            <button onClick={handleCloseModal} className='border border-[#9966CC] mt-3 rounded text-[#9966CC] p-2 w-[120px]
+                            hover:bg-[#8a5ac4] hover:text-white'>Cancel</button>
                             <button 
                                 onClick={(e) => {
                                     e.stopPropagation()
                                     handleDeleteVideoTest(deleteDetails?.id, e)
                                 }}
                                 disabled={isDeleting}
-                                className={`mt-3 rounded bg-[#E53935] p-2 w-[120px] ml-2 ${isDeleting ? 'opacity-50' : ''}`}
+                                className={`mt-3 rounded bg-[#E53935] hover:bg-[#c45a5a] p-2 w-[120px] ml-2 ${isDeleting ? 'opacity-50' : ''}`}
                             >
                                 {isDeleting ? 'Deleting...' : 'Yes delete'}
                             </button>
@@ -1629,7 +1668,15 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                     </div>
                     );
                 })
-                ) : <div className='flex items-center justify-center mt-[15%]'>{error}</div>
+                ) : (
+                        <div className='flex items-center justify-center mt-24'>
+                            {(selectTestType !== 'Select' || filterDate1 || filterDate2 || ApprovalStatus || searchQuery) ? (
+                                <div className="p-2 flex items-center">No Matching Results Found</div>
+                            ) : (
+                                <div className="p-2 flex items-center">No Data Available</div>
+                            )}
+                        </div>
+                    )
              }
                 {/* end of Data row */}
                 </div>
@@ -1637,13 +1684,13 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 {/* Pagination */}
                 <div className='flex justify-between items-center mt-6'>
                     <div className={`text-[12px] ml-[10px] ${isDarkMode ? "text-white" : "bg-white text-black"}`}>
-                        Showing {startIndex + 1}-{Math.min(startIndex + itemsPerPage, AllVideo?.length ?? 0)} of {AllVideo?.length ?? 0}
+                        Showing {Math.min(startIndex + 1, searchedData.length)}-{Math.min(startIndex + itemsPerPage, searchedData.length)} of {searchedData.length}
                     </div>
                     <div className='text-[13px] mr-5 flex items-center gap-3'>
                         <button
                             onClick={handlePrevPage}
-                            disabled={page === 1}
-                            className={`w-[90px] p-2 rounded-xl ${page === 1 ? 
+                           disabled={page === 1 || searchedData.length === 0}
+                            className={`w-[90px] p-2 rounded-xl hover:bg-[#8a5ac4] hover:text-white ${page === 1 || searchedData.length === 0 ? 
                                 'opacity-[0.5] text-gray-500 border border-gray-500' : 
                                 "border border-[#9966CC] text-[#9966CC]"}`}
                         >
@@ -1651,8 +1698,8 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                         </button>
                         <button
                             onClick={handleNextPage}
-                            disabled={page === totalPages}
-                            className={`w-[90px] p-2 rounded-xl ${page === totalPages ? 
+                            disabled={page === Math.ceil(searchedData.length / itemsPerPage) || searchedData.length === 0}
+                            className={`w-[90px] p-2 rounded-xl hover:bg-[#8a5ac4] hover:text-white ${page === Math.ceil(searchedData.length / itemsPerPage) || searchedData.length === 0 ? 
                                 'opacity-[0.5] text-gray-500 border border-gray-500' : 
                                 "border border-[#9966CC] text-[#9966CC]"}`}
                         >

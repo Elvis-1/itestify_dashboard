@@ -404,3 +404,17 @@ input::-webkit-inner-spin-button {
   border-color: #9966CC !important;
 }
 
+
+/* Add to your global CSS */
+.no-scrollbar::-webkit-scrollbar  {
+  display: none;
+}
+
+.no-scrollbar{
+  /* Hide scrollbar */
+  scrollbar-width: none;       /* Firefox */
+  -ms-overflow-style: none;    /* IE 10+ */
+}
+
+
+
