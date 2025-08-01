@@ -100,9 +100,8 @@ function Allpics() {
         const filteredData = dataToSearch.filter((item) => {
             const lowerCaseQuery = searchQuery.toLowerCase();
             return (
-                (item.title && item.title.toLowerCase().includes(lowerCaseQuery)) ||
-                (item.category && item.category.toLowerCase().includes(lowerCaseQuery)) ||
-                (item.upload_status && item.upload_status.toLowerCase().includes(lowerCaseQuery))
+                (item.source && item.source.toLowerCase().includes(lowerCaseQuery)) ||
+                (item.upload_by && item.upload_by.toLowerCase().includes(lowerCaseQuery))
             );
         });
         return filteredData;
@@ -549,7 +548,8 @@ function Allpics() {
             setAllInspirationalPicsData={setAllInspirationalPicsData} totalPages={totalPages}
             loading={loading} error={error} fetchInspirationalPics={fetchInspirationalPics}
             selectTestType={selectTestType} filterDate1={filterDate1} filterDate2={filterDate2} 
-            ApprovalStatus={ApprovalStatus} searchQuery={searchQuery} searchedData={searchedData} />}
+            ApprovalStatus={ApprovalStatus} searchQuery={searchQuery} searchedData={searchedData} 
+            setError={setError}/>}
 
             {uploaded && 
             <Uploaded searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>}

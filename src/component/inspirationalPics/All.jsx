@@ -14,7 +14,7 @@ import { set } from 'date-fns';
 function All({sortedData, sortData, itemsPerPage, startIndex, 
     page, handleNextPage, handlePrevPage, selectTestType, allInspirationalPicsData,
     loading, fetchInspirationalPics,
-   filterDate1, filterDate2, ApprovalStatus, searchQuery, searchedData}) {
+   filterDate1, filterDate2, ApprovalStatus, searchQuery, searchedData, setError}) {
 
     const {isDarkMode} = useContext(DarkModeContext)
 
@@ -281,14 +281,14 @@ function All({sortedData, sortData, itemsPerPage, startIndex,
 
                     <div className='mt-5'>
                         <img className='w-[400px] h-[300px]'
-                         src={allDetails.thumbnail_url || picBackground } alt="" />
+                         src={allDetails.thumbnail || picBackground } alt="" />
                     </div>
 
                     {allDetails.status === 'upload_now' &&
                     <div>
                         <div className='flex items-center justify-between mt-5'>
                             <p>Uploaded By</p>
-                            <p>{allDetails.uploaded_by}</p>
+                            <p>{allDetails.uploaded_by?.role}</p>
                         </div>
                         <div className='flex items-center justify-between mt-3'>
                             <p>Uploaded Date</p>
@@ -487,10 +487,10 @@ function All({sortedData, sortData, itemsPerPage, startIndex,
                 <div>
                     {allDetails.status === 'Schedule' && 
                         <>
-                        <p className='text-[20px] text-center pt-1'>Delete testimony?</p>
+                        <p className='text-[20px] text-center pt-1'>Delete Inspirational Pics?</p>
                         <p className='text-[12px] opacity-[0.6] mt-2 text-center w-[300px] ml-[-45px]'>
-                            Are you sure you want to delete this Scheduled testimony? This action will 
-                            removed this testimony permanently, and it will not 
+                            Are you sure you want to delete this Scheduled pictures? This action will 
+                            removed this pictures permanently, and it will not 
                             be uploaded on the scheduled date and time.' 
                         </p>
                         <button onClick={handleCloseModal} className='border border-[#9966CC] mt-3 rounded text-[#9966CC] p-2 w-[120px]'>Cancel</button>
@@ -501,10 +501,10 @@ function All({sortedData, sortData, itemsPerPage, startIndex,
 
                     {allDetails.status === 'upload_now' && 
                         <>
-                        <p className='text-[20px] text-center pt-1'>Delete testimony?</p>
+                        <p className='text-[20px] ml-[-5px] text-center pt-1'>Delete Inspirationals pictures?</p>
                         <p className='text-[12px] opacity-[0.6] mt-2 text-center w-[300px] ml-[-45px]'>
-                            Are you sure you want to delete this Uploaded testimony? Once deleted the 
-                            testimony will be remove from the platform and will no longer be visible to users.
+                            Are you sure you want to delete this Uploaded pictures? Once deleted the 
+                            picture will be remove from the platform and will no longer be visible to users.
                             This action cannot be undone 
                         </p>
                         <button onClick={handleCloseModal} className='border border-[#9966CC] mt-3 rounded text-[#9966CC] p-2 w-[120px]'>Cancel</button>
@@ -518,10 +518,10 @@ function All({sortedData, sortData, itemsPerPage, startIndex,
 
                     {allDetails.status === 'drafts' && 
                         <>
-                        <p className='text-[20px] text-center pt-1'>Delete testimony?</p>
+                        <p className='text-[20px] ml-[-3px] text-center pt-1'>Delete Inspirational Pictures?</p>
                         <p className='text-[12px] opacity-[0.6] mt-2 text-center w-[300px] ml-[-45px]'>
                             Are you sure you want to delete this draft? This action will permernently remove this 
-                            testimony from your drafts and cannot be undone 
+                            picture from your drafts and cannot be undone 
                         </p>
                         <button onClick={handleCloseModal} className='border border-[#9966CC] mt-3 rounded text-[#9966CC] p-2 w-[120px]'>Cancel</button>
                         <button onClick={()=> handleDelete(allDetails.id)}
@@ -627,18 +627,6 @@ function All({sortedData, sortData, itemsPerPage, startIndex,
                 </div>
                 <div className='p-2 flex items-center ml-[-15px]'>
                     Thumbnail
-                    <div className='flex flex-col'>
-                        <IoIosArrowUp
-                        onClick={() => sortData('thumbnail')}
-                        size={10}
-                        className='ml-2 cursor-pointer'
-                        />
-                        <IoIosArrowDown
-                        onClick={() => sortData('thumbnail')}
-                        size={10}
-                        className='ml-2 cursor-pointer'
-                        />
-                    </div>
                 </div>
                 <div className='p-2 flex items-center'>
                     Source
@@ -717,18 +705,6 @@ function All({sortedData, sortData, itemsPerPage, startIndex,
                 </div>
                 <div className='p-2 flex items-center'>
                     Status
-                    <div className='flex flex-col'>
-                        <IoIosArrowUp
-                        onClick={() => sortData('status')}
-                        size={10}
-                        className='ml-1 cursor-pointer'
-                        />
-                        <IoIosArrowDown
-                        onClick={() => sortData('status')}
-                        size={10}
-                        className='ml-1 cursor-pointer'
-                        />
-                    </div>
                 </div>
             <div className='p-2 flex items-center'>Action</div>
             
