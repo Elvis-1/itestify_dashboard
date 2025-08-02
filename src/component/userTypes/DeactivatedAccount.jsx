@@ -23,6 +23,9 @@ const DeactivatedAccount = ({ onReactivate }) => {
   const [searchItem, setSearchItem] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [open, setOpen] = useState(false);
+  
+
+
 
   useEffect(() => {
     const loadDeactivatedUsers = () => {

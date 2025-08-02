@@ -50,7 +50,7 @@ const Users = () => {
     <div className={`p-5 ${isDarkMode ? `bg-black` : `bg-off-white`} h-screen`}>
       {/* Top Bar with Tabs and CSV Button */}
       <div className="flex justify-between items-center mb-4">
-        {/* Tabs on the Left */}
+       
         <div
           className={`${
             isDarkMode ? `bg-off-black` : `bg-white`
