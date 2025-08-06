@@ -1,7 +1,9 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { MdClose } from "react-icons/md";
 import { IoMdArrowDropdown } from "react-icons/io";
+import axios from "axios";
+import { message } from "antd";
 const AddMember = ({
   setMemberModal,
   onConfirm,
@@ -11,22 +13,51 @@ const AddMember = ({
   onProceed,
   setIsEditing,
   setEditMemberId,
-  formatSnakeToTitle
+  formatSnakeToTitle,
 }) => {
   const { isDarkMode } = useContext(DarkModeContext);
+  const token = localStorage.getItem("token");
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://itestify-backend-38u1.onrender.com";
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
+  const [roles, setRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState(null);
 
-  const options = [
-    // { value: "Super admin", label: "Super admin" },
-    { value: "admin", label: "Admin" },
-    { value: "viewer", label: "Viewer" },
-    { value: "super_admin", label: "Super Admin" },
-  ];
+  // FETCH ALL ROLES ALREADY CREATED
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        // setLoading(true);
+        const response = await axios.get(`${API_URL}/auths/roles/all/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        setRoles(response?.data?.data);
+        console.log(response?.data?.data?.name);
+      } catch (error) {
+        message.error(error?.message);
+        console.log(error);
+        console.error(
+          "Error fetching members:",
+          error?.response || error?.message
+        );
+      } finally {
+        // setLoading(false);
+      }
+    };
+
+    fetchMembers();
+  }, []);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setAdminDetails({ ...adminDetails, [name]: value });
   };
 
+  const allRoles = roles.flatMap((admin) => admin.name);
+  console.log(allRoles);
   return (
     <div>
       {" "}
@@ -109,10 +140,7 @@ const AddMember = ({
                transition-colors duration-200`}
               >
                 <span className="text-sm opacity-80 capitalize">
-                  {adminDetails.role
-                    ? options.find((opt) => opt.value === adminDetails.role)
-                        ?.label
-                    : "Select Role"}
+                  {selectedRole ? selectedRole : "Select Role"}
                 </span>
                 <IoMdArrowDropdown
                   className={`w-5 h-5 transition-transform duration-200 
@@ -125,13 +153,14 @@ const AddMember = ({
                     isDarkMode ? `bg-black` : `bg-off-white`
                   }`}
                 >
-                  {options.map((option) => (
+                  {allRoles.map((option, index) => (
                     <div
-                      key={option.value}
+                      key={index}
                       onClick={() => {
+                        setSelectedRole(option); 
                         setAdminDetails((prev) => ({
                           ...prev,
-                          role: option.value,
+                          role: option, 
                         }));
                         setIsOpenDropdown(false);
                       }}
@@ -140,9 +169,9 @@ const AddMember = ({
                           ? `text-white hover:bg-zinc-800 border-b-off-white`
                           : `text-black hover:bg-near-white border-b-borderColor`
                       } text-sm
-                     transition-colors duration-150 last-of-type:border-t first-of-type:border-b`}
+                     transition-colors duration-150 border-t border-b`}
                     >
-                      {formatSnakeToTitle(option.label)}
+                      {formatSnakeToTitle(option)}
                     </div>
                   ))}
                 </div>
@@ -168,7 +197,7 @@ const AddMember = ({
                 Cancel
               </button>
               <button
-              type="submit"
+                type="submit"
                 onClick={() => {
                   adminDetails.role === "super_admin"
                     ? onConfirm()

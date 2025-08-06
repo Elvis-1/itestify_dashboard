@@ -70,16 +70,14 @@ const GeneralSettings = () => {
     const fetchMembers = async () => {
       try {
         setLoading(true);
-        const response = await axios.get(
-          `${API_URL}/auths/members/list-members/`,
-          {
-            headers: {
-              Authorization: `Bearer ${token}`,
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        const response = await axios.get(`${API_URL}/auths/roles/all/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
         setNewMember(response?.data?.data);
+        console.log(response?.data?.data);
       } catch (error) {
         message.error(error?.message);
         console.log(error);
@@ -138,7 +136,7 @@ const GeneralSettings = () => {
         setSuccessChangeModal(true);
       } else {
         const response = await axios.post(
-          `${API_URL}/auths/members/create-member/`,
+          `${API_URL}/auths/invite/add-member/`,
           payload,
           {
             headers: {
@@ -224,7 +222,7 @@ const GeneralSettings = () => {
   };
   const formatSnakeToTitle = (value) => {
     return value
-      .split("_")
+      ?.split("_")
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
@@ -403,19 +401,23 @@ const GeneralSettings = () => {
                   <div className="">
                     {member.role !== "super_admin" && (
                       <p className="pb-5 font-bold">
-                        {formatSnakeToTitle(member.role)}
+                        {formatSnakeToTitle(member.name)}
                       </p>
                     )}
-                    <p>{member.full_name}</p>
-                    <p
-                      className={`text-xs  ${
-                        isDarkMode ? `text-off-white` : `text-off-black`
-                      }  opacity-80`}
-                    >
-                      {member.email}
-                    </p>
+                    {member.members?.map((persons) => (
+                      <div key={persons.id}>
+                        {" "}
+                        <p className="capitalize">{persons?.full_name}</p>
+                        <p
+                          className={`text-xs  ${
+                            isDarkMode ? `text-off-white` : `text-off-black`
+                          }  opacity-80`}
+                        >
+                          {persons?.email}
+                        </p>
+                      </div>
+                    ))}
                   </div>
-                  <div></div>
 
                   <div className="relative">
                     <p
