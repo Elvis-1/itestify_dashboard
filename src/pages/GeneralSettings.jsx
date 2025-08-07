@@ -57,9 +57,7 @@ const GeneralSettings = () => {
   const [memberToDelete, setMemberToDelete] = useState(null);
 
   const [isCreateRoleOpen, setIsCreateRoleOpen] = useState(false);
-  // const toggleOptions = (index) => {
-  //   setIsOpenOptions(isOpenOptions === index ? -1 : index);
-  // };
+
   const openConfirmModal = () => {
     setMemberModal(false);
     setConfirmAddAdmin(true);
@@ -91,7 +89,7 @@ const GeneralSettings = () => {
     };
 
     fetchMembers();
-  }, []);
+  }, [role]);
 
   //ADD NEW MEMEBERS AND UPDATE EXISTING MEMEBERS
   const addAdminMember = async () => {
@@ -107,6 +105,7 @@ const GeneralSettings = () => {
         email: adminDetails.email,
         full_name: adminDetails.name,
         role: adminDetails.role,
+        is_invitation_expired: false,
       };
 
       if (isEditing) {
@@ -147,6 +146,7 @@ const GeneralSettings = () => {
         );
         setNewMember((prev) => [...prev, response.data]);
         setSuccessModal(true);
+        console.log(adminDetails.role);
       }
 
       setConfirmAddAdmin(false);
@@ -226,15 +226,22 @@ const GeneralSettings = () => {
       .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
       .join(" ");
   };
-  const handleCreateRoleSubmit = (e) => {
-    e.preventDefault();
-    if (!role.name || role.permissions.length === 0) {
-      message.error("Please fill in all the required fields.");
-    }
-    setAdminDetails((prev) => [{ ...prev, role: role.name }]);
 
-    setIsCreateRoleOpen(false);
-    setSuccessCreateRole(true);
+  //CREATE ROLE
+  const handleCreateRoleSubmit = async (e) => {
+    e.preventDefault();
+    try {
+      if (!role.name || role.permissions.length === 0) {
+        message.error("Please fill in all the required fields.");
+      }
+      await axios.post(`${API_URL}/auths/roles/create_role/`, role);
+      console.log(adminDetails.role);
+     setAdminDetails((prev) => ({ ...prev, role: role.name }));
+      setIsCreateRoleOpen(false);
+      setSuccessCreateRole(true);
+    } catch (error) {
+      message.error(error?.response?.data?.message || "Error Adding Content");
+    }
   };
 
   const SUCCESS_MESSAGES = {
@@ -398,25 +405,31 @@ const GeneralSettings = () => {
                     isDarkMode ? `bg-grayBlack` : `bg-white`
                   } rounded-xl flex justify-between align-top items-start w-full text-sm p-5 mb-4`}
                 >
-                  <div className="">
+                  <div className="w-full">
                     {member.role !== "super_admin" && (
                       <p className="pb-5 font-bold">
                         {formatSnakeToTitle(member.name)}
                       </p>
                     )}
-                    {member.members?.map((persons) => (
-                      <div key={persons.id}>
-                        {" "}
-                        <p className="capitalize">{persons?.full_name}</p>
-                        <p
-                          className={`text-xs  ${
-                            isDarkMode ? `text-off-white` : `text-off-black`
-                          }  opacity-80`}
-                        >
-                          {persons?.email}
-                        </p>
-                      </div>
-                    ))}
+                    {member?.members?.length === 0 ? (
+                      <div>No Members Added</div>
+                    ) : (
+                      member.members?.map((persons) => (
+                        <div key={persons.id} className="pt-2 flex justify-between w-full items-center">
+                          <div>
+                            <p className="capitalize">{persons?.full_name}</p>
+                            <p
+                              className={`text-xs  ${
+                                isDarkMode ? `text-off-white` : `text-off-black`
+                              }  opacity-80`}
+                            >
+                              {persons?.email}
+                            </p>
+                          </div>
+                         {/* { <p className="text-primary text-xs font-semibold">Invited</p>} */}
+                        </div>
+                      ))
+                    )}
                   </div>
 
                   <div className="relative">
@@ -424,7 +437,7 @@ const GeneralSettings = () => {
                       onClick={() =>
                         navigate("/dashboard/general-settings/manage-admin")
                       }
-                      className="cursor-pointer text-primary font-bold text-xs"
+                      className="cursor-pointer text-primary font-bold text-xs text-nowrap"
                     >
                       Manage Role
                     </p>

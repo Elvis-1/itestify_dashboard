@@ -4,6 +4,7 @@ import { MdClose } from "react-icons/md";
 import { IoMdArrowDropdown } from "react-icons/io";
 import axios from "axios";
 import { message } from "antd";
+import { Loader } from "rsuite";
 const AddMember = ({
   setMemberModal,
   onConfirm,
@@ -23,12 +24,13 @@ const AddMember = ({
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
   const [roles, setRoles] = useState([]);
   const [selectedRole, setSelectedRole] = useState(null);
+  const [loadRoles, setLoadRoles] = useState(false);
 
   // FETCH ALL ROLES ALREADY CREATED
   useEffect(() => {
     const fetchMembers = async () => {
       try {
-        // setLoading(true);
+        setLoadRoles(true);
         const response = await axios.get(`${API_URL}/auths/roles/all/`, {
           headers: {
             Authorization: `Bearer ${token}`,
@@ -36,7 +38,6 @@ const AddMember = ({
           },
         });
         setRoles(response?.data?.data);
-        console.log(response?.data?.data?.name);
       } catch (error) {
         message.error(error?.message);
         console.log(error);
@@ -45,7 +46,7 @@ const AddMember = ({
           error?.response || error?.message
         );
       } finally {
-        // setLoading(false);
+        setLoadRoles(false);
       }
     };
 
@@ -57,7 +58,6 @@ const AddMember = ({
   };
 
   const allRoles = roles.flatMap((admin) => admin.name);
-  console.log(allRoles);
   return (
     <div>
       {" "}
@@ -153,27 +153,31 @@ const AddMember = ({
                     isDarkMode ? `bg-black` : `bg-off-white`
                   }`}
                 >
-                  {allRoles.map((option, index) => (
-                    <div
-                      key={index}
-                      onClick={() => {
-                        setSelectedRole(option); 
-                        setAdminDetails((prev) => ({
-                          ...prev,
-                          role: option, 
-                        }));
-                        setIsOpenDropdown(false);
-                      }}
-                      className={`p-2 cursor-pointer ${
-                        isDarkMode
-                          ? `text-white hover:bg-zinc-800 border-b-off-white`
-                          : `text-black hover:bg-near-white border-b-borderColor`
-                      } text-sm
+                  {loadRoles ? (
+                    <Loader />
+                  ) : (
+                    allRoles.map((option, index) => (
+                      <div
+                        key={index}
+                        onClick={() => {
+                          setSelectedRole(option);
+                          setAdminDetails((prev) => ({
+                            ...prev,
+                            role: option,
+                          }));
+                          setIsOpenDropdown(false);
+                        }}
+                        className={`p-2 cursor-pointer ${
+                          isDarkMode
+                            ? `text-white hover:bg-zinc-800 border-b-off-white`
+                            : `text-black hover:bg-near-white border-b-borderColor`
+                        } text-sm
                      transition-colors duration-150 border-t border-b`}
-                    >
-                      {formatSnakeToTitle(option)}
-                    </div>
-                  ))}
+                      >
+                        {formatSnakeToTitle(option)}
+                      </div>
+                    ))
+                  )}
                 </div>
               )}
             </div>
