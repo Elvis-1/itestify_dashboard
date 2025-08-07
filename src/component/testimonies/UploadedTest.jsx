@@ -625,23 +625,6 @@ function UploadedTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                                         ))}
                                     </div>
                                 )}
-                                <hr className={`w-full mt-4 ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`} />
-                                <div className='flex items-center justify-between mt-4 mb-3'>
-                                    <h3 className={`text-[14px] ${isDarkMode ? 'text-white' : 'text-black'}`}>Approval Status</h3>
-                                </div>
-                                <div className="flex flex-wrap gap-4">
-                                    {['drafts', 'upload_now', 'scheduled'].map((status) => (
-                                        <div key={status} className="flex items-center cursor-pointer">
-                                            <div className={`w-[16px] h-[16px] rounded-full border border-[#9966CC] mr-1 flex items-center justify-center ${ApprovalStatus === status ? 'bg-[#9966CC]' : 'bg-transparent'}`}>
-                                                {ApprovalStatus === status && <div className="w-[8px] h-[8px] rounded-full bg-white"></div>}
-                                            </div>
-                                            <input type="radio" id={status} name="status" value={status} checked={ApprovalStatus === status} onChange={handleChange} className="hidden" />
-                                            <label className={`cursor-pointer text-[14px] ${isDarkMode ? 'text-white' : 'text-black'}`} htmlFor={status}>
-                                                {status.charAt(0).toUpperCase() + status.slice(1)}
-                                            </label>
-                                        </div>
-                                    ))}
-                                </div>
                             </div>
                         </div>
                         <div className={`absolute bg-[#0B0B0B] z-10 bottom-0 left-0 right-0 py-3 px-6 ${isDarkMode ? 'border-gray-600 bg-green' : 'border-gray-300 bg-white'} flex justify-end`}>
