@@ -126,7 +126,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
         }
 
         return dataToSearch;
-    }, [getFilteredData, AllVideo, searchQuery, selectTestType, filterDate1, filterDate2, ApprovalStatus]);
+    }, [getFilteredData, AllVideo, searchQuery]);
 
     const sortedData = React.useMemo(() => {
         const dataToSort = searchedData;
@@ -627,7 +627,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                                     <h3 className={`text-[14px] ${isDarkMode ? 'text-white' : 'text-black'}`}>Approval Status</h3>
                                 </div>
                                 <div className="flex flex-wrap gap-4">
-                                    {['pending', 'approved', 'rejected'].map((status) => (
+                                    {['drafts', 'upload_now', 'scheduled'].map((status) => (
                                         <div key={status} className="flex items-center cursor-pointer">
                                             <div className={`w-[16px] h-[16px] rounded-full border border-[#9966CC] mr-1 flex items-center justify-center ${ApprovalStatus === status ? 'bg-[#9966CC]' : 'bg-transparent'}`}>
                                                 {ApprovalStatus === status && <div className="w-[8px] h-[8px] rounded-full bg-white"></div>}
@@ -659,7 +659,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 styles={{
                     content: {
                         backgroundColor: '#171717',
-                        width: '300px',
+                        width: '400px',
                         height: 'auto',
                         color: 'white',
                         margin: '-40px auto',
@@ -674,7 +674,7 @@ function AllVideoTest({all, setAll, uploaded, setUploaded, scheduled, setSchedul
                 {details ? (
                     <div>
                         <h2 className='mt-[-10px] text-[20px] font-sans pb-2'>Video Details</h2>
-                        <hr className='opacity-[0.6] w-[118%] ml-[-23px]'/> 
+                        <hr className='opacity-[0.6] w-[113%] ml-[-23px]'/> 
                         <div className='w-[113%] ml-[-16px] rounded-xl overflow-hidden h-[230px] mt-6 relative'>
                             <VideoPlayer videoUrl={details.video_file}>
                                 <video poster={details.thumbnail || 'No thumbnail available'} style={{ width: '100%', height: '100%', objectFit: 'cover' }} />

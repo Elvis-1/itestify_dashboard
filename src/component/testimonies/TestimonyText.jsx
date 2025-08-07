@@ -161,7 +161,7 @@ function TestimonyText() {
         }
     };
 
-    async function handleDetail(id) {
+    async function handleDetail(id, openModal = true) {
         try {
             const token = localStorage.getItem("token");
             if (!token) {
@@ -194,9 +194,13 @@ function TestimonyText() {
                 }
 
                 setDetails(testimonyDetails);
-                setOpenModal(true);
                 setGetStatus(testimonyDetails.status);
+                setDeleteStatus(testimonyDetails.status);
                 setActionModal(false);
+
+                if(openModal){
+                    setOpenModal(true);
+                }
             } else {
                 console.error("No data found in the response.");
             }
@@ -336,7 +340,6 @@ function TestimonyText() {
             >
                 {operationLoading ? 
                 <div className='flex items-center gap-2'>
-                    <ClipLoader size={14} color="#ffffff" /> 
                     <span className='text-[12px] p-1'>Rejecting...</span>
                 </div>
                 
@@ -956,10 +959,11 @@ function TestimonyText() {
 
                     <div className='w-[150%] ml-[-25px] pb-2 opacity-[0.9] cursor-pointer'>
                         <button 
-                            onClick={() => {
-                                setActionModal(false);
-                                showDeleteNotification();
-                                console.log(deleteStatus)
+                             onClick={async () => {
+                                await handleDetail(controlDetail, false); // fetch latest data
+                                console.log(details.status)
+                                setActionModal(false);             // close the 3-dot menu
+                                showDeleteNotification();          // open delete modal
                             }} 
                             className='pl-2 pt-4 text-red font-bold'
                         >
@@ -990,7 +994,7 @@ function TestimonyText() {
                     },
                 }}
             >
-                {getStatus.toLowerCase() === 'pending' ? 
+                {details.status === 'PENDING' ? 
                     <div className='flex flex-col w-[128%] ml-[-20px] mt-5 items-center justify-center'>
                         <div className='w-[80%] ml-[-45px]'>
                             <p className='text-[15px] text-center pt-3'>Unable to delete Pending Testimonies!</p>
@@ -1203,7 +1207,6 @@ function TestimonyText() {
                                 <div 
                                     onClick={() => {
                                         handleDetail(item.id)
-                                        setDeleteStatus(item.status)
                                     }} 
                                     className='ml-[15px] mt-4'
                                 >

@@ -173,8 +173,7 @@ function Allpics() {
             (!endDate || itemDate <= new Date(endDate.setHours(23, 59, 59, 999)));
 
         // Category filtering
-        const matchesCategory = selectTestType === 'Select' || 
-                              (item?.category && item.category.toLowerCase() === selectTestType.toLowerCase());
+       
 
         // Status filtering
         const matchesStatus = !ApprovalStatus || 
@@ -346,57 +345,6 @@ function Allpics() {
                     </div>
                     <hr className='opacity-[0.2] text-gray-300 w-[117%] ml-[-25px] mt-3'/>
 
-                    {/* category section */}
-                    <div className='flex items-center justify-between mt-2 w-[110%] ml-[-15px]'>
-                        <h3 className='text-[14px]'>Category</h3>
-                        <button 
-                        onClick={() => setSelectTestType('Select')}
-                        className='outline-none 
-                        border-none p-1 text-[#9966CC] rounded'>Clear</button>
-                    </div>
-
-                    <div onClick={() => setFilterDropDown(!filterDropDown)} 
-                    className='flex items-center justify-center w-[110%] 
-                    ml-[-15px] bg-[#171717] p-1 rounded-xl cursor-pointer'>
-                        <p className=' text-white
-                        font-sans p-1 w-[100%] rounded'>{selectTestType}</p>
-                        {filterDropDown  ? <FaCaretUp/> : <FaCaretDown/>}
-                    </div>
-
-                    {filterDropDown ? 
-                    <div className='flex flex-col rounded-xl cursor-pointer p-1 opacity-[0.6] mt-3 border overflow-hidden w-[110%] ml-[-13px]'>
-                        <div 
-                            onClick={() => {
-                                setSelectTestType('Healing')
-                                setFilterDropDown(false)
-                            }}
-                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1'>
-                            <input type='button' 
-                            value='Healing'
-                            onClick={() => setSelectTestType('Healing')} />
-                        </div>
-                        <div 
-                            onClick={() => setSelectTestType('Deliverance')}
-                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1 cursor-pointer'>
-                            <input  type='button' 
-                            value='Deliverance'
-                            onClick={() => setSelectTestType('Deliverance')} />
-                        </div>
-                        <div
-                            onClick={() => setSelectTestType('Faith')}
-                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1'>
-                            <input type='button' 
-                            value='Faith'
-                            onClick={() => setSelectTestType('Faith')} />
-                        </div>
-                        <div 
-                            onClick={() => setSelectTestType('Salvation')}
-                            className='w-[110%] ml-[-15px] pl-5 pb-1'>
-                            <input type='button' 
-                            value='Salvation' 
-                            onClick={() => setSelectTestType('Salvation')}/>
-                        </div>
-                    </div>: ""}
 
                     {/* Approval status section */}
                     <div className='flex items-center justify-between mt-3'>
