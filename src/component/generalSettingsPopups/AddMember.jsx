@@ -69,7 +69,7 @@ const AddMember = ({
         />
 
         {/* Modal */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-sm shadow-2xl ">
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-sm shadow-2xl overflow-y-auto scroll-m-0">
           <div
             className={`rounded-lg  modal ${
               isDarkMode ? "bg-near-black text-white" : "bg-white text-black"
@@ -154,7 +154,9 @@ const AddMember = ({
                   }`}
                 >
                   {loadRoles ? (
-                    <Loader />
+                    <div className="flex justify-center items-center margin-auto p-6">
+                      <Loader />
+                    </div>
                   ) : (
                     allRoles.map((option, index) => (
                       <div

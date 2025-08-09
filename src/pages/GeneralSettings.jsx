@@ -89,7 +89,7 @@ const GeneralSettings = () => {
     };
 
     fetchMembers();
-  }, [role]);
+  }, []);
 
   //ADD NEW MEMEBERS AND UPDATE EXISTING MEMEBERS
   const addAdminMember = async () => {
@@ -236,7 +236,7 @@ const GeneralSettings = () => {
       }
       await axios.post(`${API_URL}/auths/roles/create_role/`, role);
       console.log(adminDetails.role);
-     setAdminDetails((prev) => ({ ...prev, role: role.name }));
+      setAdminDetails((prev) => ({ ...prev, role: role.name }));
       setIsCreateRoleOpen(false);
       setSuccessCreateRole(true);
     } catch (error) {
@@ -415,7 +415,10 @@ const GeneralSettings = () => {
                       <div>No Members Added</div>
                     ) : (
                       member.members?.map((persons) => (
-                        <div key={persons.id} className="pt-2 flex justify-between w-full items-center">
+                        <div
+                          key={persons.id}
+                          className="pt-2 flex justify-between w-full items-center"
+                        >
                           <div>
                             <p className="capitalize">{persons?.full_name}</p>
                             <p
@@ -426,7 +429,7 @@ const GeneralSettings = () => {
                               {persons?.email}
                             </p>
                           </div>
-                         {/* { <p className="text-primary text-xs font-semibold">Invited</p>} */}
+                          {/* { <p className="text-primary text-xs font-semibold">Invited</p>} */}
                         </div>
                       ))
                     )}

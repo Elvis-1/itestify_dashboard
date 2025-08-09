@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Form, Input, Button, Spin } from "antd";
+import { Form, Input, Button, Spin, message } from "antd";
 import {
   LockOutlined,
   CheckCircleFilled,
@@ -8,12 +8,16 @@ import {
 import { useNavigate, useLocation } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
-import logo from "../assets/icons/Logo.png"
+import logo from "../assets/icons/Logo.png";
 
 const AdminLoginInvite = () => {
   const [loading, setLoading] = useState(false);
   const [pageLoading, setPageLoading] = useState(true);
-  const [email, setEmail] = useState('');
+  const [email, setEmail] = useState("");
+  const [password1, setPassword1] = useState("");
+  const [password2, setPassword2] = useState("");
+  const password = { password1, password2 };
+  const token = localStorage.getItem("token");
   const [passwordValidation, setPasswordValidation] = useState({
     length: false,
     uppercase: false,
@@ -41,14 +45,14 @@ const AdminLoginInvite = () => {
     return () => clearTimeout(timer);
   }, [location]);
 
-  const checkPasswordValidation = (password, confirmPassword) => {
+  const checkPasswordValidation = (pwd, confirmPwd) => {
     setPasswordValidation({
-      length: password.length >= 8,
-      uppercase: /[A-Z]/.test(password),
-      lowercase: /[a-z]/.test(password),
-      number: /[0-9]/.test(password),
-      special: /[!@#$%]/.test(password),
-      match: password === confirmPassword && password !== "",
+      length: pwd.length >= 8,
+      uppercase: /[A-Z]/.test(pwd),
+      lowercase: /[a-z]/.test(pwd),
+      number: /[0-9]/.test(pwd),
+      special: /[!@#$%]/.test(pwd),
+      match: pwd === confirmPwd && pwd !== "",
     });
   };
 
@@ -57,13 +61,12 @@ const AdminLoginInvite = () => {
   const onFinish = async (values) => {
     try {
       setLoading(true);
-
-      // Use the email from URL and password from form
       const response = await axios.post(
-        "https://itestify-backend-38u1.onrender.com/admin/setup-account/",
+        "https://itestify-backend-38u1.onrender.com/auths/invite/accept/",
         {
-          email: email,
-          password: values.password,
+          token: token,
+          password1: password.password1,
+          password2: password.password2,
         }
       );
 
@@ -72,8 +75,9 @@ const AdminLoginInvite = () => {
         setLoading(false);
         navigate("/login");
       }, 1500);
+      console.log(response);
     } catch (error) {
-      console.error(
+      message.error(
         "Account setup failed:",
         error.response ? error.response.data : error.message
       );
@@ -103,9 +107,9 @@ const AdminLoginInvite = () => {
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.5 }}
-      className="flex justify-center items-center min-h-screen bg-[#0B0B0B]"
+      className="flex justify-center items-center min-h-screen bg-[#0B0B0B] py-12"
     >
-      <div className="flex flex-col w-[350px]">
+      <div className="flex flex-col ">
         <motion.div
           initial={{ y: -20 }}
           animate={{ y: 0 }}
@@ -172,18 +176,18 @@ const AdminLoginInvite = () => {
                   id="password"
                   className="border-none outline-none"
                   placeholder="Enter Password"
+                  value={password1}
+                  onChange={(e) => {
+                    const value = e.target.value;
+                    setPassword1(value);
+                    setIsTyping(true);
+                    checkPasswordValidation(value, password2);
+                  }}
                   prefix={<LockOutlined className="text-white" />}
                   style={{
                     backgroundColor: "#313131",
                     color: "white",
                     border: "none",
-                  }}
-                  onChange={(e) => {
-                    const form = document.querySelector("form");
-                    const confirmPassword =
-                      form.querySelector("#confirmPassword")?.value || "";
-                    setIsTyping(true); // Track typing
-                    checkPasswordValidation(e.target.value, confirmPassword);
                   }}
                 />
               </Form.Item>
@@ -213,12 +217,12 @@ const AdminLoginInvite = () => {
                     color: "white",
                     border: "none",
                   }}
+                  value={password2}
                   onChange={(e) => {
-                    const form = document.querySelector("form");
-                    const password =
-                      form.querySelector("#password")?.value || "";
-                    setIsTyping(true); // Track typing
-                    checkPasswordValidation(password, e.target.value);
+                    const value = e.target.value;
+                    setPassword2(value);
+                    setIsTyping(true);
+                    checkPasswordValidation(password1, value);
                   }}
                 />
               </Form.Item>
