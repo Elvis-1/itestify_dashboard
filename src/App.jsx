@@ -51,7 +51,7 @@ function App() {
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/check-email" element={<CheckMail />} />
-                  <Route path="/invite" element={<AdminLoginInvite />} />
+                  <Route path="/accept-invite" element={<AdminLoginInvite />} />
                   <Route element={<ProtectedRoute />}>
                     <Route path="/dashboard" element={<Dashboard />}>
                       <Route path="" element={<Overview />} />
@@ -98,7 +98,7 @@ function App() {
                         element={<Permissions />}
                       />
                       <Route
-                        path="general-settings/manage-admin"
+                        path="general-settings/manage-superadmin/:id"
                         element={<ManageSuperAdmin />}
                       />
 

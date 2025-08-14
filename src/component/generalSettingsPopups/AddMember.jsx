@@ -57,7 +57,9 @@ const AddMember = ({
     setAdminDetails({ ...adminDetails, [name]: value });
   };
 
-  const allRoles = roles.flatMap((admin) => admin.name);
+  const allRoles = roles
+    .filter((role) => role.name !== "Super Admin")
+    .flatMap((admin) => admin.name);
   return (
     <div>
       {" "}
@@ -157,6 +159,8 @@ const AddMember = ({
                     <div className="flex justify-center items-center margin-auto p-6">
                       <Loader />
                     </div>
+                  ) : allRoles.length === 0 ? (
+                    <div className="text-center p-3">No roles Available</div>
                   ) : (
                     allRoles.map((option, index) => (
                       <div

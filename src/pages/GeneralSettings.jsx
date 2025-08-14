@@ -57,6 +57,7 @@ const GeneralSettings = () => {
   const [memberToDelete, setMemberToDelete] = useState(null);
 
   const [isCreateRoleOpen, setIsCreateRoleOpen] = useState(false);
+  const [lastAddedRole, setLastAddedRole] = useState(null);
 
   const openConfirmModal = () => {
     setMemberModal(false);
@@ -64,30 +65,30 @@ const GeneralSettings = () => {
   };
 
   //FETCH ALL ADMINS MEMEBERS
-  useEffect(() => {
-    const fetchMembers = async () => {
-      try {
-        setLoading(true);
-        const response = await axios.get(`${API_URL}/auths/roles/all/`, {
-          headers: {
-            Authorization: `Bearer ${token}`,
-            "Content-Type": "application/json",
-          },
-        });
-        setNewMember(response?.data?.data);
-        console.log(response?.data?.data);
-      } catch (error) {
-        message.error(error?.message);
-        console.log(error);
-        console.error(
-          "Error fetching members:",
-          error?.response || error?.message
-        );
-      } finally {
-        setLoading(false);
-      }
-    };
 
+  const fetchMembers = async () => {
+    try {
+      setLoading(true);
+      const response = await axios.get(`${API_URL}/auths/roles/all/`, {
+        headers: {
+          Authorization: `Bearer ${token}`,
+          "Content-Type": "application/json",
+        },
+      });
+      setNewMember(response?.data?.data);
+      console.log(response?.data?.data);
+    } catch (error) {
+      message.error(error?.message);
+      console.log(error);
+      console.error(
+        "Error fetching members:",
+        error?.response || error?.message
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
     fetchMembers();
   }, []);
 
@@ -105,7 +106,7 @@ const GeneralSettings = () => {
         email: adminDetails.email,
         full_name: adminDetails.name,
         role: adminDetails.role,
-        is_invitation_expired: false,
+        // is_invitation_expired: false,
       };
 
       if (isEditing) {
@@ -134,21 +135,24 @@ const GeneralSettings = () => {
         );
         setSuccessChangeModal(true);
       } else {
-        const response = await axios.post(
-          `${API_URL}/auths/invite/add-member/`,
-          payload,
-          {
+        await axios
+          .post(`${API_URL}/auths/invite/add-member/`, payload, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
-          }
-        );
-        setNewMember((prev) => [...prev, response.data]);
-        setSuccessModal(true);
-        console.log(adminDetails.role);
-      }
+          })
+          .then((res) =>
+            setNewMember((prev) => [...prev, res.data])
+          )
+          .catch((err) => console.log(err.response.data.message));
 
+        const roleBeforeReset = adminDetails.role;
+        setSuccessModal(true);
+        setLastAddedRole(roleBeforeReset); // new state
+        setAdminDetails({ name: "", email: "", role: "" });
+      }
+      fetchMembers();
       setConfirmAddAdmin(false);
       setAdminDetails({ name: "", email: "", role: "" });
       setMemberModal(false);
@@ -244,21 +248,6 @@ const GeneralSettings = () => {
     }
   };
 
-  const SUCCESS_MESSAGES = {
-    super_admin: {
-      title: "Super Admin Added Successfully!",
-      message: `You have successfully added a new Super Admin. An invitation email has been sent to ${adminDetails.email} to set up their account.`,
-    },
-    admin: {
-      title: "Admin Added Successfully!",
-      message: `You have successfully added a new Admin. An invitation email has been sent to ${adminDetails.email} to set up their account.`,
-    },
-    viewer: {
-      title: "Viewer Added Successfully!",
-      message: `You have successfully assigned a new Viewer. An invitation email has been sent to ${adminDetails.email} to set up their account.`,
-    },
-  };
-
   return (
     <div>
       {memberModal && (
@@ -284,9 +273,14 @@ const GeneralSettings = () => {
           formatSnakeToTitle={formatSnakeToTitle}
         />
       )}
-      {successModal && adminDetails.role && (
-        <SuccessModal successMessage={SUCCESS_MESSAGES[adminDetails.role]} />
+      {successModal && lastAddedRole && (
+        <SuccessModal
+          title="Super Admin Added Successfully!"
+          message={`You have successfully added a new ${adminDetails.role} An invitation email has been sent to ${adminDetails.email} to set up their account.`}
+          adminDetails={adminDetails}
+        />
       )}
+
       {successChangeModal && (
         <SuccessModal
           successMessage="Changes Saved Successfully!"
@@ -406,11 +400,62 @@ const GeneralSettings = () => {
                   } rounded-xl flex justify-between align-top items-start w-full text-sm p-5 mb-4`}
                 >
                   <div className="w-full">
-                    {member.role !== "super_admin" && (
+                    <div className="flex justify-between w-full items-start">
                       <p className="pb-5 font-bold">
                         {formatSnakeToTitle(member.name)}
                       </p>
-                    )}
+                      <div className="relative">
+                        <p
+                          onClick={() =>
+                            navigate(
+                              `/dashboard/general-settings/manage-superadmin/${member.id}`
+                            )
+                          }
+                          className="cursor-pointer text-primary font-bold text-xs text-nowrap"
+                        >
+                          Manage Role
+                        </p>
+                        {isOpenOptions === member.id && (
+                          <div
+                            className={`rounded-lg ${
+                              isDarkMode
+                                ? `text-white bg-[#292929]`
+                                : `text-black bg-white`
+                            } w-[120px]  border border-[#787878] h-fit absolute top-5 right-0 z-10 shadow-lg`}
+                          >
+                            <p
+                              onClick={() => {
+                                setAdminDetails({
+                                  name: member.full_name,
+                                  email: member.email,
+                                  role: member.role,
+                                });
+                                setIsEditing(true);
+                                setEditMemberId(member.id);
+                                setMemberModal(true);
+                                setIsOpenOptions(-1);
+                              }}
+                              className="border-b border-[#787878] p-2 cursor-pointer"
+                            >
+                              Edit
+                            </p>
+                            <p
+                              onClick={() => {
+                                member.role === "Super admin"
+                                  ? setDeleteSuperAdminModal(true)
+                                  : setDeleteMemberModal(true);
+                                setIsOpenOptions(false);
+                                setMemberToDelete(member.id);
+                              }}
+                              className="p-2 text-[#E53935] cursor-pointer"
+                            >
+                              Delete
+                            </p>
+                          </div>
+                        )}
+                      </div>
+                    </div>
+
                     {member?.members?.length === 0 ? (
                       <div>No Members Added</div>
                     ) : (
@@ -429,58 +474,13 @@ const GeneralSettings = () => {
                               {persons?.email}
                             </p>
                           </div>
-                          {/* { <p className="text-primary text-xs font-semibold">Invited</p>} */}
+                          {persons?.invitation_status === "ACTIVE" && (
+                            <p className="text-primary text-xs font-semibold justify-end">
+                              Invited
+                            </p>
+                          )}
                         </div>
                       ))
-                    )}
-                  </div>
-
-                  <div className="relative">
-                    <p
-                      onClick={() =>
-                        navigate("/dashboard/general-settings/manage-admin")
-                      }
-                      className="cursor-pointer text-primary font-bold text-xs text-nowrap"
-                    >
-                      Manage Role
-                    </p>
-                    {isOpenOptions === member.id && (
-                      <div
-                        className={`rounded-lg ${
-                          isDarkMode
-                            ? `text-white bg-[#292929]`
-                            : `text-black bg-white`
-                        } w-[120px]  border border-[#787878] h-fit absolute top-5 right-0 z-10 shadow-lg`}
-                      >
-                        <p
-                          onClick={() => {
-                            setAdminDetails({
-                              name: member.full_name,
-                              email: member.email,
-                              role: member.role,
-                            });
-                            setIsEditing(true);
-                            setEditMemberId(member.id);
-                            setMemberModal(true);
-                            setIsOpenOptions(-1);
-                          }}
-                          className="border-b border-[#787878] p-2 cursor-pointer"
-                        >
-                          Edit
-                        </p>
-                        <p
-                          onClick={() => {
-                            member.role === "Super admin"
-                              ? setDeleteSuperAdminModal(true)
-                              : setDeleteMemberModal(true);
-                            setIsOpenOptions(false);
-                            setMemberToDelete(member.id);
-                          }}
-                          className="p-2 text-[#E53935] cursor-pointer"
-                        >
-                          Delete
-                        </p>
-                      </div>
                     )}
                   </div>
                 </div>
