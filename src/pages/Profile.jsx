@@ -2,14 +2,16 @@ import { MdOutlineEdit } from "react-icons/md";
 import { BsPerson } from "react-icons/bs";
 import { useState, useEffect } from "react";
 import { MdCancel } from "react-icons/md";
-import { FaCheckCircle } from "react-icons/fa"; // Import the checkmark icon
+import { FaCheckCircle } from "react-icons/fa";
 
 const Profile = () => {
   const [updateProfile, setUpdateProfile] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const [updateEmail, setUpdateEmail] = useState(false); 
+  const [isLoadingNameNumber, setIsLoadingNameNumber] = useState(false); 
+  const [isLoadingEmail, setIsLoadingEmail] = useState(false); 
   const [fullName, setFullName] = useState("Ore ore");
   const [mobileNumber, setMobileNumber] = useState("Not Yet Available");
-  const [email, setEmail] = useState("Fifee@yopmail.com");
+  const [email, setEmail] = useState("Fife@yopmail.com");
   const [highlightEmpty, setHighlightEmpty] = useState({
     fullName: false,
     mobileNumber: false,
@@ -31,7 +33,6 @@ const Profile = () => {
   });
   const [passwordError, setPasswordError] = useState("");
 
-  // New state for password validation rules
   const [passwordValidationStatus, setPasswordValidationStatus] = useState({
     length: false,
     uppercase: false,
@@ -41,18 +42,18 @@ const Profile = () => {
     match: false,
   });
 
-  // States for the new email change flow
   const [emailInputVisible, setEmailInputVisible] = useState(true);
-  const [newEmailDisplay, setNewEmailDisplay] = useState(""); // Stores the new email as text for display
-  const [showSendOtpPrompt, setShowSendOtpPrompt] = useState(false); // Controls the "To proceed..." message and button
-  const [isSendingOtp, setIsSendingOtp] = useState(false); // Loading state for sending OTP
-  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false); // Loading state for verifying OTP
-  const [showFinalEmailChangeForm, setShowFinalEmailChangeForm] = useState(false); // Controls visibility of former/new email inputs
-  const [formerEmailInput, setFormerEmailInput] = useState(""); // Input for former email in final form
-  const [newEmailConfirmInput, setNewEmailConfirmInput] = useState(""); // Input for new email in final form
-  const [isFinalEmailSaving, setIsFinalEmailSaving] = useState(false); // Loading state for final email save
+  const [newEmailDisplay, setNewEmailDisplay] = useState("");
+  const [showSendOtpPrompt, setShowSendOtpPrompt] = useState(false);
+  const [isSendingOtp, setIsSendingOtp] = useState(false);
+  const [isVerifyingOtp, setIsVerifyingOtp] = useState(false);
+  const [showFinalEmailChangeForm, setShowFinalEmailChangeForm] =
+    useState(false);
+  const [formerEmailInput, setFormerEmailInput] = useState("");
+  const [newEmailConfirmInput, setNewEmailConfirmInput] = useState("");
+  const [isFinalEmailSaving, setIsFinalEmailSaving] = useState(false);
+  const [resendTimer, setResendTimer] = useState(0);
 
-  // Effect to validate password inputs and update status
   useEffect(() => {
     const { new: newPassword, confirm } = passwordInputs;
 
@@ -61,7 +62,7 @@ const Profile = () => {
     const lowercaseValid = /[a-z]/.test(newPassword);
     const numberValid = /[0-9]/.test(newPassword);
     const specialCharValid = /[!@#$%^&*]/.test(newPassword);
-    const matchValid = newPassword === confirm && newPassword !== ""; // Ensure new password is not empty for match
+    const matchValid = newPassword === confirm && newPassword !== "";
 
     setPasswordValidationStatus({
       length: lengthValid,
@@ -72,44 +73,65 @@ const Profile = () => {
       match: matchValid,
     });
 
-    // Clear password error if all rules are met
-    if (lengthValid && uppercaseValid && lowercaseValid && numberValid && specialCharValid && matchValid) {
+    if (
+      lengthValid &&
+      uppercaseValid &&
+      lowercaseValid &&
+      numberValid &&
+      specialCharValid &&
+      matchValid
+    ) {
       setPasswordError("");
     }
   }, [passwordInputs]);
 
-  // Determine if all password requirements are met
-  const allPasswordRequirementsMet = Object.values(passwordValidationStatus).every(status => status);
+  useEffect(() => {
+    let timer;
+    if (resendTimer > 0) {
+      timer = setInterval(() => {
+        setResendTimer((prev) => prev - 1);
+      }, 1000);
+    }
+    return () => clearInterval(timer);
+  }, [resendTimer]);
+
+  const allPasswordRequirementsMet = Object.values(
+    passwordValidationStatus
+  ).every((status) => status);
 
   const handlePasswordUpdate = async () => {
-    // Check for empty fields first, as these are critical
     const { current, new: newPassword, confirm } = passwordInputs;
     if (!current || !newPassword || !confirm) {
       setPasswordError("Please fill in all fields.");
       return;
     }
 
-    // If not all password requirements are met, display error based on validation status
     if (!allPasswordRequirementsMet) {
-      // Find the first unmet requirement and set a specific error message
-      if (!passwordValidationStatus.length) setPasswordError("Password must be at least 8 characters long.");
-      else if (!passwordValidationStatus.uppercase) setPasswordError("Password must contain an uppercase letter.");
-      else if (!passwordValidationStatus.lowercase) setPasswordError("Password must contain a lowercase letter.");
-      else if (!passwordValidationStatus.number) setPasswordError("Password must contain a number.");
-      else if (!passwordValidationStatus.specialChar) setPasswordError("Password must contain a special character.");
-      else if (!passwordValidationStatus.match) setPasswordError("Passwords do not match.");
+      if (!passwordValidationStatus.length)
+        setPasswordError("Password must be at least 8 characters long.");
+      else if (!passwordValidationStatus.uppercase)
+        setPasswordError("Password must contain an uppercase letter.");
+      else if (!passwordValidationStatus.lowercase)
+        setPasswordError("Password must contain a lowercase letter.");
+      else if (!passwordValidationStatus.number)
+        setPasswordError("Password must contain a number.");
+      else if (!passwordValidationStatus.specialChar)
+        setPasswordError("Password must contain a special character.");
+      else if (!passwordValidationStatus.match)
+        setPasswordError("Passwords do not match.");
       return;
     }
 
-    setIsLoading(true);
+    setIsLoadingNameNumber(true); 
 
     setTimeout(() => {
-      setIsLoading(false);
+      setIsLoadingNameNumber(false);
       setShowPasswordModal(false);
       setPasswordInputs({ current: "", new: "", confirm: "" });
-      // Using a custom message box instead of alert()
-      const messageBox = document.createElement('div');
-      messageBox.className = 'fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50';
+
+      const messageBox = document.createElement("div");
+      messageBox.className =
+        "fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50";
       messageBox.innerHTML = `
         <div class="bg-[#171717] p-8 rounded-lg shadow-lg text-white text-center">
           <p class="text-xl mb-4">Password updated successfully!</p>
@@ -117,153 +139,111 @@ const Profile = () => {
         </div>
       `;
       document.body.appendChild(messageBox);
-      document.getElementById('closeMessageBox').onclick = () => document.body.removeChild(messageBox);
+      document.getElementById("closeMessageBox").onclick = () =>
+        document.body.removeChild(messageBox);
     }, 1500);
   };
 
   const sendOtpToEmail = async (targetEmail) => {
     console.log(`Sending OTP to ${targetEmail}...`);
-    // Simulate API call
     return new Promise((resolve) => setTimeout(() => resolve(true), 1000));
   };
 
   const verifyOtp = async (enteredOtp) => {
-    const expectedOtp = "123456"; // This should come from your backend
-    // Simulate API call
-    return new Promise((resolve) => setTimeout(() => resolve(enteredOtp === expectedOtp), 500));
+    const expectedOtp = "1234"; 
+    return new Promise((resolve) =>
+      setTimeout(() => resolve(enteredOtp === expectedOtp), 500)
+    );
   };
 
-  // This function is now specifically for the "Verify" button under OTP input
   const handleOtpVerification = async () => {
     if (otp.trim() === "") {
-      setHighlightEmpty(prev => ({ ...prev, otp: true }));
-      setTimeout(() => setHighlightEmpty(prev => ({ ...prev, otp: false })), 2000);
+      setHighlightEmpty((prev) => ({ ...prev, otp: true }));
+      setTimeout(
+        () => setHighlightEmpty((prev) => ({ ...prev, otp: false })),
+        2000
+      );
       return;
     }
 
-    setIsVerifyingOtp(true); // Set loading for OTP verification
+    setIsVerifyingOtp(true);
     const isVerified = await verifyOtp(otp);
-    setIsVerifyingOtp(false); // Clear loading
+    setIsVerifyingOtp(false);
 
     if (!isVerified) {
-      const messageBox = document.createElement('div');
-      messageBox.className = 'fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50';
+      const messageBox = document.createElement("div");
+      messageBox.className =
+        "fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50";
       messageBox.innerHTML = `
-        <div class="bg-[#171717] p-8 rounded-lg shadow-lg text-white text-center">
-          <p class="text-xl mb-4">Invalid OTP. Please try again.</p>
-          <button id="closeMessageBox" class="bg-[#9966CC] hover:bg-[#7d56b6] text-white px-6 py-2 rounded-md">OK</button>
-        </div>
-      `;
+      <div class="bg-[#171717] p-8 rounded-lg shadow-lg text-white text-center">
+        <p class="text-xl mb-4">Invalid OTP. Please try again.</p>
+        <button id="closeMessageBox" class="bg-[#9966CC] hover:bg-[#7d56b6] text-white px-6 py-2 rounded-md">OK</button>
+      </div>
+    `;
       document.body.appendChild(messageBox);
-      document.getElementById('closeMessageBox').onclick = () => document.body.removeChild(messageBox);
-      return; // Stay in OTP input state
+      document.getElementById("closeMessageBox").onclick = () =>
+        document.body.removeChild(messageBox);
+      return;
     } else {
-      // OTP verified, show final email change form directly
       setShowOtpInput(false);
-      setOtpSent(false); // OTP is verified, no longer "sent" in the pending sense
+      setOtpSent(false);
       setShowFinalEmailChangeForm(true);
-      setFormerEmailInput(originalEmail);
-      setNewEmailConfirmInput(email); // The new email user typed earlier
+      setFormerEmailInput(""); 
+      setNewEmailConfirmInput(""); 
     }
   };
 
-
-  const handleProfileSave = async () => { // This is now for general profile updates, not email change flow
+  const handleNameNumberSave = async () => {
     const empty = {
       fullName: fullName.trim() === "",
       mobileNumber: mobileNumber.trim() === "",
-      email: emailInputVisible && email.trim() === "", // Only check if input is visible
     };
 
-    if (empty.fullName || empty.mobileNumber || empty.email) {
+    if (empty.fullName || empty.mobileNumber) {
       setHighlightEmpty(empty);
       setTimeout(() => {
         setHighlightEmpty({
           fullName: false,
           mobileNumber: false,
-          email: false,
         });
       }, 2000);
       return;
     }
 
-    // This part runs if it's a regular profile save (not email change flow)
-    setIsLoading(true);
+    setIsLoadingNameNumber(true);
     setTimeout(() => {
-      setIsLoading(false);
+      setIsLoadingNameNumber(false);
       setUpdateProfile(false);
-      // Reset email-related states if it was a general profile update
-      setShowSendOtpPrompt(false);
-      setOtpSent(false);
-      setShowOtpInput(false);
-      setEmailInputVisible(true); // Ensure email input is visible for next edit
-      setNewEmailDisplay("");
-      setOriginalEmail(email); // Update original email only after successful save
     }, 2000);
   };
 
+
   const handleSendOtpClick = async () => {
-    setIsSendingOtp(true); // Set loading for OTP sending
-    await sendOtpToEmail(originalEmail); // Send to original email for verification
+    setIsSendingOtp(true);
+    await sendOtpToEmail(originalEmail);
     setOtpSent(true);
-    setShowOtpInput(true); // Show OTP input
-    setShowSendOtpPrompt(false); // Hide this prompt
-    setIsSendingOtp(false); // Clear loading
+    setShowOtpInput(true);
+    setShowSendOtpPrompt(false);
+    setIsSendingOtp(false);
+    setResendTimer(60); 
   };
 
   const handleFinalEmailSave = async () => {
-    // Basic validation for the two email inputs
-    if (!formerEmailInput.trim() || !newEmailConfirmInput.trim()) {
-      setPasswordError("Both former and new email fields are required."); // Reusing passwordError state for simplicity
-      return;
-    }
-    if (formerEmailInput.trim() !== originalEmail) {
-        setPasswordError("Former email does not match your current email.");
-        return;
-    }
-    if (newEmailConfirmInput.trim() !== email) {
-        setPasswordError("New email does not match the email you entered previously.");
-        return;
-    }
-
-
     setIsFinalEmailSaving(true);
-    // Simulate API call to update email
+
     setTimeout(() => {
       setIsFinalEmailSaving(false);
-      setOriginalEmail(newEmailConfirmInput); // Update original email to the new one
-      setEmail(newEmailConfirmInput); // Update current email state
-      setShowFinalEmailChangeForm(false); // Hide the final form
-      setUpdateProfile(false); // Exit update profile mode
-      setEmailInputVisible(true); // Reset email input visibility
-      setNewEmailDisplay(""); // Clear display text
-      setOtpSent(false); // Reset OTP states
-      setShowOtpInput(false);
-      setOtp("");
-      setShowSendOtpPrompt(false);
-      setFormerEmailInput("");
-      setNewEmailConfirmInput("");
-
-      const messageBox = document.createElement('div');
-      messageBox.className = 'fixed inset-0 bg-black bg-opacity-75 flex justify-center items-center z-50';
-      messageBox.innerHTML = `
-        <div class="bg-[#171717] p-8 rounded-lg shadow-lg text-white text-center">
-          <p class="text-xl mb-4">Email updated successfully!</p>
-          <button id="closeMessageBox" class="bg-[#9966CC] hover:bg-[#7d56b6] text-white px-6 py-2 rounded-md">OK</button>
-        </div>
-      `;
-      document.body.appendChild(messageBox);
-      document.getElementById('closeMessageBox').onclick = () => document.body.removeChild(messageBox);
-
+      setOriginalEmail(newEmailConfirmInput);
+      setEmail(newEmailConfirmInput);
+      setShowFinalEmailChangeForm(false);
+      setUpdateEmail(false);
     }, 1500);
   };
 
-  // Determine if the final email save button should be enabled
-  const isFinalEmailSaveEnabled = formerEmailInput.trim() !== "" && newEmailConfirmInput.trim() !== "" && !isFinalEmailSaving;
-
-  // Condition to hide the "Save Changes" button in the header
-  const hideHeaderSaveButton = showSendOtpPrompt || showOtpInput || showFinalEmailChangeForm;
-
+  const isFinalEmailSaveEnabled =
+    formerEmailInput.trim() !== "" &&
+    newEmailConfirmInput.trim() !== "" &&
+    !isFinalEmailSaving;
 
   return (
     <>
@@ -275,7 +255,7 @@ const Profile = () => {
           </div>
           <button
             onClick={() => setShowPasswordModal(true)}
-            className="bg-[#9966CC] h-[70%] rounded-[10px] w-[13%] text-[13px]"
+            className="bg-[#9966CC] h-[73%] rounded-[10px] w-[15%] text-[13px]"
           >
             Change My Password
           </button>
@@ -379,7 +359,7 @@ const Profile = () => {
                 <img
                   src={profileImage}
                   alt="Full View"
-                  className="h-[80%] w-[95%] rounded-md  mt-8"
+                  className="h-[80%] w-[95%] rounded-md  mt-8"
                 />
               </div>
             </div>
@@ -387,38 +367,47 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className={` w-[100%] h-[55%] flex justify-center items-center`}>
+      <div className={` w-[100%] h-[73%] flex justify-center items-center`}>
         <div className="h-[95%] w-[97%] flex justify-center items-center">
           <form
             onSubmit={(e) => e.preventDefault()}
-            className={`border-2 h-[100%] w-[100%] rounded-[10px] flex flex-col justify-between p-3`}
+            className={`bg-[#171717] h-[100%] w-[100%] rounded-[10px] flex flex-col justify-between p-3`}
           >
             <div
               className={`w-[100%] ${
-                !updateProfile ? "border-b-2  h-[45%]" : " mt-10"
+                !updateProfile ? "border-b-2  h-[45%]" : " mt-10"
               } flex flex-col justify-between items-center`}
             >
-              <div className="h-[30%] w-[100%] flex justify-between items-center">
+              <div className="h-[30%] w-[100%] flex justify-between items-center mt-3">
                 <p className="text-[20px] font-semibold">
                   Personal Information
                 </p>
-                {updateProfile && !hideHeaderSaveButton ? ( // Hide if email flow is active
-                  <button
-                    type="button"
-                    onClick={handleProfileSave} // Use handleProfileSave for general updates
-                    className="flex items-center bg-[#9966CC] hover:bg-[#7d56b6] text-white px-4 py-2 rounded-[10px] transition-colors duration-200"
-                  >
-                    {isLoading ? (
-                      <>
-                        <span className="loader mr-2"></span>
-                        Saving...
-                      </>
-                    ) : (
-                      <>
-                        Save Changes
-                      </>
-                    )}
-                  </button>
+                {updateProfile ? (
+                  <div className="flex gap-2 items-center">
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setUpdateProfile(false);
+                      }}
+                      className="flex items-center border border-[#9966CC] text-[#9966CC] px-4 py-2 rounded-[10px] transition-colors duration-200"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="button"
+                      onClick={handleNameNumberSave}
+                      className="flex items-center bg-[#9966CC] hover:bg-[#7d56b6] text-white px-4 py-2 rounded-[10px] transition-colors duration-200"
+                    >
+                      {isLoadingNameNumber ? (
+                        <>
+                          <span className="loader mr-2"></span>
+                          Saving...
+                        </>
+                      ) : (
+                        <>Save Changes</>
+                      )}
+                    </button>
+                  </div>
                 ) : (
                   <button
                     type="button"
@@ -432,14 +421,14 @@ const Profile = () => {
               </div>
 
               {!updateProfile && (
-                <div className="w-[100%] h-[55%] flex items-start flex-col gap-1">
-                  <p className="text-[16px] mb-2">Role</p>
-                  <p>Super Admin</p>
+                <div className="w-[100%] h-[75%] flex items-start flex-col gap-4 mt-7">
+                  <p className="text-[16px]">Role</p>
+                  <p className="mb-4">Super Admin</p>
                 </div>
               )}
             </div>
 
-            <div className="w-[100%] h-[25%] flex flex-col justify-center items-start gap-1">
+            <div className="w-[100%] h-[25%] flex flex-col justify-center items-start gap-4">
               <p>Full Name</p>
               {updateProfile ? (
                 <input
@@ -482,213 +471,211 @@ const Profile = () => {
         </div>
       </div>
 
-      <div className=" w-[100%] flex justify-center items-center mt-8">
-        <div className="h-[95%] w-[97%] flex justify-center flex-col border-2 rounded-[10px]">
-          <div className="h-[30%] w-[100%] flex justify-between items-center p-3 mt-3">
-            <p className="text-[20px] font-semibold w-[20%]">Contact Information</p>
+      <div className="w-[100%] flex justify-center items-center mt-3">
+        <div className="h-[100%] w-[97%] flex justify-center flex-col bg-[#171717] mb-5 rounded-[10px]">
+          
+          {!updateEmail && (
+            <>
+              <div className="w-full flex justify-between items-center p-3 mt-3">
+                <p className="text-[20px] font-semibold">Contact Information</p>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUpdateEmail(true);
+                    setShowSendOtpPrompt(true);
+                    setEmailInputVisible(false);
+                    setNewEmailDisplay(email);
+                    setOtpSent(false);
+                    setShowOtpInput(false);
+                    setOtp("");
+                    setShowFinalEmailChangeForm(false);
+                  }}
+                  className="flex items-center text-[17px] text-[#9966CC]"
+                >
+                  <MdOutlineEdit className="mr-1" />
+                  Edit
+                </button>
+              </div>
+              <div className="w-full p-3 flex flex-col gap-1">
+                <p className="text-[16px]">Email Address</p>
+                <p className="text-[16px] text-white mb-7">{email}</p>
+              </div>
+            </>
+          )}
 
-            {/* This "Save Changes" button is now hidden if the email change flow is active */}
-            {updateProfile && !hideHeaderSaveButton ? (
+          
+          {updateEmail && !showOtpInput && !showFinalEmailChangeForm && (
+            <>
+              <div className="w-full flex justify-between items-center p-3 mt-3">
+                <div className="flex flex-col gap-1">
+                  <p className="text-[20px] font-semibold">
+                    Contact Information
+                  </p>
+                  <p className="text-sm text-white">
+                    To proceed, please click the button below to send a
+                    verification code to your current email address.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUpdateEmail(false);
+                    setEmail(originalEmail);
+                    setEmailInputVisible(true);
+                    setNewEmailDisplay("");
+                    setShowSendOtpPrompt(false);
+                    setOtpSent(false);
+                    setShowOtpInput(false);
+                    setShowFinalEmailChangeForm(false);
+                    setOtp("");
+                  }}
+                  className="flex items-center border border-[#9966CC] text-[#9966CC] px-4 py-2 rounded-[10px] transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+              </div>
+              <div className="w-full p-3 flex flex-col gap-4">
+                <p className="text-[16px] font-semibold">Email Address</p>
+                <p className="text-[16px] text-white">{email}</p>
+                <button
+                  type="button"
+                  onClick={handleSendOtpClick}
+                  className="bg-[#9966CC] hover:bg-[#7d56b6] text-white px-4 py-2 rounded-[10px] transition-colors duration-200 w-[15%]"
+                  disabled={isSendingOtp}
+                >
+                  {isSendingOtp ? "Sending OTP..." : "Send OTP"}
+                </button>
+              </div>
+            </>
+          )}
+
+          
+          {showOtpInput && otpSent && !showFinalEmailChangeForm && (
+            <>
+              <div className="w-full flex justify-between items-center p-3 mt-3">
+                <div className="flex flex-col gap-1">
+                  <p className="text-[20px] font-semibold">
+                    Contact Information
+                  </p>
+                  <p className="text-sm text-white">
+                    Please enter the OTP sent to {email} to continue.
+                  </p>
+                </div>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setUpdateEmail(false);
+                    setEmail(originalEmail);
+                    setEmailInputVisible(true);
+                    setNewEmailDisplay("");
+                    setShowSendOtpPrompt(false);
+                    setOtpSent(false);
+                    setShowOtpInput(false);
+                    setShowFinalEmailChangeForm(false);
+                    setOtp("");
+                  }}
+                  className="flex items-center border border-[#9966CC] text-[#9966CC] px-4 py-2 rounded-[10px] transition-colors duration-200"
+                >
+                  Cancel
+                </button>
+              </div>
+
+              <div className="w-full p-3 flex flex-col gap-4">
+                <p className="text-[16px] font-semibold">Email Address</p>
+                <p className="text-[16px] text-white">{email}</p>
+                <p className="text-[16px] font-semibold">OTP</p>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={otp}
+                    onChange={(e) => setOtp(e.target.value)}
+                    placeholder="Enter 4 digit code"
+                    className={`rounded px-2 py-1 flex-grow bg-[#171717] text-white h-[60px] outline-none ${
+                      highlightEmpty.otp
+                        ? "border-2 border-[#9966CC]"
+                        : "border border-[#333]"
+                    }`}
+                  />
+                  <button
+                    type="button"
+                    onClick={handleOtpVerification}
+                    disabled={otp.trim() === "" || isVerifyingOtp}
+                    className={`px-4 py-2 rounded-[10px] transition-colors duration-200 h-[60px] ${
+                      otp.trim() !== "" && !isVerifyingOtp
+                        ? "bg-[#9966CC] hover:bg-[#7d56b6] text-white"
+                        : "bg-[#8B8B8B] text-gray-400 cursor-not-allowed"
+                    }`}
+                  >
+                    {isVerifyingOtp ? "Verifying..." : "Verify"}
+                  </button>
+                </div>
+                <div className="text-sm mt-2">
+                  Didn&apos;t receive an Email?{" "}
+                  {resendTimer > 0 ? (
+                    <span className="text-[#9966CC]">
+                      You can request for another in {resendTimer}s
+                    </span>
+                  ) : (
+                    <button
+                      onClick={handleSendOtpClick}
+                      className="text-[#9966CC] hover:underline"
+                    >
+                      Resend OTP
+                    </button>
+                  )}
+                </div>
+              </div>
+            </>
+          )}
+
+          {showFinalEmailChangeForm && (
+            <div className="w-full p-3 space-y-4">
+              <div className="flex flex-col gap-1">
+                <p className="text-[16px] text-white">Former Email</p>
+                <input
+                  type="text"
+                  value={formerEmailInput}
+                  onChange={(e) => setFormerEmailInput(e.target.value)}
+                  className="w-full h-[60px] p-2 rounded bg-[#232323] text-white outline-none"
+                />
+              </div>
+              <div className="flex flex-col gap-1">
+                <p className="text-[16px] text-white">New Email</p>
+                <input
+                  type="text"
+                  value={newEmailConfirmInput}
+                  onChange={(e) => setNewEmailConfirmInput(e.target.value)}
+                  className="w-full h-[60px] p-2 rounded bg-[#232323] text-white outline-none"
+                />
+              </div>
               <button
                 type="button"
-                onClick={handleProfileSave}
-                className={`flex items-center px-4 py-2 rounded-[10px] transition-colors duration-200 ${
-                    isLoading
-                    ? "bg-[#8B8B8B] text-gray-400 cursor-not-allowed"
-                    : "bg-[#9966CC] hover:bg-[#7d56b6] text-white"
+                onClick={handleFinalEmailSave}
+                disabled={!isFinalEmailSaveEnabled}
+                className={`flex items-center px-4 py-2 rounded-[10px] transition-colors duration-200 justify-center ${
+                  isFinalEmailSaveEnabled
+                    ? "bg-[#9966CC] hover:bg-[#7d56b6] text-white"
+                    : "bg-[#8B8B8B] text-gray-400 cursor-not-allowed"
                 }`}
-                disabled={isLoading}
               >
-                {isLoading ? (
+                {isFinalEmailSaving ? (
                   <>
                     <span className="loader mr-2"></span>
                     Saving...
                   </>
                 ) : (
-                  <>Save Changes</>
+                  <>Save</>
                 )}
               </button>
-            ) : (
-              // This is the "Edit" button for the Contact Information section
-              <button
-                type="button"
-                onClick={() => {
-                  setUpdateProfile(true);
-                  // Reset email flow states when entering edit mode if not already in an email flow
-                  if (!showSendOtpPrompt && !showOtpInput && !showFinalEmailChangeForm) {
-                    setEmailInputVisible(true);
-                    setNewEmailDisplay("");
-                    setOtpSent(false);
-                    setShowOtpInput(false);
-                    setOtp("");
-                  }
-                }}
-                className="flex items-center text-[17px] text-[#9966CC]"
-              >
-                <MdOutlineEdit className="mr-1" />
-                Edit
-              </button>
-            )}
-          </div>
-          <div className="w-[100%] h-[%] flex items-start flex-col gap-1 p-3" >
-            <p className="text-[16px]"> Email Address</p>
-            {updateProfile ? (
-              <>
-                {/* State 1: Initial email input is visible (user can type) */}
-                {emailInputVisible && !showSendOtpPrompt && !showOtpInput && !showFinalEmailChangeForm && (
-                  <input
-                    type="text"
-                    value={email}
-                    onChange={(e) => {
-                      const newEmail = e.target.value;
-                      setEmail(newEmail);
-                      // Only trigger the next step if email is different AND contains @gmail.com
-                      if (newEmail !== originalEmail && newEmail.includes('@gmail.com')) {
-                        setEmailInputVisible(false); // Hide the input field
-                        setNewEmailDisplay(newEmail); // Set the new email to be displayed as text
-                        setShowSendOtpPrompt(true); // Show the "To proceed..." message and button
-                        setOtpSent(false); // Reset OTP states
-                        setShowOtpInput(false);
-                        setOtp("");
-                        setShowFinalEmailChangeForm(false);
-                      } else {
-                        // If user types back the original email, or email doesn't contain @gmail.com, keep input visible
-                        setEmailInputVisible(true);
-                        setNewEmailDisplay(""); // Clear display text
-                        setShowSendOtpPrompt(false); // Hide prompt
-                        setOtpSent(false);
-                        setShowOtpInput(false);
-                        setOtp("");
-                        setShowFinalEmailChangeForm(false);
-                      }
-                    }}
-                    className={`rounded px-2 py-1 w-full bg-[#171717] text-white h-[60px] outline-none ${
-                      highlightEmpty.email
-                        ? "border-2 border-[#9966CC]"
-                        : "border border-[#333]"
-                    }`}
-                  />
-                )}
-
-                {/* State 2: New email displayed as text, showing prompt to send OTP */}
-                {!emailInputVisible && newEmailDisplay && showSendOtpPrompt && !otpSent && !showOtpInput && !showFinalEmailChangeForm && (
-                  <div className="w-full mt-3 space-y-2">
-                    <p className="text-[16px]">{newEmailDisplay}</p> {/* Display new email as text */}
-                    <p className="text-sm text-white">
-                      To proceed, please click the button below to send a verification code to your current email address.
-                    </p>
-                    <button
-                      type="button"
-                      onClick={handleSendOtpClick}
-                      className="bg-[#9966CC] hover:bg-[#7d56b6] text-white px-4 py-2 rounded-[10px] transition-colors duration-200"
-                      disabled={isSendingOtp}
-                    >
-                      {isSendingOtp ? 'Sending OTP...' : 'Send OTP'}
-                    </button>
-                  </div>
-                )}
-
-                {/* State 3: OTP sent, awaiting OTP input AND "Verify" button */}
-                {showOtpInput && otpSent && !showFinalEmailChangeForm && (
-                  <div className="w-full mt-3 space-y-2">
-                    <p className="text-[16px]">{newEmailDisplay}</p> {/* Still display new email as text */}
-                    <p className="text-sm text-white">
-                      A 4-digit verification code has been sent to{" "}
-                      <span className="font-semibold">{originalEmail}</span>.
-                      Please enter the code below to continue.
-                    </p>
-                    <div className="flex items-center gap-2"> {/* Flex container for input and button */}
-                        <input
-                            type="text"
-                            value={otp}
-                            onChange={(e) => setOtp(e.target.value)}
-                            placeholder="Enter OTP"
-                            className={`rounded px-2 py-1 flex-grow bg-[#171717] text-white h-[60px] outline-none ${
-                                highlightEmpty.otp
-                                ? "border-2 border-[#9966CC]"
-                                : "border border-[#333]"
-                            }`}
-                        />
-                        {/* NEW: Verify button beside OTP input */}
-                        <button
-                            type="button"
-                            onClick={handleOtpVerification}
-                            disabled={otp.trim() === "" || isVerifyingOtp}
-                            className={`px-4 py-2 rounded-[10px] transition-colors duration-200 h-[60px] ${
-                                otp.trim() !== "" && !isVerifyingOtp
-                                ? "bg-[#9966CC] hover:bg-[#7d56b6] text-white"
-                                : "bg-[#8B8B8B] text-gray-400 cursor-not-allowed"
-                            }`}
-                        >
-                            {isVerifyingOtp ? (
-                                <>
-                                <span className="loader mr-2"></span>
-                                Verifying...
-                                </>
-                            ) : (
-                                <>Verify</>
-                            )}
-                        </button>
-                    </div>
-                  </div>
-                )}
-
-                {/* State 4: OTP verified, showing final email change form */}
-                {showFinalEmailChangeForm && (
-                    <div className="w-full mt-3 space-y-4">
-                        <div className="flex flex-col gap-1">
-                            <p className="text-[16px] text-white">Former Email</p>
-                            <input
-                                type="text"
-                                value={formerEmailInput}
-                                onChange={(e) => setFormerEmailInput(e.target.value)}
-                                className="w-full h-[60px] p-2 rounded bg-[#232323] text-white outline-none"
-                            />
-                        </div>
-                        <div className="flex flex-col gap-1">
-                            <p className="text-[16px] text-white">New Email</p>
-                            <input
-                                type="text"
-                                value={newEmailConfirmInput}
-                                onChange={(e) => setNewEmailConfirmInput(e.target.value)}
-                                className="w-full h-[60px] p-2 rounded bg-[#232323] text-white outline-none"
-                            />
-                        </div>
-                        {/* NEW: Save New Email button under the last input */}
-                        <button
-                            type="button"
-                            onClick={handleFinalEmailSave}
-                            disabled={!isFinalEmailSaveEnabled}
-                            className={`flex items-center px-4 py-2 rounded-[10px] transition-colors duration-200 justify-center ${
-                                isFinalEmailSaveEnabled
-                                    ? "bg-[#9966CC] hover:bg-[#7d56b6] text-white"
-                                    : "bg-[#8B8B8B] text-gray-400 cursor-not-allowed"
-                            }`}
-                        >
-                            {isFinalEmailSaving ? (
-                                <>
-                                    <span className="loader mr-2"></span>
-                                    Saving...
-                                </>
-                            ) : (
-                                <>Save</>
-                            )}
-                        </button>
-                    </div>
-                )}
-              </>
-            ) : (
-              // When not in update profile mode, just show the email text
-              <p>{email}</p>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
       {showPasswordModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center">
-          <div className="bg-[#171717] mt-10 rounded-lg w-[33%] h-[90%]  flex justify-center items-center flex-col ">
+        <div className="fixed inset-0 bg-black bg-opacity-50 z-50 flex items-center justify-center mt-10">
+          <div className="bg-[#171717] mb-4 rounded-lg w-[33%]  overflow-y-auto flex justify-center items-center flex-col">
             <div className="flex justify-between items-center mb-4 border-b-2 p-4 w-[100%]">
-              <h2 className="text-white text-xl font-semibold">
+              <h2 className="text-white text-xl font-semibold ">
                 Change Password
               </h2>
               <button onClick={() => setShowPasswordModal(false)}>
@@ -761,7 +748,9 @@ const Profile = () => {
                   )}
                 </p>
                 <p className="flex items-center justify-between">
-                  <span>Contains at least one special character (!@#$%^&*)</span>
+                  <span>
+                    Contains at least one special character (!@#$%^&*)
+                  </span>
                   {passwordValidationStatus.specialChar && (
                     <FaCheckCircle className="text-green-500" />
                   )}
@@ -778,7 +767,7 @@ const Profile = () => {
                 <p className="text-red-500 text-sm">{passwordError}</p>
               )}
 
-              <div className="flex gap-4 items-center justify-end mt-4 border-t-2 pt-2 h-[15%]">
+              <div className="flex gap-4 items-center justify-end mt-4 border-t-2 pt-2 h-[15%]  mb-3">
                 <button
                   type="button"
                   onClick={() => {
@@ -786,7 +775,7 @@ const Profile = () => {
                     setPasswordError("");
                     setShowPasswordModal(false);
                   }}
-                  className="flex items-center border border-[#9966CC] text-[#9966CC] px-4 py-2 rounded-[10px] transition-colors duration-200"
+                  className="flex items-center border border-[#9966CC] text-[#9966CC] px-4 py-2 rounded-[10px] transition-colors duration-200 mt-4"
                 >
                   Cancel
                 </button>
@@ -794,14 +783,14 @@ const Profile = () => {
                 <button
                   type="button"
                   onClick={handlePasswordUpdate}
-                  disabled={!allPasswordRequirementsMet || isLoading} // Disable button if requirements not met or loading
-                  className={`flex items-center px-4 py-2 rounded-[10px] transition-colors duration-200 ${
-                    allPasswordRequirementsMet && !isLoading
-                      ? "bg-[#9966CC] hover:bg-[#7d56b6] text-white" // Enabled style
-                      : "bg-[#8B8B8B] text-gray-400 cursor-not-allowed" // Disabled style
+                  disabled={!allPasswordRequirementsMet || isLoadingNameNumber}
+                  className={`flex items-center px-4 py-2 rounded-[10px] transition-colors duration-200 mt-4 ${
+                    allPasswordRequirementsMet && !isLoadingNameNumber
+                      ? "bg-[#9966CC] hover:bg-[#7d56b6] text-white"
+                      : "bg-[#8B8B8B] text-gray-400 cursor-not-allowed"
                   }`}
                 >
-                  {isLoading ? (
+                  {isLoadingNameNumber ? (
                     <>
                       <span className="loader mr-2"></span>
                       Updating...
