@@ -76,6 +76,8 @@ const changeSuccess = () => {
           (a, b) => new Date(b.created_at) - new Date(a.created_at)
         );
         setRegisteredUsers(sorted);
+        localStorage.setItem("registeredUsers", JSON.stringify(sorted));
+
       } catch (error) {
         message.error(error?.message);
         console.error("Error fetching registered users:", error);
