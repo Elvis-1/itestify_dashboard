@@ -135,22 +135,20 @@ const GeneralSettings = () => {
         );
         setSuccessChangeModal(true);
       } else {
-        await axios
+        const response = await axios
           .post(`${API_URL}/auths/invite/add-member/`, payload, {
             headers: {
               Authorization: `Bearer ${token}`,
               "Content-Type": "application/json",
             },
           })
-          .then((res) =>
-            setNewMember((prev) => [...prev, res.data])
-          )
+          .then((res) => setNewMember((prev) => [...prev, res.data]))
           .catch((err) => console.log(err.response.data.message));
-
         const roleBeforeReset = adminDetails.role;
         setSuccessModal(true);
         setLastAddedRole(roleBeforeReset); // new state
         setAdminDetails({ name: "", email: "", role: "" });
+        console.log(response.data)
       }
       fetchMembers();
       setConfirmAddAdmin(false);
@@ -160,7 +158,7 @@ const GeneralSettings = () => {
       console.error("Failed to add member:", error);
       message.error(
         `${
-          error?.response?.data?.message ||
+          error ||
           `Failed to add member:  ${error?.message}`
         }
          `
@@ -275,7 +273,7 @@ const GeneralSettings = () => {
       )}
       {successModal && lastAddedRole && (
         <SuccessModal
-          title="Super Admin Added Successfully!"
+          title={`${adminDetails.role} Added Successfully!`}
           message={`You have successfully added a new ${adminDetails.role} An invitation email has been sent to ${adminDetails.email} to set up their account.`}
           adminDetails={adminDetails}
         />
@@ -406,11 +404,15 @@ const GeneralSettings = () => {
                       </p>
                       <div className="relative">
                         <p
-                          onClick={() =>
-                            navigate(
-                              `/dashboard/general-settings/manage-superadmin/${member.id}`
-                            )
-                          }
+                          onClick={() => {
+                            member.name === "Super Admin"
+                              ? navigate(
+                                  `/dashboard/general-settings/manage-superadmin/${member.id}`
+                                )
+                              : navigate(
+                                  `/dashboard/general-settings/manage-user/${member.id}`
+                                );
+                          }}
                           className="cursor-pointer text-primary font-bold text-xs text-nowrap"
                         >
                           Manage Role

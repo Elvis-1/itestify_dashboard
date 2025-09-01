@@ -5,7 +5,7 @@ import {
   CheckCircleFilled,
   CloseCircleFilled,
 } from "@ant-design/icons";
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation, useParams } from "react-router-dom";
 import axios from "axios";
 import { motion } from "framer-motion";
 import logo from "../assets/icons/Logo.png";
@@ -17,7 +17,7 @@ const AdminLoginInvite = () => {
   const [password1, setPassword1] = useState("");
   const [password2, setPassword2] = useState("");
   const password = { password1, password2 };
-  const token = localStorage.getItem("token");
+  const token = useParams().id
   const [passwordValidation, setPasswordValidation] = useState({
     length: false,
     uppercase: false,

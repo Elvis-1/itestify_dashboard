@@ -34,7 +34,8 @@ import CheckMail from "./component/CheckMail";
 import ResetPassword from "./pages/ResetPassword";
 import AdminLoginInvite from "./component/AdminLoginInvite";
 import TextTesActivityLog from "./pages/TextTesActivitylog";
-import ManageSuperAdmin from "./pages/ManageSuperAdmin"
+import ManageSuperAdmin from "./pages/ManageSuperAdmin";
+import ManageUser from "./pages/ManageUser";
 
 function App() {
   return (
@@ -51,15 +52,27 @@ function App() {
                   <Route path="/forgot-password" element={<ForgotPassword />} />
                   <Route path="/reset-password" element={<ResetPassword />} />
                   <Route path="/check-email" element={<CheckMail />} />
-                  <Route path="/accept-invite" element={<AdminLoginInvite />} />
+                  <Route path="/accept-invite/:id" element={<AdminLoginInvite />} />
                   <Route element={<ProtectedRoute />}>
                     <Route path="/dashboard" element={<Dashboard />}>
                       <Route path="" element={<Overview />} />
-                      <Route path="home-management" element={<HomeManagement />}/>
+                      <Route
+                        path="home-management"
+                        element={<HomeManagement />}
+                      />
 
-                      <Route path="all-testimonies" element={<AllTestimonies />}/>
-                      <Route path="upload-testimonies" element={<UploadTestimonies />}/>
-                      <Route path="activity-log" element={<TextTesActivityLog />} />
+                      <Route
+                        path="all-testimonies"
+                        element={<AllTestimonies />}
+                      />
+                      <Route
+                        path="upload-testimonies"
+                        element={<UploadTestimonies />}
+                      />
+                      <Route
+                        path="activity-log"
+                        element={<TextTesActivityLog />}
+                      />
 
                       <Route path="users" element={<Users />} />
                       <Route path="donations" element={<Donations />} />
@@ -100,6 +113,10 @@ function App() {
                       <Route
                         path="general-settings/manage-superadmin/:id"
                         element={<ManageSuperAdmin />}
+                      />
+                      <Route
+                        path="general-settings/manage-user/:id"
+                        element={<ManageUser />}
                       />
 
                       <Route path="profile" element={<Profile />} />

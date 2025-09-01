@@ -11,6 +11,7 @@ function Overview() {
   return (
       <div className='p-5'>
         <h3>Overview</h3>
+        <img src="" alt="" />
 
         {isDarkMode ?
         <>
