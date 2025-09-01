@@ -88,24 +88,27 @@ function Allpics() {
     };
 
     // search Data logic
-    const searchedData = React.useMemo(() => {
-        const dataToSearch = Array.isArray(getFilteredData) && getFilteredData.length > 0 
-            ? getFilteredData 
-            : Array.isArray(allInspirationalPicsData) 
-                ? allInspirationalPicsData 
-                : [];
-    
-        if (searchQuery.trim() !== "") {
-            return dataToSearch.filter((item) => {
-                const lowerCaseQuery = searchQuery.toLowerCase();
-                return (
-                    item?.source?.toLowerCase().includes(lowerCaseQuery)
-                );
-            });
-        }
-    
-        return dataToSearch;
-    }, [getFilteredData, allInspirationalPicsData, searchQuery]);
+  const searchedData = React.useMemo(() => {
+    // Use filtered data if filters are active, otherwise use all data
+    const dataToSearch = (getFilteredData.length > 0 || 
+                         selectTestType !== 'Select' || 
+                         filterDate1 || 
+                         filterDate2 || 
+                         ApprovalStatus) ? getFilteredData : allInspirationalPicsData;
+
+    if (searchQuery.trim() !== "") {
+        const filteredData = dataToSearch.filter((item) => {
+            const lowerCaseQuery = searchQuery.toLowerCase();
+            return (
+                (item.source && item.source.toLowerCase().includes(lowerCaseQuery)) ||
+                (item.upload_by && item.upload_by.toLowerCase().includes(lowerCaseQuery))
+            );
+        });
+        return filteredData;
+    }
+
+    return dataToSearch;
+}, [getFilteredData, allInspirationalPicsData, searchQuery]);;
         
 
     const sortedData = React.useMemo(() => {
@@ -140,6 +143,51 @@ function Allpics() {
         }
     };
 
+      function handleFilterDate1(event) {
+        setFilterDate1(event.target.value)
+    }
+        
+    //function handling the second date input
+    function handleFilterDate2(event) {
+        setFilterDate2(event.target.value)
+    }
+
+    function handleFiltering() {
+    // If all filters are empty/reset, show all data
+    if (selectTestType === 'Select' && !filterDate1 && !filterDate2 && !ApprovalStatus) {
+        setGetFilterData([]); // Empty array means show all data
+        setFilterModal(false);
+        setPage(1);
+        return;
+    }
+
+    const filteredData = allInspirationalPicsData.filter((item) => {
+        // Date filtering
+        const itemDate = new Date(item.created_at);
+        const startDate = filterDate1 ? new Date(filterDate1) : null;
+        const endDate = filterDate2 ? new Date(filterDate2) : null;
+
+        // Check if item is within date range
+        const isWithinDateRange =
+            (!startDate || itemDate >= startDate) &&
+            (!endDate || itemDate <= new Date(endDate.setHours(23, 59, 59, 999)));
+
+        // Category filtering
+       
+
+        // Status filtering
+        const matchesStatus = !ApprovalStatus || 
+                            (item?.status && item.status.toLowerCase() === ApprovalStatus.toLowerCase());
+
+        return isWithinDateRange && matchesCategory && matchesStatus;
+    });
+
+    setGetFilterData(filteredData);
+    setFilterModal(false);
+    setPage(1);
+    }
+
+
      //function fo filter modal footer button
     function filterModalFooterButton() {
             return[
@@ -156,49 +204,43 @@ function Allpics() {
             ]
     }
     
-    function handleFilterDate1(event) {
-        setFilterDate1(event.target.value)
-    }
-        
-    //function handling the second date input
-    function handleFilterDate2(event) {
-        setFilterDate2(event.target.value)
-    }
+  
 
     //function handling the filtering logic
-    function handleFiltering() {
-        const getFilterData = allInspirationalPicsData.filter((item) => {
-            const itemDate = new Date(item.created_at);
+    // function handleFiltering() {
+    //     const getFilterData = allInspirationalPicsData.filter((item) => {
+    //         const itemDate = new Date(item.created_at);
             
-            if(filterDate1 !== "" && filterDate2 !== "" 
-                && selectTestType !== "" && ApprovalStatus !== "") {
+    //         if(filterDate1 !== "" && filterDate2 !== "" 
+    //             && selectTestType !== "" && ApprovalStatus !== "") {
     
-                const isWithinDateRange =
-                (!filterDate1 || itemDate >= new Date(filterDate1)) &&
-                (!filterDate2 || itemDate <= new Date(filterDate2));
+    //             const isWithinDateRange =
+    //             (!filterDate1 || itemDate >= new Date(filterDate1)) &&
+    //             (!filterDate2 || itemDate <= new Date(filterDate2));
     
-                // const matchesCategory =
-                // !selectTestType || item.category === selectTestType;
+    //             // const matchesCategory =
+    //             // !selectTestType || item.category === selectTestType;
     
-                const matchesStatus =
-                !ApprovalStatus || item.status === ApprovalStatus;
+    //             const matchesStatus =
+    //             !ApprovalStatus || item.status === ApprovalStatus;
     
-                return (
-                    isWithinDateRange && matchesStatus
-                    // matchesCategory &&
-                );
+    //             return (
+    //                 isWithinDateRange && matchesStatus
+    //                 // matchesCategory &&
+    //             );
     
-            }else{
-                return (item.created_at === filterDate1 || item.created_at === filterDate2  || item.status === ApprovalStatus
-                )
-            }
+    //         }else{
+    //             return (item.created_at === filterDate1 || item.created_at === filterDate2  || item.status === ApprovalStatus
+    //             )
+    //         }
             
-        });
+    //     });
     
-        setGetFilterData(getFilterData); // Update filtered data
-        setFilterModal(false); // Close filter modal
-    }
+    //     setGetFilterData(getFilterData); // Update filtered data
+    //     setFilterModal(false); // Close filter modal
+    // }
 
+    
     function handleCloseModal() {
         setFilterModal(false)
     }
@@ -221,11 +263,13 @@ function Allpics() {
     const handleChange = (event) => {
         setApprovalStatus(event.target.value);
     }
-
     function handleReset() {
-        setApprovalStatus('')
-        setFilterDate1('')
-        setFilterDate2('')
+        setApprovalStatus('');
+        setFilterDate1('');
+        setFilterDate2('');
+        setSelectTestType('Select');
+        setGetFilterData([]);
+        setPage(1);
     }
         
   return (
@@ -301,54 +345,6 @@ function Allpics() {
                     </div>
                     <hr className='opacity-[0.2] text-gray-300 w-[117%] ml-[-25px] mt-3'/>
 
-                    {/* category section */}
-                    {/* <div className='flex items-center justify-between mt-2 w-[110%] ml-[-15px]'>
-                        <h3 className='text-[14px]'>Category</h3>
-                        <button 
-                        onClick={() => setSelectTestType('Select')}
-                        className='outline-none 
-                        border-none p-1 text-[#9966CC] rounded'>Clear</button>
-                    </div>
-
-                    <div onClick={() => setFilterDropDown(!filterDropDown)} 
-                    className='flex items-center justify-center w-[110%] 
-                    ml-[-15px] bg-[#171717] p-1 rounded-xl cursor-pointer'>
-                        <p className=' text-white
-                        font-sans p-1 w-[100%] rounded'>{selectTestType}</p>
-                        {filterDropDown  ? <FaCaretUp/> : <FaCaretDown/>}
-                    </div>
-
-                    {filterDropDown ? 
-                    <div className='flex flex-col rounded-xl cursor-pointer p-1 opacity-[0.6] mt-3 border overflow-hidden w-[110%] ml-[-13px]'>
-                        <div 
-                            onClick={() => setSelectTestType('Healing')}
-                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1'>
-                            <input type='button' 
-                            value='Healing'
-                            onClick={() => setSelectTestType('Healing')} />
-                        </div>
-                        <div 
-                            onClick={() => setSelectTestType('Deliverance')}
-                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1 cursor-pointer'>
-                            <input  type='button' 
-                            value='Deliverance'
-                            onClick={() => setSelectTestType('Deliverance')} />
-                        </div>
-                        <div
-                            onClick={() => setSelectTestType('Faith')}
-                            className='w-[110%] ml-[-15px] border-b pl-5 pb-1'>
-                            <input type='button' 
-                            value='Faith'
-                            onClick={() => setSelectTestType('Faith')} />
-                        </div>
-                        <div 
-                            onClick={() => setSelectTestType('Salvation')}
-                            className='w-[110%] ml-[-15px] pl-5 pb-1'>
-                            <input type='button' 
-                            value='Salvation' 
-                            onClick={() => setSelectTestType('Salvation')}/>
-                        </div>
-                    </div>: ""} */}
 
                     {/* Approval status section */}
                     <div className='flex items-center justify-between mt-3'>
@@ -427,9 +423,6 @@ function Allpics() {
 
         </Modal>
         <div className='flex items-center justify-end mt-5 mr-4 mb-5'>
-           <button className='bg-[#9966CC] text-[14px] p-1 rounded text-white'> 
-            <span className='pl-1 pr-1'>+</span>Upload New Picture
-           </button>
         </div>
         <div className={`w-[98%] h-[400px] m-[auto] bg-[#171717] rounded-xl`}>
             <div className={`flex items-center justify-between p-3
@@ -501,7 +494,10 @@ function Allpics() {
             handleNextPage={handleNextPage} handlePrevPage={handlePrevPage}
             page={page} allInspirationalPicsData={allInspirationalPicsData}
             setAllInspirationalPicsData={setAllInspirationalPicsData} totalPages={totalPages}
-            loading={loading} error={error} fetchInspirationalPics={fetchInspirationalPics} />}
+            loading={loading} error={error} fetchInspirationalPics={fetchInspirationalPics}
+            selectTestType={selectTestType} filterDate1={filterDate1} filterDate2={filterDate2} 
+            ApprovalStatus={ApprovalStatus} searchQuery={searchQuery} searchedData={searchedData} 
+            setError={setError}/>}
 
             {uploaded && 
             <Uploaded searchQuery={searchQuery} setSearchQuery={setSearchQuery}/>}

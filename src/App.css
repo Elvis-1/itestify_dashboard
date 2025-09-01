@@ -110,9 +110,9 @@ input[type="time"]::-webkit-calendar-picker-indicator {
 }
 #video_player {
   position: relative;
-  width: 300px;
+  width: 383px;
   height: 300px;
-  border-radius: 7px;
+  border-radius: 10px;
   overflow: hidden;
   box-shadow: 0 0 5px rgba(255, 255, 255, 0.24);
 }
@@ -153,7 +153,7 @@ input[type="time"]::-webkit-calendar-picker-indicator {
   bottom: 0;
   left: 0;
   height: 115px;
-  width: 95%;
+  width: 100%;
   background: #292929;
   box-shadow: 0 0 40px 10px rgb(0 0 0 / 25%);
   z-index: 3;
@@ -404,6 +404,7 @@ input::-webkit-inner-spin-button {
   border-color: #9966CC !important;
 }
 
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .no-scrollbar::-webkit-scrollbar {
     display: none;
@@ -414,3 +415,6 @@ input::-webkit-inner-spin-button {
     -ms-overflow-style: none;  /* IE and Edge */
     scrollbar-width: none;  /* Firefox */
 }
+
+
+

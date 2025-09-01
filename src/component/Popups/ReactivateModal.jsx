@@ -34,7 +34,6 @@ const ReactivateModal = ({ onClose, onSuccess }) => {
     <>
       <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
         <div className="bg-[#0B0B0B] rounded-xl size-[93%] shadow-lg w-[30%] flex flex-col relative p-6 justify-between">
-          {/* bg-[#0B0B0B] rounded-xl shadow-lg w-[30%] flex gap-2 flex-col relative size-[90%] p-6 justify-between */}
            <button
               onClick={onClose}
               className="text-xl font-bold text-white absolute top-4 right-4 hover:text-red-500 transition-colors duration-300 flex h-10 w-[10%] justify-end"
@@ -57,7 +56,7 @@ const ReactivateModal = ({ onClose, onSuccess }) => {
                 setShowReasonList((prev) => !prev);
                 setIsChoosingReason(true);
               }}
-              className="w-full p-2 rounded bg-[#232323] text-white cursor-pointer select-none flex items-center justify-between text-[14px]"
+              className="w-full p-2 rounded bg-[#232323] text-white cursor-pointer select-none flex items-center justify-between text-[14px] "
             >
               <span>{reason || "Select a reason"}</span>
               {showReasonList ? (

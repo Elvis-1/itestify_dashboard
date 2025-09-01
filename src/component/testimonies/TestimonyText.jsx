@@ -161,7 +161,7 @@ function TestimonyText() {
         }
     };
 
-    async function handleDetail(id) {
+    async function handleDetail(id, openModal = true) {
         try {
             const token = localStorage.getItem("token");
             if (!token) {
@@ -194,9 +194,13 @@ function TestimonyText() {
                 }
 
                 setDetails(testimonyDetails);
-                setOpenModal(true);
                 setGetStatus(testimonyDetails.status);
+                setDeleteStatus(testimonyDetails.status);
                 setActionModal(false);
+
+                if(openModal){
+                    setOpenModal(true);
+                }
             } else {
                 console.error("No data found in the response.");
             }
@@ -216,7 +220,7 @@ function TestimonyText() {
     };
 
     function handleModalFooterButton() {
-        if (getStatus === 'pending') {
+        if (getStatus.toLowerCase() === 'pending') {
             return [
                 <button
                     key="reject"
@@ -224,8 +228,8 @@ function TestimonyText() {
                         setRejectionReason('');
                         handleRejectionReason();
                     }}
-                    className='text-[12px] border border-red-600 text-red p-1 w-[100px] rounded 
-                    hover:text-[13px] hover:w-[110px] transition-all duration-200'
+                    className='text-[12px] border border-red-600 text-red p-1 w-[120px] rounded 
+                    hover:text-[13px] hover:w-[130px] transition-all duration-200'
                 >
                     Reject Testimony
                 </button>,
@@ -251,7 +255,7 @@ function TestimonyText() {
                      : 'Approve Testimony'}
                 </button>
             ];
-        } else if (getStatus === 'rejected') {
+        } else if (getStatus.toLowerCase() === 'rejected') {
             return [
                 <div key="reason" className='text-left'>
                     <h3 className='text-[13px]'>Reason For Rejection</h3>
@@ -266,12 +270,12 @@ function TestimonyText() {
         const token = localStorage.getItem('token');
         try {
             const payload = { action: newStatus };
-            if (newStatus === 'reject') {
+            if (newStatus.toLowerCase() === 'reject') {
                 payload.rejection_reason = reason;
             }
 
             const response = await axios.post(
-                `https://itestify-backend-38u1.onrender.com/text-testimonies/${id}/review/`,
+                `https://itestify-backend-38u1.onrender.com/testimonies/texts/${id}/review/`,
                 payload,
                 {
                     headers: {
@@ -287,7 +291,7 @@ function TestimonyText() {
                         testimony.id === id 
                             ? { 
                                 ...testimony, 
-                                status: newStatus === 'approve' ? 'approved' : 'rejected',
+                                status: newStatus.toLowerCase() === 'approve' ? 'approved' : 'rejected',
                                 rejection_reason: reason || testimony.rejection_reason
                             } 
                             : testimony
@@ -336,7 +340,6 @@ function TestimonyText() {
             >
                 {operationLoading ? 
                 <div className='flex items-center gap-2'>
-                    <ClipLoader size={14} color="#ffffff" /> 
                     <span className='text-[12px] p-1'>Rejecting...</span>
                 </div>
                 
@@ -362,25 +365,6 @@ function TestimonyText() {
 
     function showFilterModal() {
         setFilterModal(true);
-    }
-
-    function filterModalFooterButton() {
-        return [
-            <div className='mt-[50px]'>
-                <button 
-                    onClick={handleReset}
-                    className='border border-[#9966CC] outline-none p-1 rounded w-[100px] text-[#9966CC]'
-                >
-                    Clear All
-                </button>
-                <button
-                    onClick={handleFiltering}
-                    className='bg-[#9966CC] ml-2 border-none outline-none rounded p-1 w-[100px]'
-                >
-                    Apply
-                </button>
-            </div>
-        ];
     }
 
     const handleChange = (event) => {
@@ -449,7 +433,7 @@ function TestimonyText() {
 
     function handleDeleteAlertFooterButton() {
         return [
-            deleteStatus === 'pending' ? 
+            getStatus.toLowerCase() === 'pending' ? 
                 <button 
                     onClick={() => setDeleteAlert(false)}
                     className='mr-[110px] mt-3 bg-[#9966CC] border-none outline-none rounded w-[80px] p-1
@@ -534,71 +518,124 @@ function TestimonyText() {
     return (
         <div className={`${!isDarkMode ? 'border h-[400px] rounded-xl w-[98%] m-[auto]' : 'border-none'}`}>
             {/* Testimony Details Modal */}
-            <Modal
-                open={openModal}
-                onCancel={handleCloseModal}
-                footer={handleModalFooterButton()}
-                closable={true}
-                closeIcon={<span style={{ color: `${isDarkMode ? '#fff' : 'black'}`, fontSize: '12px', marginTop: '-30px' }}>X</span>}
-                styles={{
-                    content: {
-                        backgroundColor: `${isDarkMode ? 'black' : 'white'}`,
+            {openModal && (
+                <div
+                    className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50"
+                    onClick={handleCloseModal}
+                >
+                    <div
+                    className={`relative rounded-lg overflow-hidden ${
+                        isDarkMode ? 'bg-[#0B0B0B] text-white' : 'bg-white text-black'
+                    }`}
+                    style={{
                         width: '400px',
-                        height: 'auto',
-                        color: `${isDarkMode ? '#fff' : 'black'}`,
-                        margin: '0 auto',
-                        borderRadius: '8px',
-                        marginLeft: '200px'
-                    },
-                    body: {
-                        color: `${isDarkMode ? '#fff' : 'black'}`,
-                    },
-                }}
-            >
-                {details ? (
-                    <div>
-                        <div className={`w-[400px] h-[50px] ml-[-24px] mt-[-22px] rounded-tl-xl rounded-tr-xl ${isDarkMode ? 'bg-[#313131]' : 'bg-gray-200'}`}></div>
-                        <div className='w-[50px] h-[50px] m-[auto] z-[1000]'>
-                            <img className='w-[50px] h-[50px] m-[auto] mt-[-25px]' src={modalpic} alt="" />
-                        </div>
+                        height: '420px',
+                        marginLeft: '200px',
+                        border:'2px solid grey',
+                        display: 'flex',
+                        flexDirection: 'column',
+                    }}
+                    onClick={(e) => e.stopPropagation()}
+                    >
+                    {/* Fixed Header */}
+                    <div
+                        className={`w-full h-[80px] flex items-center justify-center relative ${
+                        isDarkMode ? 'bg-[#313131]' : 'bg-gray-200'
+                        }`}
+                        style={{
+                        position: 'sticky',
+                        top: 0,
+                        flexShrink: 0,
+                        zIndex: 10,
+                        }}
+                    >
+                        {/* Image inside header */}
+                        <img
+                        src={modalpic}
+                        alt="Modal Pic"
+                        className="w-[50px] h-[50px] rounded-full absolute top-20 transform -translate-y-1/2"
+                        />
 
-                        <div className="rounded-3xl px-5 py-4 overflow-hidden border border-gray-600 w-[110%] m-auto ml-[-17px] h-auto mt-6">
-                            <div className="mb-2">
-                            <h3>Name</h3>
-                            <p> {details?.uploaded_by.full_name || "N/A"} </p>
-                            </div>
-        
-                            <div className="mb-2">
-                            <h3>Email</h3>
-                            <p> {details.uploaded_by.email || "N/A"} </p>
-                            </div>
+                        {/* Close Button */}
+                        <button
+                        onClick={handleCloseModal}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2"
+                        style={{
+                            background: 'transparent',
+                            border: 'none',
+                            fontSize: '16px',
+                        }}
+                        >
+                        X
+                        </button>
+                    </div>
 
-                            <div className='flex  items-center gap-3 text-[14px] h-[45px] font-sans'>
-                                <p className='mb-1'>Status</p>
-                                <p className={`w-[100px] text-center  p-[3px] rounded ${
-                                    details.status === 'pending' ? 
-                                        'text-yellow-400 border border-yellow-500' :
-                                    details.status === 'approved' ? 
-                                        'text-green-500 border border-green-500' : 
-                                        'text-red border border-red'
-                                }`}>
-                                    {details.status.charAt(0).toUpperCase() + details.status.slice(1)}
+                    {/* Scrollable Content */}
+                    <div className="p-4 overflow-y-auto no-scrollbar" style={{ flex: 1 }}>
+                        {details ? (
+                        <div>
+                            <div className="rounded-3xl px-5 py-4 border border-gray-600 w-full mt-5">
+                            <div className="mb-2">
+                                <h3>Name</h3>
+                                <p>{details?.uploaded_by.full_name || 'N/A'}</p>
+                            </div>
+                            <div className="mb-2">
+                                <h3>Email</h3>
+                                <p>{details.uploaded_by.email || 'N/A'}</p>
+                            </div>
+                            <div className="flex items-center gap-3 text-[12px] h-[45px] font-sans">
+                                <p className="mb-1">Status</p>
+                                <p
+                                className={`w-[100px] text-center p-[3px] rounded ${
+                                    details.status.toLowerCase() === 'pending'
+                                    ? 'text-yellow-400 border border-yellow-500'
+                                    : details.status.toLowerCase() === 'approved'
+                                    ? 'text-green-500 border border-green-500'
+                                    : 'text-red-500 border border-red-500'
+                                }`}
+                                >
+                                {details.status.charAt(0) + details.status.slice(1).toLowerCase()}
                                 </p>
                             </div>
-        
-                        </div>
+                            </div>
 
-                        <div className='mt-3 mb-7'>
-                            <h3 className={`font-sans text-[11px] ${isDarkMode && 'text-white'}`}>{details.title || "no title"}</h3>
-                            <p className={`text-[11px] pt-2 ${isDarkMode && 'text-white'}`}>
-                                {details?.content?.slice(0, 500) + "..."}
-                            </p>
-                        </div>    
+                            {details.status.toLowerCase() === 'approved' &&
+                                <div className='border border-gray-600 rounded-xl mt-5 p-3'>
+                                    <h3 className='text-[13px]'>Engagement Analytics</h3>
+                                    <div className='flex items-center gap-16 text-[11px] mt-2'>
+                                        <div className='max-w-fit text-center p-1.5'>
+                                            <p>Likes</p>
+                                            <p>{details.likes || 0 }</p>
+                                        </div>
+                                        <div className='max-w-fit text-center p-1.5'>
+                                            <p>Comments</p>
+                                            <p>{details.comments || 0}</p>
+                                        </div>
+                                        <div className='max-w-fit text-center p-1.5'>
+                                            <p>Shares</p>
+                                            <p>{details.shares || 0}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            }
+
+                            <div className="mt-3 mb-7">
+                                <h3 className="font-sans text-[11px]">{details.title || 'no title'}</h3>
+                                <p className="text-[11px] pt-2">
+                                    {details?.content}
+                                </p>
+                            </div>
+
+                            {/* Footer */}
+                            <div className="mt-4 float-right pb-3">{handleModalFooterButton()}</div>
+                        </div>
+                        ) : (
+                        <p>No details available</p>
+                        )}
                     </div>
-                ) : (
-                    <p>No details available</p>
-                )}
-            </Modal>
+                    </div>
+                </div>
+            )}
 
             {/* Rejection Reason Modal */}
             <Modal
@@ -679,296 +716,211 @@ function TestimonyText() {
             </Modal>
 
             {/* Filter Modal */}
-            <Modal
-                open={filterModal}
-                onCancel={handleCloseModal}
-                footer={filterModalFooterButton}
-                closeIcon={<span style={{ color: `${isDarkMode ? '#fff' : 'black'}`, fontSize: '12px', marginTop: '-15px' }}>X</span>}
-                styles={{
-                    content: {
-                        backgroundColor: `${isDarkMode ? '#0B0B0B' : '#fff'}`,
-                        width: '330px',
-                        height: 'auto',
-                        color: `${isDarkMode ? '#fff' : 'black'}`,
-                        margin: '0 auto',
-                        borderRadius: '8px',
-                        marginLeft: '100%',
-                        marginTop: '50px'
-                    },
-                    body: {
-                        color: `${isDarkMode ? '#fff' : 'black'}`
-                    },
-                }}
-            >
-                <div>
-                    <h3 className={`text-[13px] font-sans pb-2 mt-[-10px] ${isDarkMode ? 'text-white' : 'text-black'}`}>Filter</h3>
-                    <hr className={`w-[117%] ml-[-25px] ${isDarkMode ? 'text-gray-300 opacity-[0.2]' : 'text-black'} `}/>
+             {filterModal && (
+                <>
+                    {/* Overlay */}
+                    <div
+                    onClick={handleCloseModal}
+                    className="fixed inset-0 bg-black bg-opacity-50 z-40"
+                    />
 
-                    <div>
-                        {/* Date Range Section */}
-                        <div className='flex items-center justify-between mb-[-15px] mt-2 w-[110%] ml-[-15px]'>
+                    {/* Modal Content */}
+                    <div
+                    className="fixed z-50"
+                    style={{
+                        top: '150px',
+                        left: '75%',
+                        transform: 'translateX(-50%)',
+                        backgroundColor: isDarkMode ? '#0B0B0B' : '#fff',
+                        width: '400px',
+                        height: '400px',
+                        color: isDarkMode ? '#fff' : 'black',
+                        borderRadius: '8px',
+                        overflow: 'hidden',
+                        padding: 0
+                    }}
+                    >
+                    {/* Header */}
+                    <div className={`${isDarkMode ? 'bg-[#131313]' : 'bg-gray-200'} h-[60px] w-full rounded-t-lg flex items-center justify-between px-5 sticky top-0 z-10`}>
+                        <h3 className={isDarkMode ? 'text-white' : 'text-black'}>Filter</h3>
+                        <button 
+                        onClick={handleCloseModal}
+                        className={isDarkMode ? 'text-white' : 'text-black'}
+                        >
+                        X
+                        </button>
+                    </div>
+
+                    {/* Scrollable Content */}
+                    <div 
+                        className="scroll-container"
+                        style={{
+                        height: 'calc(450px - 120px)',
+                        overflowY: 'auto',
+                        scrollbarWidth: 'none',
+                        msOverflowStyle: 'none',
+                        padding: '0 24px',
+                        position: 'relative'
+                        }}
+                    >
+                        <div className="pt-2 pb-20">
+                        <hr className={`w-full mb-2 ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`} />
+
+                        {/* Date Range */}
+                        <div className='flex items-center justify-between mb-2'>
                             <h3 className={`text-[14px] ${isDarkMode ? 'text-white' : 'text-black'}`}>Date Range</h3>
                             <button 
-                                onClick={() => {
-                                    setFilterDate1('');
-                                    setFilterDate2('');
-                                }}
-                                className='outline-none border-none p-1 text-[#9966CC] rounded'
+                            onClick={() => {
+                                setFilterDate1('');
+                                setFilterDate2('');
+                            }}
+                            className='outline-none border-none p-1 text-[#9966CC] rounded'
                             >
-                                Clear
+                            Clear
                             </button>
                         </div>
 
-                        <div className='flex items-center justify-between mt-4 gap-2 ml-[-10px]'>
+                        <div className='flex items-center justify-between mt-4 gap-2'>
                             <div>
-                                <p>From</p>
-                                <div className={`flex items-center rounded-xl w-[150px] p-1 mt-1 cursor-pointer 
-                                    ${isDarkMode ? 'bg-[#171717]' : 'border border-[#9966CC]'}`}>
-                                    <CalendarOutlined 
-                                        onClick={handleFromDateIconClick} 
-                                        className={`${isDarkMode ? 'text-white ml-2' : 'text-black ml-2'}`} 
-                                    />
-                                    <input 
-                                        type="date"
-                                        ref={dateInputRef1}
-                                        placeholder={`dd/mm/yyyy`}
-                                        value={filterDate1}
-                                        onChange={handleFilterDate1}
-                                        className='no-icon border cursor-pointer'
-                                    />
-                                </div>
+                            <p className={isDarkMode ? 'text-white' : 'text-black'}>From</p>
+                            <div className={`flex items-center rounded-xl w-[150px] p-1 mt-1 cursor-pointer 
+                                ${isDarkMode ? 'bg-[#171717]' : 'border border-[#9966CC]'}`}>
+                                <CalendarOutlined 
+                                onClick={handleFromDateIconClick} 
+                                className={`${isDarkMode ? 'text-white ml-2' : 'text-black ml-2'}`} 
+                                />
+                                <input 
+                                type="date"
+                                ref={dateInputRef1}
+                                value={filterDate1}
+                                onChange={handleFilterDate1}
+                                className={`no-icon cursor-pointer ${isDarkMode ? 'bg-[#171717] text-white' : 'bg-white'}`}
+                                style={{ border: 'none', outline: 'none', width: '100%' }}
+                                />
                             </div>
-                           
+                            </div>
+
                             <div>
-                                <p>To</p>
-                                <div className={`flex items-center rounded-xl w-[150px] p-1 mt-1 cursor-pointer 
-                                    ${isDarkMode ? 'bg-[#171717]' : 'border border-[#9966CC]'}`}>
-                                    <CalendarOutlined 
-                                        onClick={handleToDateIconClick} 
-                                        className={`${isDarkMode ? 'text-white ml-2' : 'text-black ml-2'}`}
-                                    />
-                                    <input 
-                                        type="date"
-                                        ref={dateInputRef2}
-                                        placeholder='dd/mm/yyyy'
-                                        value={filterDate2}
-                                        onChange={handleFilterDate2}
-                                        className='no-icon border cursor-pointer'
-                                    />
-                                </div>
+                            <p className={isDarkMode ? 'text-white' : 'text-black'}>To</p>
+                            <div className={`flex items-center rounded-xl w-[150px] p-1 mt-1 cursor-pointer 
+                                ${isDarkMode ? 'bg-[#171717]' : 'border border-[#9966CC]'}`}>
+                                <CalendarOutlined 
+                                onClick={handleToDateIconClick} 
+                                className={`${isDarkMode ? 'text-white ml-2' : 'text-black ml-2'}`}
+                                />
+                                <input 
+                                type="date"
+                                ref={dateInputRef2}
+                                value={filterDate2}
+                                onChange={handleFilterDate2}
+                                className={`no-icon cursor-pointer ${isDarkMode ? 'bg-[#171717] text-white' : 'bg-white'}`}
+                                style={{ border: 'none', outline: 'none', width: '100%' }}
+                                />
+                            </div>
                             </div>
                         </div>
-                        <hr className={`w-[117%] ml-[-25px] mt-[15px] ${isDarkMode ? 'text-gray-300 opacity-[0.2]' : 'text-black'} `}/>
 
-                        {/* Category Section */}
-                        <div className='flex items-center justify-between mt-2 w-[110%] ml-[-15px]'>
-                            <h3 className='text-[14px]'>Category</h3>
+                        <hr className={`w-full mt-4 mr-5 ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`} />
+
+                        {/* Category */}
+                        <div className='flex items-center justify-between mt-4'>
+                            <h3 className={`text-[14px] ${isDarkMode ? 'text-white' : 'text-black'}`}>Category</h3>
                             <button 
-                                onClick={() => setSelectTestType('Select')}
-                                className='outline-none border-none p-1 text-[#9966CC] rounded'
+                            onClick={() => setSelectTestType('Select')}
+                            className='outline-none border-none p-1 text-[#9966CC] rounded'
                             >
-                                Clear
+                            Clear
                             </button>
                         </div>
 
                         <div 
                             onClick={() => setFilterDropDown(!filterDropDown)} 
-                            className={`flex items-center justify-center w-[110%] ml-[-15px] p-1 rounded-xl cursor-pointer ${isDarkMode ? 'bg-[#171717]' : 'bg-white border border-[#9966CC]'}`}
+                            className={`flex items-center justify-between p-2 rounded-xl cursor-pointer mt-2 ${isDarkMode ? 'bg-[#171717]' : 'bg-white border border-[#9966CC]'}`}
                         >
-                            <p className={`font-sans p-1 w-[100%] rounded ${isDarkMode ? 'text-white' : 'text-black'}`}>{selectTestType}</p>
-                            {filterDropDown ? <FaCaretUp/> : <FaCaretDown/>}
+                            <p className={`font-sans ${isDarkMode ? 'text-white' : 'text-black'}`}>
+                            {selectTestType}
+                            </p>
+                            {filterDropDown ? 
+                            <FaCaretUp className={isDarkMode ? 'text-white' : 'text-black'} /> : 
+                            <FaCaretDown className={isDarkMode ? 'text-white' : 'text-black'} />
+                            }
                         </div>
 
-                        {filterDropDown && 
-                            <div className='flex flex-col rounded-xl cursor-pointer p-1 opacity-[0.6] mt-3 border overflow-hidden w-[110%] ml-[-13px]'>
+                        {filterDropDown && (
+                            <div className={`flex flex-col rounded-xl cursor-pointer p-1 mt-3 border ${isDarkMode ? 'bg-[#171717] border-gray-600' : 'bg-white border-[#9966CC]'}`}>
+                            {['Healing', 'Deliverance', 'Faith', 'Salvation', 'Finance', 'Career', 'Marriage Restoration'].map((category) => (
                                 <div 
-                                    onClick={() => {
-                                        setSelectTestType('Healing');
-                                        setFilterDropDown(false);
-                                    }}
-                                    className='w-[110%] ml-[-15px] border-b pl-5 pb-1'
+                                key={category}
+                                onClick={() => {
+                                    setSelectTestType(category);
+                                    setFilterDropDown(false);
+                                }}
+                                className='w-full py-2 px-4 border-b last:border-b-0 hover:bg-opacity-50 hover:bg-gray-600'
                                 >
-                                    <input 
-                                        type='button' 
-                                        value='Healing'
-                                        onClick={() => {
-                                            setSelectTestType('Healing');
-                                            setFilterDropDown(false);
-                                        }} 
-                                    />
+                                <span className={isDarkMode ? 'text-white' : 'text-black'}>
+                                    {category}
+                                </span>
                                 </div>
-                                <div 
-                                    onClick={() => {
-                                        setSelectTestType('Deliverance');
-                                        setFilterDropDown(false);
-                                    }}
-                                    className='w-[110%] ml-[-15px] border-b pl-5 pb-1 cursor-pointer'
-                                >
-                                    <input  
-                                        type='button' 
-                                        value='Deliverance'
-                                        onClick={() => {
-                                            setSelectTestType('Deliverance');
-                                            setFilterDropDown(false);
-                                        }} 
-                                    />
-                                </div>
-                                <div
-                                    onClick={() => {
-                                        setSelectTestType('Faith');
-                                        setFilterDropDown(false);
-                                    }}
-                                    className='w-[110%] ml-[-15px] border-b pl-5 pb-1'
-                                >
-                                    <input 
-                                        type='button' 
-                                        value='Faith'
-                                        onClick={() => {
-                                            setSelectTestType('Faith');
-                                            setFilterDropDown(false);
-                                        }} 
-                                    />
-                                </div>
-                                <div 
-                                    onClick={() => {
-                                        setSelectTestType('Salvation');
-                                        setFilterDropDown(false);
-                                    }}
-                                    className='w-[110%] ml-[-15px] pl-5 pb-1'
-                                >
-                                    <input 
-                                        type='button' 
-                                        value='Salvation' 
-                                        onClick={() => {
-                                            setSelectTestType('Salvation');
-                                            setFilterDropDown(false);
-                                        }}
-                                    />
-                                </div>
-
-                                <div 
-                                    onClick={() => {
-                                        setSelectTestType('Finance');
-                                        setFilterDropDown(false);
-                                    }}
-                                    className='w-[110%] ml-[-15px] pl-5 pb-1'
-                                >
-                                    <input 
-                                        type='button' 
-                                        value='Finance' 
-                                        onClick={() => {
-                                            setSelectTestType('Finance');
-                                            setFilterDropDown(false);
-                                        }}
-                                    />
-                                </div>
-                                <div 
-                                    onClick={() => {
-                                        setSelectTestType('Career');
-                                        setFilterDropDown(false);
-                                    }}
-                                    className='w-[110%] ml-[-15px] pl-5 pb-1'
-                                >
-                                    <input 
-                                        type='button' 
-                                        value='Career' 
-                                        onClick={() => {
-                                            setSelectTestType('Career');
-                                            setFilterDropDown(false);
-                                        }}
-                                    />
-                                </div>
-                                <div 
-                                    onClick={() => {
-                                        setSelectTestType('Marriage Restoration');
-                                        setFilterDropDown(false);
-                                    }}
-                                    className='w-[110%] ml-[-15px] pl-5 pb-1'
-                                >
-                                    <input 
-                                        type='button' 
-                                        value='Marriage Restoration' 
-                                        onClick={() => {
-                                            setSelectTestType('Marriage Restoration');
-                                            setFilterDropDown(false);
-                                        }}
-                                    />
-                                </div>
+                            ))}
                             </div>
-                        }
+                        )}
 
-                        {/* Approval Status Section */}
-                        <div className='flex items-center justify-between mt-3'>
-                            <h3 className='text-[14px]'>Approval Status</h3>
+                        <hr className={`w-full mt-4 ${isDarkMode ? 'border-gray-600' : 'border-gray-300'}`} />
+
+                        {/* Approval Status */}
+                        <div className='flex items-center justify-between mt-4 mb-3'>
+                            <h3 className={`text-[14px] ${isDarkMode ? 'text-white' : 'text-black'}`}>Approval Status</h3>
                         </div>
 
-                        <div className='flex items-center gap-5'>
-                            <div className="flex gap-6 ml-[10px] mt-5">
-                                <div className="flex items-center cursor-pointer">
-                                    <div className={`w-[16px] h-[16px] rounded-full border border-[#9966CC] mr-1
-                                        ${ApprovalStatus === 'pending' ? 'bg-[#9966CC]' : 'bg-transparent'}`}>
-                                    </div>
-                                    <input
-                                        type="radio"
-                                        id="pending"
-                                        name="status"
-                                        value="pending"
-                                        checked={ApprovalStatus === 'pending'}
-                                        onChange={handleChange}
-                                        className="hidden peer cursor-pointer"
-                                    />
-                                    <label
-                                        className='cursor-pointer'
-                                        htmlFor="pending"
-                                    >
-                                        Pending
-                                    </label>
+                        <div className="flex flex-wrap gap-4">
+                            {['pending', 'approved', 'rejected'].map((status) => (
+                            <div key={status} className="flex items-center cursor-pointer">
+                                <div className={`w-[16px] h-[16px] rounded-full border border-[#9966CC] mr-1 flex items-center justify-center
+                                ${ApprovalStatus === status ? 'bg-[#9966CC]' : 'bg-transparent'}`}>
+                                {ApprovalStatus === status && (
+                                    <div className="w-[8px] h-[8px] rounded-full bg-white"></div>
+                                )}
                                 </div>
-                                <div className="flex items-center cursor-pointer">
-                                    <div className={`w-[16px] h-[16px] rounded-full border border-[#9966CC] mr-1 cursor-pointer
-                                        ${ApprovalStatus === 'approved' ? 'bg-[#9966CC]' : 'bg-transparent'}`}>
-                                    </div>
-                                    <input
-                                        type="radio"
-                                        id="approved"
-                                        name="status"
-                                        value="approved"
-                                        checked={ApprovalStatus === 'approved'}
-                                        onChange={handleChange}
-                                        className="hidden peer"
-                                    />
-                                    <label
-                                        className='cursor-pointer'
-                                        htmlFor="approved"
-                                    >
-                                        Approved
-                                    </label>
-                                </div>
-                                <div className="flex items-center cursor-pointer">
-                                    <div className={`w-[16px] h-[16px] rounded-full border border-[#9966CC] mr-1
-                                        ${ApprovalStatus === 'Rejected' ? 'bg-[#9966CC]' : 'bg-transparent'}`}>
-                                    </div>
-                                    <input
-                                        type="radio"
-                                        id="rejected"
-                                        name="status"
-                                        value="Rejected"
-                                        checked={ApprovalStatus === 'rejected'}
-                                        onChange={handleChange}
-                                        className="hidden peer"
-                                    />
-                                    <label
-                                        className='cursor-pointer'
-                                        htmlFor="rejected"
-                                    >
-                                        Rejected
-                                    </label>
-                                </div>
+                                <input
+                                type="radio"
+                                id={status}
+                                name="status"
+                                value={status}
+                                checked={ApprovalStatus === status}
+                                onChange={handleChange}
+                                className="hidden"
+                                />
+                                <label
+                                className={`cursor-pointer text-[14px] ${isDarkMode ? 'text-white' : 'text-black'}`}
+                                htmlFor={status}
+                                >
+                                {status.charAt(0).toUpperCase() + status.slice(1)}
+                                </label>
                             </div>
+                            ))}
+                        </div>
                         </div>
                     </div>
-                </div>
-            </Modal>
+
+                    {/* Footer */}
+                    <div className={`absolute bg-[#0B0B0B] z-10 bottom-0 left-0 right-0 py-3 px-6 ${isDarkMode ? 'border-gray-600 bg-green' : 'border-gray-300 bg-white'} flex justify-end`}>
+                        <button 
+                        onClick={handleReset}
+                        className='border border-[#9966CC] outline-none p-1 rounded w-[100px] text-[#9966CC] mr-2'
+                        >
+                        Clear All
+                        </button>
+                        <button
+                        onClick={handleFiltering}
+                        className='bg-[#9966CC] text-white border-none outline-none rounded p-1 w-[100px]'
+                        >
+                        Apply
+                        </button>
+                    </div>
+                    </div>
+                </>
+            )}
+
 
             {/* Action Modal */}
             <Modal
@@ -984,7 +936,7 @@ function TestimonyText() {
                         color: `${isDarkMode ? '#fff' : 'black'}`,
                         margin: '0 auto',
                         borderRadius: '8px',
-                        marginLeft: '130%',
+                        marginLeft: '120%',
                         marginTop: '180px'
                     },
                     body: {
@@ -1007,9 +959,11 @@ function TestimonyText() {
 
                     <div className='w-[150%] ml-[-25px] pb-2 opacity-[0.9] cursor-pointer'>
                         <button 
-                            onClick={() => {
-                                setActionModal(false);
-                                showDeleteNotification();
+                             onClick={async () => {
+                                await handleDetail(controlDetail, false); // fetch latest data
+                                console.log(details.status)
+                                setActionModal(false);             // close the 3-dot menu
+                                showDeleteNotification();          // open delete modal
                             }} 
                             className='pl-2 pt-4 text-red font-bold'
                         >
@@ -1040,7 +994,7 @@ function TestimonyText() {
                     },
                 }}
             >
-                {deleteStatus === 'pending' ? 
+                {details.status === 'PENDING' ? 
                     <div className='flex flex-col w-[128%] ml-[-20px] mt-5 items-center justify-center'>
                         <div className='w-[80%] ml-[-45px]'>
                             <p className='text-[15px] text-center pt-3'>Unable to delete Pending Testimonies!</p>
@@ -1245,11 +1199,15 @@ function TestimonyText() {
                         sortedData.slice(startIndex, startIndex + itemsPerPage).map((item, index) => (
                             <div
                                 key={item.id}
-                                className={`text-[13px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-9
-                                ${isDarkMode ? "text-white border-b border-b-slate-200" : "bg-white text-black border-b border-b-slate-200"}`}
+                                className={`text-[13px] w-[100%] cursor-pointer h-[50px] m-[auto] grid grid-cols-9 transition-colors duration-150
+                                ${isDarkMode 
+                                    ? "text-white border-b border-b-slate-200 hover:bg-[#1e1e1e]" 
+                                    : "bg-white text-black border-b border-b-slate-200 hover:bg-slate-200"}`}
                             >
                                 <div 
-                                    onClick={() => handleDetail(item.id)} 
+                                    onClick={() => {
+                                        handleDetail(item.id)
+                                    }} 
                                     className='ml-[15px] mt-4'
                                 >
                                     {(currentPage - 1) * itemsPerPage + index + 1}
@@ -1266,16 +1224,16 @@ function TestimonyText() {
                                 <div className='ml-[20px] mt-4'>{item?.shares || 0}</div>
                                 <div 
                                     className={`ml-[-5px] mt-3 w-[90%] m-[auto] text-center rounded-xl p-1 
-                                    ${item.status === 'rejected' ? 
+                                    ${item.status.toLowerCase() === 'rejected' ? 
                                         'text-red border border-red' : 
-                                        item.status === 'pending' ? 
+                                        item.status.toLowerCase() === 'pending' ? 
                                         'text-yellow-400 border border-yellow-500' : 
                                         'text-green-700 border border-green-700'}`}
                                 >
-                                    {item.status.charAt(0).toUpperCase() + item.status.slice(1)}
+                                    {item.status.charAt(0) + item.status.slice(1).toLowerCase()}
                                 </div>
                                 <div 
-                                    onClick={() => {
+                                    onClick={(e) => {
                                         setControlDetail(item.id);
                                         setActionModal(true);
                                     }} 
@@ -1295,6 +1253,7 @@ function TestimonyText() {
                         </div>
                     )}
                 </div>
+
 
                 {/* Pagination */}
                 <div className='flex justify-between items-center mt-4'>
