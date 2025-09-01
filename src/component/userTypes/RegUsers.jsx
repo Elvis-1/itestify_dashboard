@@ -221,17 +221,17 @@ const changeSuccess = () => {
                           isDarkMode
                             ? `text-white bg-[#292929]`
                             : `text-black bg-white`
-                        } w-[140px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
+                        } w-[150px] border-[1px] border-white absolute top-10 right-10 z-20 shadow-lg`}
                       >
                         <p
-                          className="p-2 mt-4 text-start cursor-pointer hover:bg-[#575757]"
+                          className="p-2 text-start cursor-pointer hover:bg-[#575757]"
                           onClick={() => openProfileModal(data.id)}
                         >
                           View profile
                         </p>
                         <hr className="border-t border-gray-300" />
                         <p
-                          className="h-[50px] pt-3 text-center cursor-pointer text-red-500 hover:bg-[#575757] rounded-lg"
+                          className=" p-2 text-center cursor-pointer text-red-500 hover:bg-[#575757] rounded-lg"
                           onClick={() => {
                             setSelectedUserId(data.id); 
                             setShowDeactivateModal(true);

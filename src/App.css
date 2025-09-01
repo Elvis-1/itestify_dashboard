@@ -405,15 +405,15 @@ input::-webkit-inner-spin-button {
 }
 
 
-/* Add to your global CSS */
-.no-scrollbar::-webkit-scrollbar  {
-  display: none;
+/* Hide scrollbar for Chrome, Safari and Opera */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
 }
 
-.no-scrollbar{
-  /* Hide scrollbar */
-  scrollbar-width: none;       /* Firefox */
-  -ms-overflow-style: none;    /* IE 10+ */
+/* Hide scrollbar for IE, Edge and Firefox */
+.no-scrollbar {
+    -ms-overflow-style: none;  /* IE and Edge */
+    scrollbar-width: none;  /* Firefox */
 }
 
 

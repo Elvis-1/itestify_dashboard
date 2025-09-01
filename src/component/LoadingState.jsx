@@ -3,9 +3,9 @@ import itestifyLogo from "../assets/icons/logoloading.png";
 
 const LoadingState = () => {
   return (
-    <div className="fixed inset-0 z-[70] flex">
+    <div className="fixed inset-0 z-[100] flex w-screen">
       <div
-        className="fixed inset-0 bg-black bg-opacity-50"
+        className="fixed inset-0 bg-black bg-opacity-50 w-screen"
         style={{ left: "270px" }}
         aria-hidden="true"
       />

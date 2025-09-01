@@ -2,7 +2,7 @@ import React, { useContext } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import CheckImage from "../../assets/images/CheckImage.png";
 import "../../styles/animation.css";
-const SuccessModal = ({ successMessage, adminDetails }) => {
+const SuccessModal = ({ successMessage, adminDetails, title, message }) => {
   const { isDarkMode } = useContext(DarkModeContext);
 
   return (
@@ -24,15 +24,15 @@ const SuccessModal = ({ successMessage, adminDetails }) => {
             <div className="flex flex-col gap-3 text-center justify-center items-center">
               <img className="w-20" src={CheckImage} alt="" />
               <h3 className="text-lg">
-                {successMessage?.title || "Changes Saved Successfully!"}
+                {title || "Changes Saved Successfully!"}
               </h3>
               <p
                 className={`text-sm opacity-70 ${
                   isDarkMode ? "text-off-white" : "text-off-black"
                 }`}
               >
-                {successMessage?.message ||
-                  `You have changed ${adminDetails.email} to a ${adminDetails.role}. The viewer will be notified of the change via email.`}
+                {message ||
+                  `You have changed ${adminDetails.email} to a ${adminDetails.role}. The admin will be notified of the change via email.`}
               </p>
             </div>
           </div>

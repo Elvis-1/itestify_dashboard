@@ -1,7 +1,10 @@
-import React, { useContext, useState } from "react";
+import React, { useContext, useState, useEffect } from "react";
 import { DarkModeContext } from "../../context/DarkModeContext";
 import { MdClose } from "react-icons/md";
 import { IoMdArrowDropdown } from "react-icons/io";
+import axios from "axios";
+import { message } from "antd";
+import { Loader } from "rsuite";
 const AddMember = ({
   setMemberModal,
   onConfirm,
@@ -11,20 +14,52 @@ const AddMember = ({
   onProceed,
   setIsEditing,
   setEditMemberId,
+  formatSnakeToTitle,
 }) => {
   const { isDarkMode } = useContext(DarkModeContext);
+  const token = localStorage.getItem("token");
+  const API_URL =
+    import.meta.env.VITE_API_URL ||
+    "https://itestify-backend-38u1.onrender.com";
   const [isOpenDropdown, setIsOpenDropdown] = useState(false);
+  const [roles, setRoles] = useState([]);
+  const [selectedRole, setSelectedRole] = useState(null);
+  const [loadRoles, setLoadRoles] = useState(false);
 
-  const options = [
-    // { value: "Super admin", label: "Super admin" },
-    { value: "admin", label: "admin" },
-    { value: "viewer", label: "viewer" },
-  ];
+  // FETCH ALL ROLES ALREADY CREATED
+  useEffect(() => {
+    const fetchMembers = async () => {
+      try {
+        setLoadRoles(true);
+        const response = await axios.get(`${API_URL}/auths/roles/all/`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
+          },
+        });
+        setRoles(response?.data?.data);
+      } catch (error) {
+        message.error(error?.message);
+        console.log(error);
+        console.error(
+          "Error fetching members:",
+          error?.response || error?.message
+        );
+      } finally {
+        setLoadRoles(false);
+      }
+    };
+
+    fetchMembers();
+  }, []);
   const handleChange = (e) => {
     const { name, value } = e.target;
     setAdminDetails({ ...adminDetails, [name]: value });
   };
 
+  const allRoles = roles
+    .filter((role) => role.name !== "Super Admin")
+    .flatMap((admin) => admin.name);
   return (
     <div>
       {" "}
@@ -36,7 +71,7 @@ const AddMember = ({
         />
 
         {/* Modal */}
-        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-sm shadow-2xl ">
+        <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2 w-full max-w-sm shadow-2xl overflow-y-auto scroll-m-0">
           <div
             className={`rounded-lg  modal ${
               isDarkMode ? "bg-near-black text-white" : "bg-white text-black"
@@ -106,11 +141,8 @@ const AddMember = ({
                p-1 rounded-md outline-none text-sm placeholder:text-xs
                transition-colors duration-200`}
               >
-                <span className="text-sm opacity-80">
-                  {adminDetails.role
-                    ? options.find((opt) => opt.value === adminDetails.role)
-                        ?.label
-                    : "Select Role"}
+                <span className="text-sm opacity-80 capitalize">
+                  {selectedRole ? selectedRole : "Select Role"}
                 </span>
                 <IoMdArrowDropdown
                   className={`w-5 h-5 transition-transform duration-200 
@@ -123,26 +155,35 @@ const AddMember = ({
                     isDarkMode ? `bg-black` : `bg-off-white`
                   }`}
                 >
-                  {options.map((option) => (
-                    <div
-                      key={option.value}
-                      onClick={() => {
-                        setAdminDetails((prev) => ({
-                          ...prev,
-                          role: option.value,
-                        }));
-                        setIsOpenDropdown(false);
-                      }}
-                      className={`p-2 cursor-pointer ${
-                        isDarkMode
-                          ? `text-white hover:bg-zinc-800 border-b-off-white`
-                          : `text-black hover:bg-near-white border-b-borderColor`
-                      } text-sm
-                     transition-colors duration-150 last-of-type:border-t first-of-type:border-b`}
-                    >
-                      {option.label}
+                  {loadRoles ? (
+                    <div className="flex justify-center items-center margin-auto p-6">
+                      <Loader />
                     </div>
-                  ))}
+                  ) : allRoles.length === 0 ? (
+                    <div className="text-center p-3">No roles Available</div>
+                  ) : (
+                    allRoles.map((option, index) => (
+                      <div
+                        key={index}
+                        onClick={() => {
+                          setSelectedRole(option);
+                          setAdminDetails((prev) => ({
+                            ...prev,
+                            role: option,
+                          }));
+                          setIsOpenDropdown(false);
+                        }}
+                        className={`p-2 cursor-pointer ${
+                          isDarkMode
+                            ? `text-white hover:bg-zinc-800 border-b-off-white`
+                            : `text-black hover:bg-near-white border-b-borderColor`
+                        } text-sm
+                     transition-colors duration-150 border-t border-b`}
+                      >
+                        {formatSnakeToTitle(option)}
+                      </div>
+                    ))
+                  )}
                 </div>
               )}
             </div>
@@ -166,9 +207,12 @@ const AddMember = ({
                 Cancel
               </button>
               <button
-                onClick={
-                  adminDetails.role !== "Super admin" ? onProceed : onConfirm
-                }
+                type="submit"
+                onClick={() => {
+                  adminDetails.role === "super_admin"
+                    ? onConfirm()
+                    : onProceed();
+                }}
                 className="btn-primary px-3 py-3 text-xs"
               >
                 {isEditing ? "Save Changes" : "Add member"}
