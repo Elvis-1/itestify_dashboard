@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import { useState } from 'react'
 import { Modal, Switch } from "antd";
 import { CheckOutlined } from '@ant-design/icons';
 
@@ -65,7 +65,7 @@ function NotificationSettings() {
                 <div>
                     <h3>Enable Browser Notifications</h3>
                     <p className='text-[13px] pt-1 opacity-[0.6]'>
-                        When enabled, you'll recieve notification directly within the dashbord.
+                        When enabled, you&apos;ll recieve notification directly within the dashbord.
                     </p>
                 </div>
                 <div className='mr-6'>
@@ -78,7 +78,7 @@ function NotificationSettings() {
                 <div>
                     <h3>Enable Email Notifications</h3>
                     <p className='text-[13px] pt-1 opacity-[0.6]'>
-                        When enabled, you'll recieve notification directly to your email.
+                        When enabled, you&apos;ll recieve notification directly to your email.
                     </p>
                 </div>
                 <div className='mr-6'>
