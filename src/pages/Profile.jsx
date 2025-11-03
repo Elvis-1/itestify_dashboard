@@ -217,6 +217,9 @@ const Profile = () => {
     }, 2000);
   };
 
+  const handleEmailSave = async () => {
+    setUpdateEmail(false);
+  };
 
   const handleSendOtpClick = async () => {
     setIsSendingOtp(true);
